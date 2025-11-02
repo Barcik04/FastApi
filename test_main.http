@@ -1,10 +1,7 @@
 # Test your FastAPI endpoints
 
-GET http://127.0.0.1:8000/db/ping
+GET http://127.0.0.1:8000/users
 
-###
 
-GET http://127.0.0.1:8000/hello/User
-Accept: application/json
 
-###
+
