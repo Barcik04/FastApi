@@ -24,9 +24,14 @@ class Database:
         async with self.pool.acquire() as conn:
             return await conn.execute(query, *args)
 
-    async def fetchrow(self, query: str, *args):
+    async def fetchval(self, query: str, *args):
         assert self.pool is not None, "DB pool not initialized"
         async with self.pool.acquire() as conn:
-            return await conn.fetchrow(query, *args)
+            return await conn.fetchval(query, *args)
+
+    async def fetch(self, query: str, *args):
+        assert self.pool is not None, "DB pool not initialized"
+        async with self.pool.acquire() as conn:
+            return await conn.fetch(query, *args)
 
 db = Database()

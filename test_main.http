@@ -1,6 +1,22 @@
 # Test your FastAPI endpoints
 
-GET http://127.0.0.1:8000/ping
+POST http://127.0.0.1:8000/users/
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "123456"
+}
+
+
+###
+
+GET http://127.0.0.1:8000/users/
+
+###
+
+
+GET http://127.0.0.1:8000/users/ping
 
 
 

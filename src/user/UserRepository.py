@@ -21,7 +21,7 @@ class UserRepository:
         RETURNING id::text, email;
         """
 
-        row = await db.fetchrow(query, user.email, password_hash)
+        row = await db.fetchval(query, user.email, password_hash)
         return User(id=row["id"], email=row["email"], password="")
 
     async def get_users(self) -> List[User]:
