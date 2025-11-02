@@ -9,7 +9,6 @@ RUN pip install -r /requirements.txt
 RUN apk del .tmp-build-deps
 
 RUN mkdir /src
-COPY ./src /src
 
 RUN adduser -D user
 USER user

@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from db import db   # ← relative import because main.py is inside the same package
+from src.db import db   # ← relative import because main.py is inside the same package
 
 app = FastAPI(title="FastAPI + Postgres (no ORM)")
 
