@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_USER: igor
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: crypto_system
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5101:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U igor -d crypto_system"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    working_dir: /app
+    volumes:
+      - ./src:/app/src
+      - ./.env:/app/.env:ro
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+
+volumes:
+  pgdata:
