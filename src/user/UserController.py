@@ -14,3 +14,7 @@ async def create_user(user_in: UserIn, svc: UserService = Depends(get_user_servi
 @router.get("")
 async def list_users(svc: UserService = Depends(get_user_service)):
     return await svc.get_all_users()
+
+@router.get("/ping")
+async def ping():
+    return {"status": "ok", "message": "API is working!"}
