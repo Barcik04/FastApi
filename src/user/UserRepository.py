@@ -1,34 +1,25 @@
-# src/repositories/user_repository.py
-
-from passlib.hash import bcrypt
+# src/user/UserRepository.py
 from typing import List
+from passlib.hash import bcrypt
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-
-from src.db import db
-from src.user.User import User, UserIn  # your Pydantic models
-
+from src.user.User import User, UserIn
+from src.user.user_model import UserORM
 
 class UserRepository:
-    """Simple user repository with SQL queries."""
+    async def add_user(self, session: AsyncSession, user_in: UserIn) -> User:
+        entity = UserORM(
+            email=user_in.email,
+            password_hash=bcrypt.hash(user_in.password),
+        )
+        session.add(entity)
+        await session.flush()      # get PK
+        await session.refresh(entity)
+        return User(id=entity.id, email=entity.email, password="")
 
-    async def add_user(self, user: UserIn) -> User:
-        # Hash password before storing
-        password_hash = bcrypt.hash(user.password)
-
-        query = """
-        INSERT INTO users (email, password_hash)
-        VALUES ($1, $2)
-        RETURNING id::text, email;
-        """
-
-        row = await db.fetchrow(query, user.email, password_hash)
-        return User(id=row["id"], email=row["email"], password="")
-
-    async def get_users(self) -> List[User]:
-        query = """
-        SELECT id::text AS id, email
-        FROM users;
-        """
-
-        rows = await db.fetch(query)  # fetch = all rows
-        return [User(id=row["id"], email=row["email"], password="") for row in rows]
+    async def get_users(self, session: AsyncSession) -> List[User]:
+        stmt = select(UserORM.id, UserORM.email)
+        res = await session.execute(stmt)
+        rows = res.all()
+        return [User(id=r.id, email=r.email, password="") for r in rows]

@@ -1,18 +1,19 @@
-# src/services/user_service.py
-
+# src/user/UserService.py
 from typing import List
-from src.user.UserRepository import UserRepository
+from sqlalchemy.ext.asyncio import AsyncSession
+from src.db import SessionLocal
 from src.user.User import User, UserIn
-
+from src.user.UserRepository import UserRepository
 
 class UserService:
-
-    def __init__(self, user_repo: UserRepository):
-        self.user_repo = user_repo
+    def __init__(self, repo: UserRepository):
+        self.repo = repo
 
     async def create_user(self, user_in: UserIn) -> User:
-
-        return await self.user_repo.add_user(user_in)
+        async with SessionLocal() as session:  # type: AsyncSession
+            async with session.begin():
+                return await self.repo.add_user(session, user_in)
 
     async def get_all_users(self) -> List[User]:
-        return await self.user_repo.get_users()
+        async with SessionLocal() as session:
+            return await self.repo.get_users(session)
