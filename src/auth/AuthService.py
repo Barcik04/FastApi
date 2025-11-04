@@ -1,9 +1,9 @@
 # src/user/AuthService.py
 from fastapi import HTTPException, status
-from src.infrastructure.utils.password import verify_password
-from src.infrastructure.utils.token import generate_user_token
+from src.auth.utils.password import verify_password
+from src.auth.utils.token import generate_user_token
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.user.UserRepository import UserRepository
+from src.api.repositories import UserRepository
 
 class AuthService:
     def __init__(self, repo: UserRepository):

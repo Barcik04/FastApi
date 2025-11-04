@@ -1,9 +1,9 @@
 # src/user/AuthController.py
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from src.db import SessionLocal
 from src.auth.AuthService import AuthService
-from src.user.UserRepository import UserRepository
-from src.core.domain.User import UserIn
+from src.api.repositories.UserRepository import UserRepository
+from src.api.schemas.User import UserIn
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 repo = UserRepository()

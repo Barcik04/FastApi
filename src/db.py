@@ -24,7 +24,6 @@ async def init_db(retries: int = 5, delay: int = 5) -> None:
     """
     Create tables for all models inheriting from Base, with simple retry.
     """
-    from src.user.UserOrm import UserORM
 
     for attempt in range(1, retries + 1):
         try:

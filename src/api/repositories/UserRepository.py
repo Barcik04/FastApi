@@ -2,12 +2,14 @@
 from typing import Optional, List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.user.UserOrm import UserORM
-from src.core.domain.User import User, UserIn
+from src.api.models.UserOrm import UserORM
+from src.api.schemas.User import User, UserIn
+from src.auth.utils.password import hash_password
+
 
 class UserRepository:
     async def register_user(self, session: AsyncSession, user_in: UserIn) -> User:
-        entity = UserORM(email=user_in.email, password_hash=user_in.password)
+        entity = UserORM(email=user_in.email, password_hash=hash_password(user_in.password),)
         session.add(entity)
         await session.flush()
         await session.refresh(entity)

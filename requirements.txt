@@ -3,6 +3,7 @@ fastapi
 uvicorn
 asyncpg
 python-dotenv
-passlib
+passlib==1.7.4
 sqlalchemy
 python-jose
+bcrypt==4.0.1

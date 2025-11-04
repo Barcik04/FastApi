@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from pydantic import UUID4
 
-from src.infrastructure.utils.consts import (
+from src.auth.utils.consts import (
     EXPIRATION_MINUTES,
     ALGORITHM,
     SECRET_KEY,

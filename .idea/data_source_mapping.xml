@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$PROJECT_DIR$/src/user/UserRepository.py" value="58342e4b-94f2-4829-886c-7fe35fa214cf" />
+    <file url="file://$PROJECT_DIR$/src/api/repositories/UserRepository.py" value="58342e4b-94f2-4829-886c-7fe35fa214cf" />
   </component>
 </project>
