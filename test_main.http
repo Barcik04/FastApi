@@ -1,9 +1,12 @@
 # Test your FastAPI endpoints
 
-POST http://127.0.0.1:8000/users/
+POST http://127.0.0.1:8000/auth/register
 Content-Type: application/json
 
-
+{
+  "email": "igora11111@gmail.com",
+  "password": "12345"
+}
 
 
 ###
@@ -12,8 +15,10 @@ GET http://127.0.0.1:8000/users/
 
 ###
 
+POST http://127.0.0.1:8000/auth/login
+Content-Type: application/json
 
-GET http://127.0.0.1:8000/users/ping
-
-
-
+{
+  "email": "igora11111@gmail.com",
+  "password": "12345"
+}

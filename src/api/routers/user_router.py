@@ -1,7 +1,7 @@
-# src/user/UserController.py
+# src/user/user_router.py
 from fastapi import APIRouter, Depends, Request
 from typing import List
-from src.user.User import UserIn, User
+from src.core.domain.User import UserIn, User
 from src.user.UserService import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])

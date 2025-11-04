@@ -1,14 +1,16 @@
 # src/db.py
 import os
+import asyncio
 from dotenv import load_dotenv, find_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.exc import SQLAlchemyError  # generic SA errors
 
 load_dotenv(find_dotenv())
 
 DB_URL = os.getenv("DATABASE_URL")
-if not DB_URL:
-    raise RuntimeError("DATABASE_URL not set. Check your .env path/value.")
+if not DB_URL or "+asyncpg" not in DB_URL:
+    raise RuntimeError("DATABASE_URL must be like postgresql+asyncpg://user:pass@host:5432/dbname")
 
 class Base(DeclarativeBase):
     pass
@@ -16,11 +18,24 @@ class Base(DeclarativeBase):
 engine = create_async_engine(DB_URL, echo=False, future=True)
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
-async def init_db():
-    # import models so metadata knows them
-    from src.user.user_model import UserORM
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+
+
+async def init_db(retries: int = 5, delay: int = 5) -> None:
+    """
+    Create tables for all models inheriting from Base, with simple retry.
+    """
+    from src.user.UserOrm import UserORM
+
+    for attempt in range(1, retries + 1):
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            return
+        except SQLAlchemyError as e:
+            print(f"[DB] Attempt {attempt}/{retries} failed: {e}")
+            if attempt == retries:
+                raise
+            await asyncio.sleep(delay)
 
 async def close_db():
     await engine.dispose()
