@@ -21,9 +21,6 @@ SessionLocal = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSe
 
 
 async def init_db(retries: int = 5, delay: int = 5) -> None:
-    """
-    Create tables for all models inheriting from Base, with simple retry.
-    """
 
     for attempt in range(1, retries + 1):
         try:

@@ -12,7 +12,7 @@ Content-Type: application/json
 ###
 
 GET http://127.0.0.1:8000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNWQ5YWVhZC0zYjI5LTQxM2YtODBiNS0yZWNiMTkzMWNhMWIiLCJleHAiOjE3NjIyODQ1NDcsInR5cGUiOiJjb25maXJtYXRpb24ifQ.uQnLHkSlKP9oVqgkUcp_aA0qLpfUw94DcSq_yC7z6QA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNWQ5YWVhZC0zYjI5LTQxM2YtODBiNS0yZWNiMTkzMWNhMWIiLCJleHAiOjE3NjIzNDU3NDMsInR5cGUiOiJjb25maXJtYXRpb24ifQ.j68PYkuNtbm4eBiYc5XYAzA230_-sOx5n4LcCJT21wQ
 
 ###
 
