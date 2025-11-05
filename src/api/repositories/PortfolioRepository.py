@@ -3,6 +3,8 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 from src.api.models.PortfolioOrm import PortfolioORM
+from sqlalchemy import select
+
 
 
 class PortfolioRepository:
