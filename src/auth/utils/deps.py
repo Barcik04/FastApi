@@ -1,11 +1,11 @@
 # src/auth/deps.py
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
+from jose import JWTError, jwt
+from src.auth.utils.consts import ALGORITHM, SECRET_KEY
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")  # adjust if different
-SECRET_KEY = "CHANGE_ME"
-ALGORITHM = "HS256"
+
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     cred_exc = HTTPException(

@@ -2,6 +2,8 @@
 from typing import Optional, List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.api.models.PortfolioOrm import PortfolioORM
 from src.api.models.UserOrm import UserORM
 from src.api.schemas.User import User, UserIn
 from src.auth.utils.password import hash_password
@@ -9,11 +11,14 @@ from src.auth.utils.password import hash_password
 
 class UserRepository:
     async def register_user(self, session: AsyncSession, user_in: UserIn) -> User:
-        entity = UserORM(email=user_in.email, password_hash=hash_password(user_in.password),)
-        session.add(entity)
+        user = UserORM(email=user_in.email, password_hash=hash_password(user_in.password),)
+        session.add(user)
         await session.flush()
-        await session.refresh(entity)
-        return User(id=entity.id, email=entity.email, password="")
+
+        session.add(PortfolioORM(owner_id=user.id, name=f"Portfolio {user.id}"))
+        await session.flush()
+
+        return User(id=user.id, email=user.email, password="")
 
     async def get_by_uuid(self, session: AsyncSession, uuid) -> Optional[UserORM]:
         res = await session.execute(select(UserORM).where(UserORM.id == uuid))

@@ -12,7 +12,7 @@ Content-Type: application/json
 ###
 
 GET http://127.0.0.1:8000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNWQ5YWVhZC0zYjI5LTQxM2YtODBiNS0yZWNiMTkzMWNhMWIiLCJleHAiOjE3NjIzNDU3NDMsInR5cGUiOiJjb25maXJtYXRpb24ifQ.j68PYkuNtbm4eBiYc5XYAzA230_-sOx5n4LcCJT21wQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NmZmOTRhMy0wNDhiLTQ4NmYtODA4MS0zYmQ2MTUyMjQ3NjAiLCJleHAiOjE3NjIzNDgwMDksInR5cGUiOiJjb25maXJtYXRpb24ifQ.YXpLMovl2kcKlk4IsTaUQwNE174EDPftzxlC4IFrP2g
 
 ###
 
@@ -23,3 +23,9 @@ Content-Type: application/json
   "email": "igora11111@gmail.com",
   "password": "lkalala"
 }
+
+
+###
+
+GET http://127.0.0.1:8000/portfolios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NmZmOTRhMy0wNDhiLTQ4NmYtODA4MS0zYmQ2MTUyMjQ3NjAiLCJleHAiOjE3NjIzNDkyMTcsInR5cGUiOiJjb25maXJtYXRpb24ifQ.B1h4DqT1niWCpc9pWLFUV5Zgm3Cc1l-o9HnRw6DVnm4
