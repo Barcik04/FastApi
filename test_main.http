@@ -12,7 +12,7 @@ Content-Type: application/json
 ###
 
 GET http://127.0.0.1:8000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NmZmOTRhMy0wNDhiLTQ4NmYtODA4MS0zYmQ2MTUyMjQ3NjAiLCJleHAiOjE3NjIzNDgwMDksInR5cGUiOiJjb25maXJtYXRpb24ifQ.YXpLMovl2kcKlk4IsTaUQwNE174EDPftzxlC4IFrP2g
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4YzUwZmFhMy03ZmI4LTQ2ZGEtYTg4Ni03OTRlNzZiMTY0Y2MiLCJleHAiOjE3NjI0MjYyMDUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.JvTGyFZ_SK-I9kMgUJk8WYimLxsjHuWv0OcZPe7VUwE
 
 ###
 
@@ -28,4 +28,18 @@ Content-Type: application/json
 ###
 
 GET http://127.0.0.1:8000/portfolios
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NmZmOTRhMy0wNDhiLTQ4NmYtODA4MS0zYmQ2MTUyMjQ3NjAiLCJleHAiOjE3NjIzNTMwNDgsInR5cGUiOiJjb25maXJtYXRpb24ifQ.1LZ0uP6JnaFPXHLTB1G5tB2uLcmBXSwrMPIGRw4c-8I
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZmViYjNhNC01OGIzLTQ5NDktYWJkYy1iZjFjMzE4OWVmYzEiLCJleHAiOjE3NjI0NjI1MjUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.74ViweKpvKMzRfW0255ecqw_gSpbiAjGpVQE26Z-HmA
+
+###
+
+
+
+POST http://127.0.0.1:8000/portfolios/buy?coin=bitcoin&quantity=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZmViYjNhNC01OGIzLTQ5NDktYWJkYy1iZjFjMzE4OWVmYzEiLCJleHAiOjE3NjI0NjI1MjUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.74ViweKpvKMzRfW0255ecqw_gSpbiAjGpVQE26Z-HmA
+
+
+###
+
+
+POST http://127.0.0.1:8000/portfolios/sell?coin=bitcoin&quantity=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZmViYjNhNC01OGIzLTQ5NDktYWJkYy1iZjFjMzE4OWVmYzEiLCJleHAiOjE3NjI0NjI1MjUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.74ViweKpvKMzRfW0255ecqw_gSpbiAjGpVQE26Z-HmA

@@ -26,10 +26,31 @@ def _extract_user_id(current_user) -> UUID:
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                         detail="Invalid auth payload: missing user id")
 
-@router.get("", response_model=List[Portfolio])
-async def list_portfolios(
+@router.get("", response_model=Portfolio)
+async def show_user_portfolio(
     svc: PortfolioService = Depends(get_portfolio_service),
     current_user = Depends(get_current_user),
 ):
     user_id = _extract_user_id(current_user)
-    return await svc.list_for_user(user_id)
+    return await svc.show_user_portfolio(user_id)
+
+
+@router.post("/buy", response_model=Portfolio)
+async def buy_crypto(
+    coin: str,
+    quantity: float,
+    svc: PortfolioService = Depends(get_portfolio_service),
+    current_user = Depends(get_current_user),
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.buy_crypto(user_id, coin, quantity)
+
+@router.post("/sell", response_model=Portfolio)
+async def sell_crypto(
+        coin: str,
+        quantity: float,
+        svc: PortfolioService = Depends(get_portfolio_service),
+        current_user = Depends(get_current_user),
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.sell_crypto(user_id, coin, quantity)
