@@ -1,7 +1,8 @@
 # src/user/portfolio_router.py
+
 from fastapi import APIRouter, Depends, Request, HTTPException, status
-from typing import List
 from uuid import UUID
+from starlette.responses import PlainTextResponse
 
 from src.api.schemas.Portfolio import Portfolio
 from src.api.services.PortfolioService import PortfolioService
@@ -35,7 +36,7 @@ async def show_user_portfolio(
     return await svc.show_user_portfolio(user_id)
 
 
-@router.post("/buy", response_model=Portfolio)
+@router.post("/buy", response_class=PlainTextResponse)
 async def buy_crypto(
     coin: str,
     quantity: float,
@@ -45,12 +46,21 @@ async def buy_crypto(
     user_id: UUID = _extract_user_id(current_user)
     return await svc.buy_crypto(user_id, coin, quantity)
 
-@router.post("/sell", response_model=Portfolio)
+@router.post("/sell", response_class=PlainTextResponse)
 async def sell_crypto(
         coin: str,
-        quantity: float,
+        quantity: str,
         svc: PortfolioService = Depends(get_portfolio_service),
         current_user = Depends(get_current_user),
 ):
     user_id: UUID = _extract_user_id(current_user)
     return await svc.sell_crypto(user_id, coin, quantity)
+
+@router.post("/deposit", response_class=PlainTextResponse)
+async def deposit_theter(
+        quantity: float,
+        svc: PortfolioService = Depends(get_portfolio_service),
+        current_user = Depends(get_current_user),
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.deposit_tether(user_id, quantity)
