@@ -35,3 +35,12 @@ async def list_crypto_data(
     user_id: UUID = _extract_user_id(current_user)
     return await svc.list_for_user(user_id)
 
+
+@router.get("/amount_graph", response_model=None)
+async def list_of_amount_for_user(
+    mode: int,
+    svc: CryptoDataService = Depends(get_crypto_data_service),
+    current_user = Depends(get_current_user),
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.list_of_amount_for_user(user_id, mode)
