@@ -28,7 +28,7 @@ Content-Type: application/json
 ###
 
 GET http://127.0.0.1:8000/portfolios
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhMC04YjU3LTRkM2UtYmYyOS03YTA4YjA1OWUzNWYiLCJleHAiOjE3NjI2MTUwMjQsInR5cGUiOiJjb25maXJtYXRpb24ifQ._PWZMzIER3qohDCgzJo6vW_uWZ2x3aFTGXynnmEs7bI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhMC04YjU3LTRkM2UtYmYyOS03YTA4YjA1OWUzNWYiLCJleHAiOjE3NjI2MzUwOTYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.ztrO6ToLyBZauK-n6S1qUC1eR77rEq09B04LxskkFko
 
 ###
 
@@ -66,3 +66,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhM
 
 POST http://127.0.0.1:8000/portfolios/transfer?coin=tether&quantity=1000&transfer_id=411038cb-cfa6-49a6-ac9c-e1a51ec0e8ae
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhMC04YjU3LTRkM2UtYmYyOS03YTA4YjA1OWUzNWYiLCJleHAiOjE3NjI2MTUwMjQsInR5cGUiOiJjb25maXJtYXRpb24ifQ._PWZMzIER3qohDCgzJo6vW_uWZ2x3aFTGXynnmEs7bI
+
+###
+
+GET http://127.0.0.1:8000/crypto-data
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhMC04YjU3LTRkM2UtYmYyOS03YTA4YjA1OWUzNWYiLCJleHAiOjE3NjI2MzUwOTYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.ztrO6ToLyBZauK-n6S1qUC1eR77rEq09B04LxskkFko

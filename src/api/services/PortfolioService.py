@@ -1,9 +1,11 @@
 # src/user/PortfolioService.py
+from datetime import datetime
 from uuid import UUID
 
 import httpx
 from fastapi import HTTPException
 
+from src.api.models.CryptoDataOrm import CryptoDataOrm
 from src.api.models.PortfolioOrm import PortfolioORM
 from src.api.repositories.PortfolioRepository import PortfolioRepository
 from src.db import SessionLocal
@@ -21,6 +23,7 @@ class PortfolioService:
                 coins = dict(portfolio.coins)
                 bought_price = dict(portfolio.bought_price)
                 p_and_l = 0.0
+                account_val = 0.0
 
                 for coin in coins:
                     url = "https://api.coingecko.com/api/v3/simple/price"
@@ -36,8 +39,17 @@ class PortfolioService:
 
                     coin_val = coins[coin] * price_usd * price_diff # 21 * 107 * 1.059 = 2379
                     p_and_l += coin_val - (coins[coin] * price_usd) # 2379 - (21 * 107) = 132
+                    account_val += price_usd * coins.get(coin)
 
                 portfolio.p_and_l = p_and_l
+
+                tr = CryptoDataOrm(
+                    owner_id=owner_id,
+                    amount=account_val,
+                    amount_p_and_l=p_and_l,
+                    date=datetime.now()
+                )
+                session.add(tr)
                 return portfolio
 
 
