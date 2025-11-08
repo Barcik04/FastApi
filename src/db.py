@@ -1,6 +1,8 @@
 # src/db.py
 import os
 import asyncio
+from contextlib import asynccontextmanager
+
 from dotenv import load_dotenv, find_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase
@@ -35,3 +37,13 @@ async def init_db(retries: int = 5, delay: int = 5) -> None:
 
 async def close_db():
     await engine.dispose()
+
+@asynccontextmanager
+async def get_session():
+    async with SessionLocal() as session:
+        try:
+            yield session
+            await session.commit()
+        except:
+            await session.rollback()
+            raise
