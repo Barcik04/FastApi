@@ -2,15 +2,15 @@
 from fastapi import FastAPI
 
 from src.api.repositories.PortfolioRepository import PortfolioRepository
-from src.api.routers import portfolio_router
 from src.api.routers.user_router import router as users_router
 from src.api.repositories.UserRepository import UserRepository
 from src.api.services.PortfolioService import PortfolioService
 from src.api.services.UserService import UserService
 from src.db import init_db, close_db
 
+
 from src.api.routers.portfolio_router import router as portfolio_router
-from src.api.routers.auth_router import router as auth_router  # ✅ Add this
+from src.api.routers.auth_router import router as auth_router
 
 
 app = FastAPI(title="API")

@@ -1,18 +1,11 @@
-# Test your FastAPI endpoints
-
 POST http://127.0.0.1:8000/auth/register
 Content-Type: application/json
 
 {
-  "email": "igora11111@gmail.com",
+  "email": "igor.bb00@gmail.com",
   "password": "lkalala"
 }
 
-
-###
-
-GET http://127.0.0.1:8000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4YzUwZmFhMy03ZmI4LTQ2ZGEtYTg4Ni03OTRlNzZiMTY0Y2MiLCJleHAiOjE3NjI0MjYyMDUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.JvTGyFZ_SK-I9kMgUJk8WYimLxsjHuWv0OcZPe7VUwE
 
 ###
 
@@ -20,15 +13,14 @@ POST http://127.0.0.1:8000/auth/login
 Content-Type: application/json
 
 {
-  "email": "igora11111@gmail.com",
+  "email": "igor.bb00@gmail.com",
   "password": "lkalala"
 }
-
 
 ###
 
 GET http://127.0.0.1:8000/portfolios
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhMC04YjU3LTRkM2UtYmYyOS03YTA4YjA1OWUzNWYiLCJleHAiOjE3NjI2MTUwMjQsInR5cGUiOiJjb25maXJtYXRpb24ifQ._PWZMzIER3qohDCgzJo6vW_uWZ2x3aFTGXynnmEs7bI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZThjMjMyZS01YjY3LTQ3MGItODVmMS03YTlkMzk5OWUzODciLCJleHAiOjE3NjI2MTMzNDgsInR5cGUiOiJjb25maXJtYXRpb24ifQ.T9hHha3XtGSa8nO0FgKRz36m_Siupp1_WpqPXKMK4u0
 
 ###
 
@@ -62,7 +54,3 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhM
 GET http://127.0.0.1:8000/portfolios/p_and_l_coin?coin=tether
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhMC04YjU3LTRkM2UtYmYyOS03YTA4YjA1OWUzNWYiLCJleHAiOjE3NjI2MDY4ODMsInR5cGUiOiJjb25maXJtYXRpb24ifQ.UVbAhumllu0UwZ7HsG_hiPN5Xz6BKnYrKPVw41j4dOU
 
-###
-
-POST http://127.0.0.1:8000/portfolios/transfer?coin=tether&quantity=1000&transfer_id=411038cb-cfa6-49a6-ac9c-e1a51ec0e8ae
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhMC04YjU3LTRkM2UtYmYyOS03YTA4YjA1OWUzNWYiLCJleHAiOjE3NjI2MTUwMjQsInR5cGUiOiJjb25maXJtYXRpb24ifQ._PWZMzIER3qohDCgzJo6vW_uWZ2x3aFTGXynnmEs7bI

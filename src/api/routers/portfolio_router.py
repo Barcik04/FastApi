@@ -57,10 +57,42 @@ async def sell_crypto(
     return await svc.sell_crypto(user_id, coin, quantity)
 
 @router.post("/deposit", response_class=PlainTextResponse)
-async def deposit_theter(
+async def deposit_tether(
         quantity: float,
         svc: PortfolioService = Depends(get_portfolio_service),
         current_user = Depends(get_current_user),
 ):
     user_id: UUID = _extract_user_id(current_user)
     return await svc.deposit_tether(user_id, quantity)
+
+
+@router.post("/withdraw", response_class=PlainTextResponse)
+async def deposit_tether(
+        quantity: str,
+        svc: PortfolioService = Depends(get_portfolio_service),
+        current_user = Depends(get_current_user),
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.withdraw_tether(user_id, quantity)
+
+
+@router.get("/p_and_l_coin", response_model=dict)
+async def deposit_tether(
+        coin: str,
+        svc: PortfolioService = Depends(get_portfolio_service),
+        current_user = Depends(get_current_user),
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.p_and_l_coin(user_id, coin)
+
+
+@router.post("/transfer", response_class=PlainTextResponse)
+async def transfer_coin(
+        coin: str,
+        quantity: str,
+        transfer_id: UUID,
+        svc: PortfolioService = Depends(get_portfolio_service),
+        current_user = Depends(get_current_user),
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.transfer_coin(user_id, coin, quantity, transfer_id)
