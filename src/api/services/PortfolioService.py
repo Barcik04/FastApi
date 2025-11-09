@@ -5,6 +5,7 @@ from uuid import UUID
 import httpx
 from fastapi import HTTPException
 
+from src.api.models.TransactionOrm import TransactionOrm
 from src.api.models.CryptoDataOrm import CryptoDataOrm
 from src.api.models.PortfolioOrm import PortfolioORM
 from src.api.repositories.PortfolioRepository import PortfolioRepository
@@ -92,6 +93,14 @@ class PortfolioService:
                     bought_price[coin] = new_avg_price
                     portfolio.bought_price = bought_price
 
+                    tr = TransactionOrm(
+                        owner_id=owner_id,
+                        coin=coin,
+                        date=datetime.now(),
+                        quantity=quantity
+                    )
+                    session.add(tr)
+
                     return f"Transaction successful! Bought: {quantity}, of {coin}, with price: {price_usd}"
 
 
@@ -106,6 +115,14 @@ class PortfolioService:
 
                 bought_price[coin] = new_avg_price
                 portfolio.bought_price = bought_price
+
+                tr = TransactionOrm(
+                    owner_id=owner_id,
+                    coin=coin,
+                    date=datetime.now(),
+                    quantity=quantity
+                )
+                session.add(tr)
 
                 return f"Transaction successful! Bought: {quantity}, of {coin}, with price: {price_usd}"
 
@@ -164,6 +181,13 @@ class PortfolioService:
                 portfolio.coins = coins
                 portfolio.bought_price = bought_price
 
+                tr = TransactionOrm(
+                    owner_id=owner_id,
+                    coin=coin,
+                    date=datetime.now(),
+                    quantity=quantity * (-1)
+                )
+                session.add(tr)
 
                 return f"Transaction successful! Sold: {quantity}, of {coin}, with price: {price_usd}"
 
@@ -200,6 +224,9 @@ class PortfolioService:
             async with session.begin():
                 portfolio = await self.repo.show_user_portfolio(session, owner_id)
 
+                if portfolio is None:
+                    raise HTTPException(status_code=404, detail="Portfolio not found for this user.")
+
                 coins = dict(portfolio.coins)
                 bought_price = dict(portfolio.bought_price)
 
@@ -227,7 +254,6 @@ class PortfolioService:
 
 
                 if coins.get("tether") == 0:
-                    coins.pop("tether")
                     bought_price.pop("tether")
 
                 portfolio.coins = coins

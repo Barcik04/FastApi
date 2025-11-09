@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta, timezone
+
+import httpx
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from uuid import UUID
@@ -5,13 +8,23 @@ from uuid import UUID
 from fastapi import HTTPException
 
 from src.api.models.CryptoDataOrm import CryptoDataOrm
+from src.api.repositories.PortfolioRepository import PortfolioRepository
+from src.api.repositories.TransactionRepository import TransactionRepository
 from src.db import SessionLocal
 from src.api.repositories.CryptoDataRepository import CryptoDataRepository
 
 
 class CryptoDataService:
-    def __init__(self, repo: CryptoDataRepository | None = None):
+    def __init__(
+            self,
+            repo: CryptoDataRepository | None = None,
+            transaction_repo: TransactionRepository | None = None,
+            portfolio_repo: PortfolioRepository | None = None,
+    ):
         self.repo = repo or CryptoDataRepository()
+        self.transaction_repo = transaction_repo or TransactionRepository()
+        self.portfolio_repo = portfolio_repo or PortfolioRepository()
+
 
     async def list_for_user(self, owner_id: UUID) -> list[CryptoDataOrm]:
         async with SessionLocal() as session:
@@ -48,3 +61,100 @@ class CryptoDataService:
                 plt.title("Amount Over Time" if mode == 1 else "Profit & Loss Over Time")
                 plt.tight_layout()
                 plt.show()
+
+
+    async def graph_last_24h(self, owner_id: UUID) -> None:
+        async with SessionLocal() as session:
+            async with session.begin():
+                now = datetime.now(timezone.utc)
+                portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
+
+                total_portfolio_val = [0] * 284
+
+
+                for crypto in portfolio.coins:
+                    if crypto == "tether":
+                        continue
+                    transactions = await self.transaction_repo.show_user_transactions_between_date_by_coin(session, now - timedelta(days=1), now, owner_id, crypto)
+                    portfolio_quant = portfolio.coins.get(crypto, 0.0)
+
+                    quants = []
+                    for tx in transactions:
+                        quants.append(tx.quantity)
+                    portfolio_transactions_quant = 0
+                    for q in quants:
+                        portfolio_transactions_quant += q # 0.5
+                    portfolio_start_quant = portfolio_quant - portfolio_transactions_quant # 0.2
+
+                    url = f"https://api.coingecko.com/api/v3/coins/{crypto}/market_chart"
+                    params = {"vs_currency": "usd", "days": "1"}
+
+                    async with httpx.AsyncClient() as client:
+                        response = await client.get(url, params=params)
+                        response.raise_for_status()
+                        price_usd = response.json()["prices"]
+
+                    sorted_transactions = sorted(transactions, key=lambda x: x.date)
+
+
+                    prices = []
+                    timestamps = []
+                    for timestamp, price in price_usd:
+                        time = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
+                        prices.append(price * portfolio_start_quant)
+                        timestamps.append(time)
+
+
+
+                    prices_usd = []
+                    for price in price_usd:
+                        prices_usd.append(price[1])
+
+                    prices_final = []
+                    previous_timestamp = timestamps[0]
+
+                    for timestamp, price in zip(timestamps, prices_usd):
+                        if not sorted_transactions:
+                            prices_final.append(price * portfolio_start_quant)
+                            previous_timestamp = timestamp
+                            continue
+
+                        if timestamp == timestamps[0]:
+                            if sorted_transactions[0].date <= timestamp:
+                                prices_final.append(price * (portfolio_start_quant + sorted_transactions[0].quantity))
+                                sorted_transactions.remove(sorted_transactions[0])
+                                portfolio_start_quant += sorted_transactions[0].quantity
+                                previous_timestamp = timestamp
+                            else:
+                                prices_final.append(price * portfolio_start_quant)
+                                previous_timestamp = timestamp
+                            continue
+                        elif timestamp > sorted_transactions[0].date > previous_timestamp:
+                            prices_final.append(price * (portfolio_start_quant + sorted_transactions[0].quantity))
+                            portfolio_start_quant += sorted_transactions[0].quantity
+                            sorted_transactions.remove(sorted_transactions[0])
+                            previous_timestamp = timestamp
+                            continue
+                        else:
+                            prices_final.append(price * portfolio_start_quant)
+                            previous_timestamp = timestamp
+
+
+                    prices_final = prices_final[:len(total_portfolio_val)]
+                    timestamps = timestamps[:len(total_portfolio_val)]
+                    for i in range(len(prices_final)):
+                        total_portfolio_val[i] += prices_final[i]
+
+
+
+
+                plt.plot(timestamps, total_portfolio_val)
+                plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+                plt.gcf().autofmt_xdate()
+                plt.xlabel("Date")
+                plt.ylabel("Amount")
+                plt.title("Portfolio in the last 24h")
+                plt.tight_layout()
+                plt.show()
+
+
