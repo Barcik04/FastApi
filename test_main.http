@@ -28,14 +28,14 @@ Content-Type: application/json
 ###
 
 GET http://127.0.0.1:8000/portfolios
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxYTg1ZDQ0NC02NzI2LTQ3ZTctOWNhMi04MDU4NjJiOGQ0ZjUiLCJleHAiOjE3NjI3MDc0MjYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.73P0vSC889_xqDPJLCDEgSwuwXb6-baL-BCOq-DKKd4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OGE0MWI4Ni04MWRiLTRjMDEtYWI0NC0zMWUxYTk0MDFiYmEiLCJleHAiOjE3NjI3OTAxMDksInR5cGUiOiJjb25maXJtYXRpb24ifQ.Eqw-xNWJVNpiVPXzmdOKaprQ8siFSdijo3en1etrTUk
 
 ###
 
 
 
-POST http://127.0.0.1:8000/portfolios/buy?coin=ripple&quantity=80
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZmE0ZGZmNC1jOWY3LTQ5NWItOWExOS00MWI1YWMyMmJkMTgiLCJleHAiOjE3NjI3MTU4MTksInR5cGUiOiJjb25maXJtYXRpb24ifQ.kGeIZqfZ7top2pnakQj3yb6CvpiSA3JA2PLikD5huKo
+POST http://127.0.0.1:8000/portfolios/buy?coin=bitcoin&quantity=3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYjg0ZjRmYS1kM2YyLTQ4ZDAtOTdjMC05MzUxMDQ3OGIxYTMiLCJleHAiOjE3NjI4MDg1NzUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.zZLATp1mmojib3DSO8zP6c37V4CLdjrRkKwtyG-r0fE
 
 
 ###
@@ -47,8 +47,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZmE0ZGZmN
 
 ###
 
-POST http://127.0.0.1:8000/portfolios/deposit?quantity=90000
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZmE0ZGZmNC1jOWY3LTQ5NWItOWExOS00MWI1YWMyMmJkMTgiLCJleHAiOjE3NjI3MTU4MTksInR5cGUiOiJjb25maXJtYXRpb24ifQ.kGeIZqfZ7top2pnakQj3yb6CvpiSA3JA2PLikD5huKo
+POST http://127.0.0.1:8000/portfolios/deposit?quantity=900000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYjg0ZjRmYS1kM2YyLTQ4ZDAtOTdjMC05MzUxMDQ3OGIxYTMiLCJleHAiOjE3NjI4MDg1NzUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.zZLATp1mmojib3DSO8zP6c37V4CLdjrRkKwtyG-r0fE
 
 
 ###
@@ -80,10 +80,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0NTA3OTA5Y
 
 ###
 
-GET http://127.0.0.1:8000/crypto-data/24h
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZmE0ZGZmNC1jOWY3LTQ5NWItOWExOS00MWI1YWMyMmJkMTgiLCJleHAiOjE3NjI3MTU4MTksInR5cGUiOiJjb25maXJtYXRpb24ifQ.kGeIZqfZ7top2pnakQj3yb6CvpiSA3JA2PLikD5huKo
+GET http://127.0.0.1:8000/crypto-data/24h?days=2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OGE0MWI4Ni04MWRiLTRjMDEtYWI0NC0zMWUxYTk0MDFiYmEiLCJleHAiOjE3NjI3OTAxMDksInR5cGUiOiJjb25maXJtYXRpb24ifQ.Eqw-xNWJVNpiVPXzmdOKaprQ8siFSdijo3en1etrTUk
 
 ###
 
-GET http://127.0.0.1:8000/transactions/between?start_date=2025-01-07T10:00:00&end_date=2026-01-08T10:00:00
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0NTA3OTA5YS02ODY0LTQ0OTYtYWE2NC0wNDkxZGY0YjA2ODEiLCJleHAiOjE3NjI2OTQ4OTYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.NDkCcCbq6fZWbdRpgEzv9_9kuk6PZ0h-mF2jSEQpUV4
+
+GET http://127.0.0.1:8000/crypto-data/tests?days=3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZmE0ZGZmNC1jOWY3LTQ5NWItOWExOS00MWI1YWMyMmJkMTgiLCJleHAiOjE3NjI3ODc3MTUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.KruiCk4QbwsTLOWEm6Q8H6tf0Otaji8kqTjbO_TDTgY
+
+
+###
+
+GET http://127.0.0.1:8000/crypto-data/sep-coins?days=2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OGE0MWI4Ni04MWRiLTRjMDEtYWI0NC0zMWUxYTk0MDFiYmEiLCJleHAiOjE3NjI3OTI4MTEsInR5cGUiOiJjb25maXJtYXRpb24ifQ.PcBgFyjCpJbPTQSuM6M-XueZ_6nyabZlDcXcX8opyco
+
+
+###
+
+GET http://127.0.0.1:8000/crypto-data/p_n_l_perc?days=3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYjg0ZjRmYS1kM2YyLTQ4ZDAtOTdjMC05MzUxMDQ3OGIxYTMiLCJleHAiOjE3NjI4MDg1NzUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.zZLATp1mmojib3DSO8zP6c37V4CLdjrRkKwtyG-r0fE

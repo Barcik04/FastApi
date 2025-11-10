@@ -48,10 +48,40 @@ async def list_of_amount_for_user(
 
 @router.get("/24h", response_model=None)
 async def graph_last_24h(
+    days: int,
     svc: CryptoDataService = Depends(get_crypto_data_service),
     current_user=Depends(get_current_user),
 
 ):
     user_id: UUID = _extract_user_id(current_user)
-    return await svc.graph_last_24h(user_id)
+    return await svc.graph_last_24h(user_id, days)
 
+
+@router.get("/tests", response_model=None)
+async def tests(
+        days: int,
+        svc: CryptoDataService = Depends(get_crypto_data_service),
+):
+    return await svc.tests(days)
+
+
+@router.get("/sep-coins", response_model=None)
+async def graph_multiple_coins(
+    days: int,
+    svc: CryptoDataService = Depends(get_crypto_data_service),
+    current_user=Depends(get_current_user),
+
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.graph_multiple_coins(user_id, days)
+
+
+@router.get("/p_n_l_perc", response_model=None)
+async def graph_p_n_l_percentile(
+    days: int,
+    svc: CryptoDataService = Depends(get_crypto_data_service),
+    current_user=Depends(get_current_user),
+
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.graph_p_n_l_percentile(user_id, days)

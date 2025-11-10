@@ -25,4 +25,6 @@ class TransactionOrm(Base):
 
     quantity: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
 
+    bought_price: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+
     owner = relationship("UserORM", back_populates="transactions")
