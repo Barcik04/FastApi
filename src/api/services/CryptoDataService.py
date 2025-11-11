@@ -4,6 +4,7 @@ import httpx
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from uuid import UUID
+import numpy as np
 
 from fastapi import HTTPException
 
@@ -302,6 +303,7 @@ class CryptoDataService:
 
 
 
+    # DOESNT INCLUDE SELLING IN PNL!!!!!!!!!!!!!
     async def graph_p_n_l_percent(self, owner_id: UUID) -> None:
         async with SessionLocal() as session:
             async with session.begin():
@@ -316,9 +318,12 @@ class CryptoDataService:
                 days_back = max(1.0, delta.total_seconds() / 86400.0)
 
 
+                p_n_ls_whole = [[0] * 300 for _ in range(len(unique_coins))]
+                p_n_ls_whole_pos = 0
                 for coin in unique_coins:
                     tx_coin_all = [t for t in transactions_general if t.coin == coin]
                     tx_coin_all.sort(key=lambda x: x.date)
+                    date_of_first_tra = tx_coin_all[0].date
 
                     delta = now - tx_coin_all[0].date
                     days_back_t = max(1.0, delta.total_seconds() / 86400.0)
@@ -353,14 +358,23 @@ class CryptoDataService:
                     price_saved = sorted_transactions[0].bought_price
                     p_n_ls = [1 - (sorted_transactions[0].bought_price / prices[0])] # -0.11
 
-                    sorted_transactions.pop(0)
-                    sorted_transactions_operate = sorted_transactions.copy()
 
+                    sorted_transactions_operate = sorted_transactions.copy()
+                    sorted_transactions.pop(0)
                     store_avg_tr = [price_saved * sorted_transactions_operate[0].quantity] # 2 * 85 000  ## 3 * 105 000
                     quantity_all = sorted_transactions_operate[0].quantity # 2
 
 
+
+
+
+
+
                     for i in range(len(prices)):
+                        if date_of_first_tra > timestamps[i]:
+                            p_n_ls[0] = 0.0
+                            p_n_ls.append(0.0)
+                            continue
                         if sorted_transactions_operate and not timestamps[i - 1] < sorted_transactions_operate[0].date < timestamps[i]:
                             avg_whole = sum(store_avg_tr) / quantity_all
                             p_n_ls.append((prices[i] / avg_whole) - 1)
@@ -378,9 +392,29 @@ class CryptoDataService:
                             p_n_ls.append((prices[i] / avg_whole) - 1)
 
 
-                    print("prices\n\n\n\n")
-                    for i in p_n_ls:
-                        print(i)
+                    p_n_ls = p_n_ls[:len(timestamps)]
+                    p_n_ls_whole[p_n_ls_whole_pos] = [0] * len(timestamps)
+
+
+                    for i in range(len(p_n_ls)):
+                        p_n_ls_whole[p_n_ls_whole_pos][i] = p_n_ls[i]
+                    p_n_ls_whole_pos += 1
+
+                plt.figure(figsize=(12, 6))
+
+                for idx, coin in enumerate(unique_coins):
+                    values = np.array(p_n_ls_whole[idx], dtype=float)
+                    values[values == 0.0] = np.nan
+                    plt.plot(timestamps, values, label=coin)
+
+                plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+                plt.gcf().autofmt_xdate()
+                plt.xlabel("Date")
+                plt.ylabel("PnL (%)")
+                plt.title("PnL Over Time by Coin")
+                plt.legend(loc="lower right")
+                plt.tight_layout()
+                plt.show()
 
 
 

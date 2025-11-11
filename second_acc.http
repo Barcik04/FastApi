@@ -26,21 +26,21 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NTM3OTRkZ
 
 
 
-POST http://127.0.0.1:8000/portfolios/buy?coin=solana&quantity=100
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NTM3OTRkZC1kZGU1LTRmMjItYTcwNS0xMjdiNjE3MGQ4ZmUiLCJleHAiOjE3NjI3MTc1NjUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.HUZ0PTbIVWza0s0Pw2HmoZDxpI-CjFB7pgabSD42nOg
+POST http://127.0.0.1:8000/portfolios/buy?coin=solana&quantity=50
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYmRkNmZmZi01OWJjLTRkMjEtYWRkNS1jOWU3NGQ0ZTU0OWEiLCJleHAiOjE3NjI4OTQzNzYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.nDifuB9H6gQMV14S5UpIWQtmhuMQ4ekRTPdbCNNj6b4
 
 
 ###
 
 
-POST http://127.0.0.1:8000/portfolios/sell?coin=bitcoin&quantity=all
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhMC04YjU3LTRkM2UtYmYyOS03YTA4YjA1OWUzNWYiLCJleHAiOjE3NjI2MDM1NDgsInR5cGUiOiJjb25maXJtYXRpb24ifQ.pv-_6nmjX5UJ00h20T-sXNdvpy6AUdwmnTpXiWHWLX0
+POST http://127.0.0.1:8000/portfolios/sell?coin=solana&quantity=140
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYmRkNmZmZi01OWJjLTRkMjEtYWRkNS1jOWU3NGQ0ZTU0OWEiLCJleHAiOjE3NjI4OTQzNzYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.nDifuB9H6gQMV14S5UpIWQtmhuMQ4ekRTPdbCNNj6b4
 
 
 ###
 
-POST http://127.0.0.1:8000/portfolios/deposit?quantity=90000
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NTM3OTRkZC1kZGU1LTRmMjItYTcwNS0xMjdiNjE3MGQ4ZmUiLCJleHAiOjE3NjI3MTc1NjUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.HUZ0PTbIVWza0s0Pw2HmoZDxpI-CjFB7pgabSD42nOg
+POST http://127.0.0.1:8000/portfolios/deposit?quantity=900000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYmRkNmZmZi01OWJjLTRkMjEtYWRkNS1jOWU3NGQ0ZTU0OWEiLCJleHAiOjE3NjI4OTQzNzYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.nDifuB9H6gQMV14S5UpIWQtmhuMQ4ekRTPdbCNNj6b4
 
 
 ###
@@ -66,3 +66,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZThjMjMyZ
 
 GET http://127.0.0.1:8000/crypto-data/24h
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NTM3OTRkZC1kZGU1LTRmMjItYTcwNS0xMjdiNjE3MGQ4ZmUiLCJleHAiOjE3NjI3MTc1NjUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.HUZ0PTbIVWza0s0Pw2HmoZDxpI-CjFB7pgabSD42nOg
+
+
+###
+
+GET http://127.0.0.1:8000/crypto-data/p_n_l_perc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYmRkNmZmZi01OWJjLTRkMjEtYWRkNS1jOWU3NGQ0ZTU0OWEiLCJleHAiOjE3NjI4OTQzNzYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.nDifuB9H6gQMV14S5UpIWQtmhuMQ4ekRTPdbCNNj6b4
