@@ -302,6 +302,86 @@ class CryptoDataService:
 
 
 
+    async def graph_p_n_l_percent(self, owner_id: UUID) -> None:
+        async with SessionLocal() as session:
+            async with session.begin():
+                now = datetime.now(timezone.utc)
+                transactions_general = await self.transaction_repo.show_user_transactions(session, owner_id)
+
+                unique_coins = sorted({t.coin for t in transactions_general})
+
+                sorted_transactions = sorted(transactions_general, key=lambda x: x.date)
+                oldest_transaction = sorted_transactions[0]
+                delta = now - oldest_transaction.date
+                days_back = max(1.0, delta.total_seconds() / 86400.0)
+
+
+                for coin in unique_coins:
+                    tx_coin_all = [t for t in transactions_general if t.coin == coin]
+                    tx_coin_all.sort(key=lambda x: x.date)
+
+                    delta = now - tx_coin_all[0].date
+                    days_back_t = max(1.0, delta.total_seconds() / 86400.0)
+
+                    transactions = await self.transaction_repo.show_user_transactions_between_date_by_coin(
+                        session,
+                        now - timedelta(days=days_back_t),
+                        now,
+                        owner_id,
+                        coin,
+                    )
+
+                    sorted_transactions = sorted(transactions, key=lambda x: x.date)
+
+                    url = f"https://api.coingecko.com/api/v3/coins/{coin}/market_chart"
+                    params = {"vs_currency": "usd", "days": f"{days_back}"}
+
+                    async with httpx.AsyncClient() as client:
+                        response = await client.get(url, params=params)
+                        response.raise_for_status()
+                        price_usd = response.json()["prices"]
+
+                    timestamps = []
+                    prices = []
+                    for timestamp, price in price_usd:
+                        time = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
+                        timestamps.append(time)
+                        prices.append(price)
+
+
+
+                    price_saved = sorted_transactions[0].bought_price
+                    p_n_ls = [1 - (sorted_transactions[0].bought_price / prices[0])] # -0.11
+
+                    sorted_transactions.pop(0)
+                    sorted_transactions_operate = sorted_transactions.copy()
+
+                    store_avg_tr = [price_saved * sorted_transactions_operate[0].quantity] # 2 * 85 000  ## 3 * 105 000
+                    quantity_all = sorted_transactions_operate[0].quantity # 2
+
+
+                    for i in range(len(prices)):
+                        if sorted_transactions_operate and not timestamps[i - 1] < sorted_transactions_operate[0].date < timestamps[i]:
+                            avg_whole = sum(store_avg_tr) / quantity_all
+                            p_n_ls.append((prices[i] / avg_whole) - 1)
+                            continue
+                        while sorted_transactions_operate and timestamps[i - 1] < sorted_transactions_operate[0].date < timestamps[i]:
+                            quantity_all += sorted_transactions_operate[0].quantity
+                            store_avg_tr.append(sorted_transactions_operate[0].bought_price * sorted_transactions_operate[0].quantity) # 105 * 3
+                            avg_whole = sum(store_avg_tr) / quantity_all
+
+                            p_n_ls.append((prices[i] / avg_whole) - 1) # 0
+                            sorted_transactions_operate.pop(0)
+
+                        else:
+                            avg_whole = sum(store_avg_tr) / quantity_all
+                            p_n_ls.append((prices[i] / avg_whole) - 1)
+
+
+                    print("prices\n\n\n\n")
+                    for i in p_n_ls:
+                        print(i)
+
 
 
 

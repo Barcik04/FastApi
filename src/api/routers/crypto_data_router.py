@@ -77,11 +77,10 @@ async def graph_multiple_coins(
 
 
 @router.get("/p_n_l_perc", response_model=None)
-async def graph_p_n_l_percentile(
-    days: int,
+async def graph_p_n_l_percent(
     svc: CryptoDataService = Depends(get_crypto_data_service),
     current_user=Depends(get_current_user),
 
 ):
     user_id: UUID = _extract_user_id(current_user)
-    return await svc.graph_p_n_l_percentile(user_id, days)
+    return await svc.graph_p_n_l_percent(user_id)

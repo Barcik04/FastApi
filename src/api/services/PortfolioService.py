@@ -97,7 +97,8 @@ class PortfolioService:
                         owner_id=owner_id,
                         coin=coin,
                         date=datetime.now(),
-                        quantity=quantity
+                        quantity=quantity,
+                        bought_price=price_usd
                     )
                     session.add(tr)
 
@@ -120,7 +121,8 @@ class PortfolioService:
                     owner_id=owner_id,
                     coin=coin,
                     date=datetime.now(),
-                    quantity=quantity
+                    quantity=quantity,
+                    bought_price=price_usd
                 )
                 session.add(tr)
 
