@@ -46,7 +46,7 @@ async def list_of_amount_for_user(
     return await svc.list_of_amount_for_user(user_id, mode)
 
 
-@router.get("/24h", response_model=None)
+@router.get("/val", response_model=None)
 async def graph_portfolio_val(
     days: int,
     svc: CryptoDataService = Depends(get_crypto_data_service),
@@ -76,3 +76,13 @@ async def graph_p_n_l_percent(
 ):
     user_id: UUID = _extract_user_id(current_user)
     return await svc.graph_p_n_l_percent(user_id)
+
+
+@router.get("/p_n_l", response_model=None)
+async def graph_p_n_l(
+    svc: CryptoDataService = Depends(get_crypto_data_service),
+    current_user=Depends(get_current_user),
+
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.graph_p_n_l(user_id)

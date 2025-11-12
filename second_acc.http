@@ -26,8 +26,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NTM3OTRkZ
 
 
 
-POST http://127.0.0.1:8000/portfolios/buy?coin=bitcoin&quantity=1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjI5NDk4ODMsInR5cGUiOiJjb25maXJtYXRpb24ifQ.QbvGfJ7jp3DvKip-sRPYiteVadsOecYR8xWTwOzjM-c
+POST http://127.0.0.1:8000/portfolios/buy?coin=bitcoin&quantity=30
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjI5NzczMzAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.SVknXRdk-q79fZq_gpjU_OECx2TV3TrjqVPvcNdTdvw
 
 
 ###
@@ -39,8 +39,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYmRkNmZmZ
 
 ###
 
-POST http://127.0.0.1:8000/portfolios/deposit?quantity=900000
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjI5NDk4ODMsInR5cGUiOiJjb25maXJtYXRpb24ifQ.QbvGfJ7jp3DvKip-sRPYiteVadsOecYR8xWTwOzjM-c
+POST http://127.0.0.1:8000/portfolios/deposit?quantity=9000000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjI5NzczMzAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.SVknXRdk-q79fZq_gpjU_OECx2TV3TrjqVPvcNdTdvw
 
 
 ###
@@ -64,11 +64,21 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZThjMjMyZ
 
 ###
 
-GET http://127.0.0.1:8000/crypto-data/24h
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NTM3OTRkZC1kZGU1LTRmMjItYTcwNS0xMjdiNjE3MGQ4ZmUiLCJleHAiOjE3NjI3MTc1NjUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.HUZ0PTbIVWza0s0Pw2HmoZDxpI-CjFB7pgabSD42nOg
+GET http://127.0.0.1:8000/crypto-data/val?days=100&mode=1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjI5NzY3MjAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.hIijDdrIvqLL8P1OOaHrV0EllU6ej2yNTjnflSOFHo8
 
 
 ###
 
 GET http://127.0.0.1:8000/crypto-data/p_n_l_perc
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjI5NTAwMzcsInR5cGUiOiJjb25maXJtYXRpb24ifQ.0ryjMMg94zRpiGxdUZjIeCxTtQCK22AzsVBEe3ud_rI
+
+###
+
+GET http://127.0.0.1:8000/crypto-data/p_n_l
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjI5NzkxOTgsInR5cGUiOiJjb25maXJtYXRpb24ifQ.Pmon3WOHDz8iMYvUDq7Oen1bgc3zWI0uM2HEACtfMf0
+
+###
+
+GET http://127.0.0.1:8000/crypto-data/amount_graph?mode=2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjI5NzY3MjAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.hIijDdrIvqLL8P1OOaHrV0EllU6ej2yNTjnflSOFHo8

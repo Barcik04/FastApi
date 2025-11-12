@@ -297,7 +297,6 @@ class CryptoDataService:
                 oldest_transaction = sorted_transactions[0]
                 delta = now - oldest_transaction.date
                 days_back = max(1.0, delta.total_seconds() / 86400.0)
-                print(days_back)
 
                 url = f"https://api.coingecko.com/api/v3/coins/{sorted_transactions[0].coin}/market_chart"
                 params = {"vs_currency": "usd", "days": f"{days_back}"}
@@ -342,11 +341,6 @@ class CryptoDataService:
                     p_n_ls_whole_pos += 1
 
 
-
-
-                for i in p_n_ls_whole:
-                    print(i)
-
                 plt.figure(figsize=(12, 6))
 
 
@@ -367,10 +361,77 @@ class CryptoDataService:
 
 
 
+
+
     async def graph_p_n_l(self, owner_id: UUID) -> None:
         async with SessionLocal() as session:
             async with session.begin():
                 transactions = await self.transaction_repo.show_user_transactions(session, owner_id)
+                now = datetime.now(timezone.utc)
+
+                sorted_transactions = sorted([t for t in transactions if t.bought_price > 0], key=lambda x: x.date)
+                oldest_transaction = sorted_transactions[0]
+                delta = now - oldest_transaction.date
+                days_back = max(1.0, delta.total_seconds() / 86400.0)
+
+                url = f"https://api.coingecko.com/api/v3/coins/{sorted_transactions[0].coin}/market_chart"
+                params = {"vs_currency": "usd", "days": f"{days_back}"}
+
+                async with httpx.AsyncClient() as client:
+                    response = await client.get(url, params=params)
+                    response.raise_for_status()
+                    price_usd = response.json()["prices"]
+
+                p_n_ls_whole = np.zeros((len(sorted_transactions), len(price_usd)), dtype=float)
+                p_n_ls_whole_pos = 0
+                timestamps_oldest = []
+                for coin in sorted_transactions:
+                    url = f"https://api.coingecko.com/api/v3/coins/{coin.coin}/market_chart"
+                    params = {"vs_currency": "usd", "days": f"{days_back}"}
+
+                    async with httpx.AsyncClient() as client:
+                        response = await client.get(url, params=params)
+                        response.raise_for_status()
+                        price_usd = response.json()["prices"]
+
+                    prices = []
+                    timestamps = []
+                    for timestamp, price in price_usd:
+                        time = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
+                        timestamps.append(time)
+                        prices.append(price)
+
+                    if not timestamps_oldest:
+                        timestamps_oldest = timestamps.copy()
+
+                    p_n_ls = []
+                    for i in prices:
+                        p_n_ls.append((i * coin.quantity) - (coin.bought_price * coin.quantity))
+
+                    for i in range(len(p_n_ls)):
+                        if i >= len(timestamps_oldest):
+                            break
+                        if timestamps_oldest[i] >= timestamps[i]:
+                            p_n_ls_whole[p_n_ls_whole_pos][i] = p_n_ls[i]
+                        else:
+                            p_n_ls_whole[p_n_ls_whole_pos][i] = 0.0
+                    p_n_ls_whole_pos += 1
+
+
+                concatenated_prices = np.sum(p_n_ls_whole, axis=0)
+
+
+
+                plt.plot(timestamps_oldest, concatenated_prices)
+                plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+                plt.gcf().autofmt_xdate()
+                plt.xlabel("Date")
+                plt.ylabel("Amount")
+                plt.title("Profit & Loss Over Time")
+                plt.tight_layout()
+                plt.show()
+
+
 
 
 
