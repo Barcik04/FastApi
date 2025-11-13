@@ -6,7 +6,6 @@ import httpx
 from fastapi import HTTPException
 
 from src.api.models.TransactionOrm import TransactionOrm
-from src.api.models.CryptoDataOrm import CryptoDataOrm
 from src.api.models.PortfolioOrm import PortfolioORM
 from src.api.repositories.PortfolioRepository import PortfolioRepository
 from src.db import SessionLocal
@@ -44,13 +43,7 @@ class PortfolioService:
 
                 portfolio.p_and_l = p_and_l
 
-                tr = CryptoDataOrm(
-                    owner_id=owner_id,
-                    amount=account_val,
-                    amount_p_and_l=p_and_l,
-                    date=datetime.now()
-                )
-                session.add(tr)
+
                 return portfolio
 
 

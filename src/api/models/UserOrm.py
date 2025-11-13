@@ -5,7 +5,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.api.models.TransactionOrm import TransactionOrm
-from src.api.models.CryptoDataOrm import CryptoDataOrm
 from src.db import Base
 from src.api.models.PortfolioOrm import PortfolioORM
 
@@ -21,11 +20,6 @@ class UserORM(Base):
 
     portfolios = relationship(
         PortfolioORM, back_populates="owner",
-        cascade="all, delete-orphan", passive_deletes=True
-    )
-
-    crypto_data = relationship(
-        CryptoDataOrm, back_populates="owner",
         cascade="all, delete-orphan", passive_deletes=True
     )
 

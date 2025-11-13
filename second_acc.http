@@ -75,10 +75,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhO
 
 ###
 
-GET http://127.0.0.1:8000/crypto-data/p_n_l
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjI5NzkxOTgsInR5cGUiOiJjb25maXJtYXRpb24ifQ.Pmon3WOHDz8iMYvUDq7Oen1bgc3zWI0uM2HEACtfMf0
+GET http://127.0.0.1:8000/transactions/p_n_l
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjMwMjMyMzAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.u4syXeP2bNjygFbQ65MlP5zkKF01q_2ls83ClmO_ebI
 
 ###
-
-GET http://127.0.0.1:8000/crypto-data/amount_graph?mode=2
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjI5NzY3MjAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.hIijDdrIvqLL8P1OOaHrV0EllU6ej2yNTjnflSOFHo8

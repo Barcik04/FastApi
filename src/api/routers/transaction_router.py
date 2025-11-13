@@ -1,4 +1,3 @@
-from datetime import datetime
 
 from fastapi import APIRouter, Depends, Request, HTTPException, status
 from uuid import UUID
@@ -29,11 +28,52 @@ def _extract_user_id(current_user) -> UUID:
 
 
 @router.get("/between", response_model=list[Transaction])
-async def show_user_portfolio(
-    start_date: datetime,
-    end_date: datetime,
+async def show_user_transactions(
+
     svc: TransactionService = Depends(get_transaction_service),
     current_user = Depends(get_current_user),
 ):
     user_id = _extract_user_id(current_user)
-    return await svc.show_user_transactions_between_date(start_date, end_date, user_id)
+    return await svc.show_user_transactions(user_id)
+
+
+@router.get("/val", response_model=None)
+async def graph_portfolio_val(
+    days: int,
+    svc: TransactionService = Depends(get_transaction_service),
+    current_user=Depends(get_current_user),
+
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.graph_portfolio_val(user_id, days)
+
+
+@router.get("/sep-coins", response_model=None)
+async def graph_multiple_coins(
+    days: int,
+    svc: TransactionService = Depends(get_transaction_service),
+    current_user=Depends(get_current_user),
+
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.graph_multiple_coins(user_id, days)
+
+
+@router.get("/p_n_l_perc", response_model=None)
+async def graph_p_n_l_percent(
+    svc: TransactionService = Depends(get_transaction_service),
+    current_user=Depends(get_current_user),
+
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.graph_p_n_l_percent(user_id)
+
+
+@router.get("/p_n_l", response_model=None)
+async def graph_p_n_l(
+    svc: TransactionService = Depends(get_transaction_service),
+    current_user=Depends(get_current_user),
+
+):
+    user_id: UUID = _extract_user_id(current_user)
+    return await svc.graph_p_n_l(user_id)
