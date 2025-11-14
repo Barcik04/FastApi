@@ -27,14 +27,14 @@ def _extract_user_id(current_user) -> UUID:
                         detail="Invalid auth payload: missing user id")
 
 
-@router.get("/between", response_model=list[Transaction])
-async def show_user_transactions(
+@router.get("", response_model=list[Transaction])
+async def list_for_user(
 
     svc: TransactionService = Depends(get_transaction_service),
     current_user = Depends(get_current_user),
 ):
     user_id = _extract_user_id(current_user)
-    return await svc.show_user_transactions(user_id)
+    return await svc.list_for_user(user_id)
 
 
 @router.get("/val", response_model=None)

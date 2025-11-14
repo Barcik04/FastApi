@@ -3,7 +3,7 @@ from typing import Optional, List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.models.PortfolioOrm import PortfolioORM
+from src.api.models.PortfolioOrm import PortfolioOrm
 from src.api.models.UserOrm import UserORM
 from src.api.schemas.User import User, UserIn
 from src.auth.utils.password import hash_password
@@ -15,7 +15,7 @@ class UserRepository:
         session.add(user)
         await session.flush()
 
-        session.add(PortfolioORM(owner_id=user.id, name=f"Portfolio {user.id}"))
+        session.add(PortfolioOrm(owner_id=user.id, name=f"Portfolio {user.id}"))
         await session.flush()
 
         return User(id=user.id, email=user.email, password="")

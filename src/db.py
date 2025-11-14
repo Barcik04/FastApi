@@ -8,6 +8,8 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.exc import SQLAlchemyError  # generic SA errors
 
+
+
 load_dotenv(find_dotenv())
 
 DB_URL = os.getenv("DATABASE_URL")

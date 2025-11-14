@@ -3,10 +3,11 @@ import uuid
 from sqlalchemy import String, Float, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from src.db import Base
 
 
-class PortfolioORM(Base):
+class PortfolioOrm(Base):
     __tablename__ = "portfolios"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -25,3 +26,11 @@ class PortfolioORM(Base):
     p_and_l:     Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
 
     owner = relationship("UserORM", back_populates="portfolios")
+
+
+    requests = relationship(
+        "TradeRequestOrm",
+        back_populates="portfolio",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )

@@ -6,7 +6,7 @@ import httpx
 from fastapi import HTTPException
 
 from src.api.models.TransactionOrm import TransactionOrm
-from src.api.models.PortfolioOrm import PortfolioORM
+from src.api.models.PortfolioOrm import PortfolioOrm
 from src.api.repositories.PortfolioRepository import PortfolioRepository
 from src.db import SessionLocal
 
@@ -15,7 +15,7 @@ class PortfolioService:
     def __init__(self, repo: PortfolioRepository):
         self.repo = repo
 
-    async def show_user_portfolio(self, owner_id: UUID) -> PortfolioORM:
+    async def show_user_portfolio(self, owner_id: UUID) -> PortfolioOrm:
         async with SessionLocal() as session:
             async with session.begin():
                 portfolio = await self.repo.show_user_portfolio(session, owner_id)

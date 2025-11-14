@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.api.models.TransactionOrm import TransactionOrm
 from src.db import Base
-from src.api.models.PortfolioOrm import PortfolioORM
+from src.api.models.PortfolioOrm import PortfolioOrm
 
 
 class UserORM(Base):
@@ -19,7 +19,7 @@ class UserORM(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
 
     portfolios = relationship(
-        PortfolioORM, back_populates="owner",
+        PortfolioOrm, back_populates="owner",
         cascade="all, delete-orphan", passive_deletes=True
     )
 
