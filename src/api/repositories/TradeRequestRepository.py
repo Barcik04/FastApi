@@ -25,3 +25,15 @@ class TradeRequestRepository:
         )
 
         return res.scalars().all()
+
+    async def create_request(self, session: AsyncSession, coin: str, quantity: float, sender_id: UUID, receiver_id: UUID) -> TradeRequestOrm:
+        obj = TradeRequestOrm(
+            sender_id=sender_id,
+            receiver_id=receiver_id,
+            coin=coin,
+            quantity=quantity,
+        )
+        session.add(obj)
+        await session.flush()
+        await session.refresh(obj)
+        return obj

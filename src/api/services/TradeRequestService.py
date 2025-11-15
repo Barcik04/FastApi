@@ -5,7 +5,6 @@ from src.api.repositories.PortfolioRepository import PortfolioRepository
 from src.api.repositories.TradeRequestRepository import TradeRequestRepository
 from uuid import UUID
 
-from src.api.schemas.TradeRequest import TradeRequestIn
 from src.db import SessionLocal
 
 
@@ -24,7 +23,7 @@ class TradeRequestService:
 
                 return requests
 
-    async def create_user_request(self, body: TradeRequestIn, owner_id: UUID) -> str:
+    async def create_user_request(self, body: TradeRequestOrm, owner_id: UUID) -> str:
         async with SessionLocal() as session:
             async with session.begin():
                 portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
@@ -37,12 +36,14 @@ class TradeRequestService:
                 if portfolio_receiver is None:
                     raise HTTPException(status_code=400, detail=f"Couldnt find portfolio with given id: {body.receiver_id}")
 
-                tr = TradeRequestOrm(
+                await self.trade_request_repo.create_request(
+                    session,
                     coin=body.coin,
                     quantity=body.quantity,
+                    sender_id=body.sender_id,
                     receiver_id=body.receiver_id,
                 )
-                session.add(tr)
+
 
                 return f"Successfully created a trade request!"
 
