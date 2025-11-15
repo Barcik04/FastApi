@@ -13,6 +13,7 @@ class TradeStatus(str, Enum):
     COMPLETED = "COMPLETED"
     REJECTED = "REJECTED"
 
+
 class TradeRequestOrm(Base):
     __tablename__ = "requests"
 

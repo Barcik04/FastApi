@@ -104,18 +104,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkN
 ###
 
 GET http://127.0.0.1:8000/trade_requests
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjMxMzY4NjksInR5cGUiOiJjb25maXJtYXRpb24ifQ.q8-Jz5w6VDU3sWluuLw8UYztKmU0hesIxwDX75U2jEE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjMyMzIyOTYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.p5yJV_TVKudMZDZhZr-FMQHVZgSGGZMeHaTu72YdF2c
 
 ###
 
 POST http://127.0.0.1:8000/trade_requests/send
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjMyMjU0OTQsInR5cGUiOiJjb25maXJtYXRpb24ifQ.vgsVGKQXTWUoBFYbMyRN-z4g-Imlexkw2fkM5irKQR0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjMyMzQ2NDEsInR5cGUiOiJjb25maXJtYXRpb24ifQ.eUgJq-oiEOrzLc2ATkaXHZNxB2sUkv1V_tV-LMVOTlU
 Content-Type: application/json
 
 {
   "coin": "solana",
   "quantity": 5.0,
-  "receiver_id": "60fda5b3-668f-4ec0-8e51-625aad86591e"
+  "receiver_id": "ccb27056-c23b-4dcf-bd23-36c6ee600863"
 }
 
 

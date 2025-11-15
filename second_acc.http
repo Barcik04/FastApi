@@ -78,4 +78,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhO
 GET http://127.0.0.1:8000/transactions/p_n_l
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjMwMjMyMzAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.u4syXeP2bNjygFbQ65MlP5zkKF01q_2ls83ClmO_ebI
 
+
 ###
+
+PUT http://127.0.0.1:8000/trade_requests/update
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjMyMzQ2NjAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.zogqGpuTnELhdsHDXF4pEe3DOfjRI6G83IiFAVonuQQ
+Content-Type: application/json
+
+{
+  "accept": true,
+  "request_id": "ec9cb598-f8f8-42c6-b29c-749145f47532"
+}
+
+
+###
+
+GET http://127.0.0.1:8000/trade_requests
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjMyMzQ2NjAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.zogqGpuTnELhdsHDXF4pEe3DOfjRI6G83IiFAVonuQQ
+
+
+

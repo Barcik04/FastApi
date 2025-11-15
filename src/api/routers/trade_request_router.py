@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, Request, HTTPException, status
 
-from src.api.models import TradeRequestOrm
-from src.api.schemas.TradeRequest import TradeRequest
+from src.api.schemas.TradeRequest import TradeRequest, TradeRequestIn, TradeRequestUpdateDto
 from src.api.services.TradeRequestService import TradeRequestService
 from src.auth.utils.deps import get_current_user
 from uuid import UUID
@@ -38,9 +37,19 @@ async def show_user_requests(
 
 @router.post("/send", response_model=str)
 async def create_user_request(
-        body: TradeRequestOrm,
+        body: TradeRequestIn,
         svc: TradeRequestService = Depends(get_trade_request_service),
         current_user = Depends(get_current_user)
 ):
     user_id = _extract_user_id(current_user)
     return await svc.create_user_request(body, user_id)
+
+
+@router.put("/update", response_model=str)
+async def update_user_request(
+        body: TradeRequestUpdateDto,
+        svc: TradeRequestService = Depends(get_trade_request_service),
+        current_user = Depends(get_current_user)
+):
+    user_id = _extract_user_id(current_user)
+    return await svc.update_user_request(user_id, body.accept, body.request_id)

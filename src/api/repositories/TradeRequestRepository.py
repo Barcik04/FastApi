@@ -8,9 +8,12 @@ from src.api.models.TradeRequestOrm import TradeRequestOrm
 class TradeRequestRepository:
     async def show_user_requests(self, session: AsyncSession, owner_id: UUID) -> list[TradeRequestOrm]:
         res = await session.execute(
-            select(TradeRequestOrm).where(TradeRequestOrm.receiver_id==owner_id or TradeRequestOrm.sender_id==owner_id)
+            select(TradeRequestOrm).where((TradeRequestOrm.receiver_id==owner_id) | (TradeRequestOrm.sender_id==owner_id))
         )
         return res.scalars().all()
+
+
+
 
     async def show_user_senders(self, session: AsyncSession, owner_id: UUID) -> list[TradeRequestOrm]:
         res = await session.execute(
@@ -19,12 +22,19 @@ class TradeRequestRepository:
 
         return res.scalars().all()
 
+
+
+
     async def show_user_receivers(self, session: AsyncSession, owner_id: UUID) -> list[TradeRequestOrm]:
         res = await session.execute(
             select(TradeRequestOrm).where(TradeRequestOrm.receiver_id==owner_id)
         )
 
         return res.scalars().all()
+
+
+
+
 
     async def create_request(self, session: AsyncSession, coin: str, quantity: float, sender_id: UUID, receiver_id: UUID) -> TradeRequestOrm:
         obj = TradeRequestOrm(
@@ -37,3 +47,12 @@ class TradeRequestRepository:
         await session.flush()
         await session.refresh(obj)
         return obj
+
+
+
+
+    async def find_request(self, session: AsyncSession, request_id: UUID, receiver_id: UUID) -> TradeRequestOrm:
+        res = await session.execute(
+            select(TradeRequestOrm).where((TradeRequestOrm.id==request_id) & (TradeRequestOrm.receiver_id==receiver_id))
+        )
+        return res.scalar()

@@ -19,3 +19,8 @@ class TradeRequest(TradeRequestIn):
     status: TradeStatus = TradeStatus.PENDING
     created_at: datetime
     model_config = ConfigDict(from_attributes=True, extra="ignore")
+
+
+class TradeRequestUpdateDto(BaseModel):
+    accept: bool
+    request_id: UUID
