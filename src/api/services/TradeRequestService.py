@@ -5,6 +5,7 @@ from src.api.repositories.PortfolioRepository import PortfolioRepository
 from src.api.repositories.TradeRequestRepository import TradeRequestRepository
 from uuid import UUID
 
+from src.api.schemas.TradeRequest import TradeRequestIn
 from src.db import SessionLocal
 
 
@@ -23,23 +24,23 @@ class TradeRequestService:
 
                 return requests
 
-    async def create_user_request(self, coin: str, quantity: float, owner_id: UUID, receiver_id: UUID) -> str:
+    async def create_user_request(self, body: TradeRequestIn, owner_id: UUID) -> str:
         async with SessionLocal() as session:
             async with session.begin():
                 portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
-                portfolio_receiver = await self.portfolio_repo.find_portfolio_by_id(session, receiver_id)
+                portfolio_receiver = await self.portfolio_repo.find_portfolio_by_id(session, body.receiver_id)
 
-                if not portfolio.coins.get(coin):
-                    raise HTTPException(status_code=400, detail=f"There is no coin with that name in your portfolio: {coin}")
-                if portfolio.coins.get(coin) > quantity:
-                    raise HTTPException(status_code=400, detail=f"There is not enough quantity: {quantity} of coin in your portfolio: {coin}")
+                if not portfolio.coins.get(body.coin):
+                    raise HTTPException(status_code=400, detail=f"There is no coin with that name in your portfolio: {body.coin}")
+                if portfolio.coins.get(body.coin) < body.quantity:
+                    raise HTTPException(status_code=400, detail=f"There is not enough quantity: {body.quantity} of coin in your portfolio: {body.coin}")
                 if portfolio_receiver is None:
-                    raise HTTPException(status_code=400, detail=f"Couldnt find portfolio with given id: {receiver_id}")
+                    raise HTTPException(status_code=400, detail=f"Couldnt find portfolio with given id: {body.receiver_id}")
 
                 tr = TradeRequestOrm(
-                    coin=coin,
-                    quantity=quantity,
-                    receiver_id=receiver_id,
+                    coin=body.coin,
+                    quantity=body.quantity,
+                    receiver_id=body.receiver_id,
                 )
                 session.add(tr)
 

@@ -114,7 +114,7 @@ Content-Type: application/json
 
 {
   "coin": "solana",
-  "quantity": 5,
+  "quantity": 5.0,
   "receiver_id": "60fda5b3-668f-4ec0-8e51-625aad86591e"
 }
 

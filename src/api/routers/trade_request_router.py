@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, Request, HTTPException, status
 
-from src.api.models import TradeRequestOrm
-from src.api.schemas.TradeRequest import TradeRequest
+from src.api.schemas.TradeRequest import TradeRequest, TradeRequestIn
 from src.api.services.TradeRequestService import TradeRequestService
 from src.auth.utils.deps import get_current_user
 from uuid import UUID
@@ -38,9 +37,9 @@ async def show_user_requests(
 
 @router.post("/send", response_model=str)
 async def create_user_request(
-        body: TradeRequestOrm,
+        body: TradeRequestIn,
         svc: TradeRequestService = Depends(get_trade_request_service),
         current_user = Depends(get_current_user)
 ):
     user_id = _extract_user_id(current_user)
-    return await svc.create_user_request(body.coin, body.quantity, user_id, body.receiver_id)
+    return await svc.create_user_request(body, user_id)
