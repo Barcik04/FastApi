@@ -100,3 +100,24 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OGE0MWI4N
 
 GET http://127.0.0.1:8000/crypto-data/p_n_l_perc
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjI4OTEwNTUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.vkziu724US6t2mQS_NBE0DPqVAk317lFUE2sba9TY5s
+
+###
+
+GET http://127.0.0.1:8000/trade_requests
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjMxMzY4NjksInR5cGUiOiJjb25maXJtYXRpb24ifQ.q8-Jz5w6VDU3sWluuLw8UYztKmU0hesIxwDX75U2jEE
+
+###
+
+POST http://127.0.0.1:8000/trade_requests/send
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjMyMjI5NTYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.vGnlM1vnJ3HHFemCc1zJyZsFsIckbg1ef6b2FZnxDr4
+Content-Type: application/json
+
+{
+  "coin": "solana",
+  "quantity": 5,
+  "receiver_id": "60fda5b3-668f-4ec0-8e51-625aad86591e"
+}
+
+
+
+

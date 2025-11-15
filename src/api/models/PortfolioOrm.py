@@ -28,9 +28,19 @@ class PortfolioOrm(Base):
     owner = relationship("UserORM", back_populates="portfolios")
 
 
-    requests = relationship(
+    sender_requests = relationship(
         "TradeRequestOrm",
-        back_populates="portfolio",
+        foreign_keys="TradeRequestOrm.sender_id",
+        back_populates="sender",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
+
+    receiver_requests = relationship(
+        "TradeRequestOrm",
+        foreign_keys="TradeRequestOrm.receiver_id",
+        back_populates="receiver",
         cascade="all, delete-orphan",
         passive_deletes=True,
     )

@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import String, Float, ForeignKey, Enum as SqlEnum
+from sqlalchemy import String, Float, ForeignKey, Enum as SqlEnum, DateTime
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -20,7 +20,11 @@ class TradeRequestOrm(Base):
         PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
 
-    portfolio_id: Mapped[uuid.UUID] = mapped_column(
+    sender_id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("portfolios.id", ondelete="CASCADE"), nullable=False
+    )
+
+    receiver_id: Mapped[uuid.UUID] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("portfolios.id", ondelete="CASCADE"), nullable=False
     )
 
@@ -35,11 +39,18 @@ class TradeRequestOrm(Base):
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+        DateTime(timezone=True), nullable=False, default=datetime.now()
     )
 
-    portfolio = relationship(
+    sender = relationship(
         "PortfolioOrm",
-        back_populates="requests",
+        foreign_keys=[sender_id],
+        back_populates="sender_requests",
+    )
+
+    receiver = relationship(
+        "PortfolioOrm",
+        foreign_keys=[receiver_id],
+        back_populates="receiver_requests",
     )
 

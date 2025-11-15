@@ -13,6 +13,12 @@ class PortfolioRepository:
         )
         return res.scalar()
 
+    async def find_portfolio_by_id(self, session: AsyncSession, portfolio_id: UUID) -> PortfolioOrm:
+        res = await session.execute(
+            select(PortfolioOrm).where(PortfolioOrm.id == portfolio_id)
+        )
+        return res.scalar()
+
 
 
 

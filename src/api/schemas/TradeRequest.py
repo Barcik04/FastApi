@@ -12,7 +12,7 @@ class TradeStatus(str, Enum):
 class TradeRequestIn(BaseModel):
     coin: str
     quantity: float
-    portfolio_id: UUID
+    receiver_id: UUID
 
 class TradeRequest(TradeRequestIn):
     id: UUID
