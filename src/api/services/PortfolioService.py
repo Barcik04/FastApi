@@ -1,4 +1,5 @@
-# src/user/PortfolioService.py
+"""Module containing portfolio service implementation."""
+
 from datetime import datetime
 from uuid import UUID
 
@@ -12,10 +13,25 @@ from src.db import SessionLocal
 
 
 class PortfolioService:
+    """A class implementing the portfolio service."""
     def __init__(self, repo: PortfolioRepository):
+        """The initializer of the `portfolio service`.
+
+        Args:
+            repo (PortfolioRepository): The reference to the repository.
+        """
         self.repo = repo
 
+
     async def show_user_portfolio(self, owner_id: UUID) -> PortfolioOrm:
+        """The method getting portfolio assigned to particular user.
+
+            Args:
+                owner_id (int): The id of the user.
+
+            Returns:
+                PortfolioOrm: portfolio assigned to a user.
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 portfolio = await self.repo.show_user_portfolio(session, owner_id)
@@ -48,7 +64,19 @@ class PortfolioService:
 
 
 
+
     async def buy_crypto(self, owner_id: UUID, coin: str, quantity: float) -> str:
+        """The method proceeds to assign coin with given quantity to user portfolio
+            plus creates transaction object and insert it into transaction table.
+
+            Args:
+                owner_id (int): The id of the user.
+                coin (str): name of the coin to buy.
+                quantity (float): quantity of the coin to buy.
+
+            Returns:
+                str: message with transaction information.
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 portfolio = await self.repo.show_user_portfolio(session, owner_id)
@@ -123,7 +151,20 @@ class PortfolioService:
 
 
 
+
+
     async def sell_crypto(self, owner_id: UUID, coin: str, quantity: str) -> str:
+        """The method updates user portfolio and sells given coin and its quantity
+            if theres enough coin in user portfolio
+
+            Args:
+                owner_id (int): The id of the user.
+                coin (str): name of the coin to buy.
+                quantity (float): quantity of the coin to buy.
+
+            Returns:
+                str: message with transaction information.
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 portfolio = await self.repo.show_user_portfolio(session, owner_id)
@@ -187,7 +228,19 @@ class PortfolioService:
                 return f"Transaction successful! Sold: {quantity}, of {coin}, with price: {price_usd}"
 
 
+
+
+
     async def deposit_tether(self, owner_id: UUID, quantity: float) -> str:
+        """The method updates user portfolio and adds "tether" coin which is used to buy other coins
+
+            Args:
+                owner_id (int): The id of the user.
+                quantity (float): quantity of tether to buy.
+
+            Returns:
+                str: message with transaction information.
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 portfolio = await self.repo.show_user_portfolio(session, owner_id)
@@ -214,7 +267,19 @@ class PortfolioService:
                 return f"Transaction successful! {quantity} of theater bought!"
 
 
+
+
+
     async def withdraw_tether(self, owner_id: UUID, quantity: str) -> str:
+        """The method proceeds to withdraw tether from user portfolio to user's "bank account"
+
+            Args:
+                owner_id (int): The id of the user.
+                quantity (float): quantity of the tether to withdraw.
+
+            Returns:
+                str: message with transaction information.
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 portfolio = await self.repo.show_user_portfolio(session, owner_id)
@@ -257,7 +322,19 @@ class PortfolioService:
                 return f"Withdrawal successful! You withdrew: {quantity} of tether. {usd} USD will be transferred into your bank account shortly"
 
 
+
+
+
     async def p_and_l_coin(self, owner_id: UUID, coin: str) -> dict[str, float]:
+        """method calculates and displays profit and losses for the given coin
+
+            Args:
+                owner_id (int): The id of the user.
+                coin (str): name of the coin to calculate profit and losses.
+
+            Returns:
+                dict[str, float]: dictionary with str as a key and p_n_L in $ and % as a value.
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 portfolio = await self.repo.show_user_portfolio(session, owner_id)
@@ -290,7 +367,19 @@ class PortfolioService:
                 return results
 
 
+
     async def transfer_coin(self, owner_id: UUID, coin: str, quantity: str, transfer_id: UUID) -> str:
+        """method transfers coin with given quantity to portfolio with transfer_id
+
+            Args:
+                owner_id (int): The id of the user.
+                coin (str): name of the coin to transfer.
+                quantity (str): quantity to transfer.
+                transfer_id (UUID): transfer id of portfolio to transfer to.
+
+            Returns:
+                str: basic status information of the transfer.
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 my_portfolio = await self.repo.show_user_portfolio(session, owner_id)

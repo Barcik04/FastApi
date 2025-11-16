@@ -15,7 +15,7 @@ from src.api.routers.user_router import router as users_router
 from src.container import Container
 from src.db import init_db, close_db
 
-# === CONTAINER & WIRING (jak u profesora) ===
+
 container = Container()
 container.wire(modules=[
     "src.api.routers.auth_router",
@@ -50,7 +50,6 @@ app.include_router(transaction_router)
 app.include_router(trade_request_router)
 
 
-# (opcjonalnie) możesz też dodać handler HTTPException jak u profa:
 @app.exception_handler(HTTPException)
 async def http_exception_handle_logging(
     request: Request,

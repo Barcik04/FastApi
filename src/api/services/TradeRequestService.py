@@ -1,3 +1,5 @@
+"""Module containing trade request service implementation."""
+
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,6 +13,7 @@ from src.db import SessionLocal
 
 
 class TradeRequestService:
+    """A class implementing the trade request service."""
     def __init__(self,
                  trade_request_repo: TradeRequestRepository | None = None,
                  portfolio_repo: PortfolioRepository | None = None
@@ -18,7 +21,18 @@ class TradeRequestService:
         self.trade_request_repo = trade_request_repo or TradeRequestRepository()
         self.portfolio_repo = portfolio_repo or PortfolioRepository()
 
+
+
+
     async def show_user_requests(self, owner_id: UUID) -> list[TradeRequestOrm]:
+        """The method getting trade requests assigned to particular user.
+
+                   Args:
+                       owner_id (int): The id of the user.
+
+                   Returns:
+                       list[TradeRequestOrm]: list of trade requests assigned to a particular user.
+               """
         async with SessionLocal() as session:
             async with session.begin():
                 portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
@@ -26,7 +40,20 @@ class TradeRequestService:
 
                 return requests
 
+
+
+
+
     async def create_user_request(self, body: TradeRequestIn, owner_id: UUID) -> str:
+        """The method creates a trade request aimed to a particular user specified in body with coin and quantity.
+
+            Args:
+                owner_id (int): The id of the user.
+                body (TradeRequestIn): The body DTO of the trade request contains: (coin: str, quantity: float, receiver_id: UUID)
+
+            Returns:
+                str: info of transaction status.
+        """
         async with SessionLocal() as session:
             async with session.begin():
 
@@ -67,7 +94,19 @@ class TradeRequestService:
 
 
 
-    async def _proceed_trade(self, session: AsyncSession, request, sender_portfolio, receiver_portfolio) -> None:
+
+    async def _proceed_trade(self, session: AsyncSession,  request, sender_portfolio, receiver_portfolio) -> None:
+        """The private method used to update both sides of trade request (method used in update_user_request method below).
+
+            Args:
+                session (AsyncSession): session used in update_user_request method.
+                request (TradeRequestOrm): body of the trade request.
+                sender_portfolio (PortfolioOrm): portfolio of user that sent the trade request.
+                receiver_portfolio (PortfolioOrm): portfolio of user that received the trade request.
+
+            Returns:
+                None
+        """
         sender_coins = dict(sender_portfolio.coins or {})
         receiver_coins = dict(receiver_portfolio.coins or {})
 
@@ -79,7 +118,19 @@ class TradeRequestService:
 
 
 
+
+
     async def update_user_request(self, owner_id: UUID, accept: bool, request_id: UUID) -> str:
+        """The method conducts trade request based on accept field and request_id.
+
+            Args:
+                owner_id (UUID): The id of user.
+                accept (bool): Whether to accept the trade request.
+                request_id (UUID): The id of the trade request.
+
+            Returns:
+                str: info of transaction status.
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 receiver_portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
