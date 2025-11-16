@@ -1,98 +1,87 @@
 # src/user/portfolio_router.py
 
-from fastapi import APIRouter, Depends, Request, HTTPException, status
 from uuid import UUID
+
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends
 from starlette.responses import PlainTextResponse
 
 from src.api.schemas.Portfolio import Portfolio
 from src.api.services.PortfolioService import PortfolioService
-from src.auth.utils.deps import get_current_user
+from src.auth.utils.deps import get_current_user_id
+from src.container import Container
 
-router = APIRouter(
-    prefix="/portfolios",
-    tags=["portfolios"],
-    dependencies=[Depends(get_current_user)]
-)
+router = APIRouter(prefix="/portfolios", tags=["portfolios"])
 
-def get_portfolio_service(request: Request) -> PortfolioService:
-    return request.app.state.portfolio_service
-
-def _extract_user_id(current_user) -> UUID:
-    if hasattr(current_user, "id") and current_user.id:
-        return UUID(str(current_user.id))
-    if isinstance(current_user, dict):
-        for k in ("id", "user_id", "uid", "sub"):
-            if k in current_user and current_user[k]:
-                return UUID(str(current_user[k]))
-    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail="Invalid auth payload: missing user id")
 
 @router.get("", response_model=Portfolio)
+@inject
 async def show_user_portfolio(
-    svc: PortfolioService = Depends(get_portfolio_service),
-    current_user = Depends(get_current_user),
+    user_id: UUID = Depends(get_current_user_id),
+    service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
-    user_id = _extract_user_id(current_user)
-    return await svc.show_user_portfolio(user_id)
+    return await service.show_user_portfolio(user_id)
 
 
 @router.post("/buy", response_class=PlainTextResponse)
+@inject
 async def buy_crypto(
     coin: str,
     quantity: float,
-    svc: PortfolioService = Depends(get_portfolio_service),
-    current_user = Depends(get_current_user),
+    user_id: UUID = Depends(get_current_user_id),
+    service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
-    user_id: UUID = _extract_user_id(current_user)
-    return await svc.buy_crypto(user_id, coin, quantity)
+    return await service.buy_crypto(user_id, coin, quantity)
+
 
 @router.post("/sell", response_class=PlainTextResponse)
+@inject
 async def sell_crypto(
-        coin: str,
-        quantity: str,
-        svc: PortfolioService = Depends(get_portfolio_service),
-        current_user = Depends(get_current_user),
+    coin: str,
+    quantity: str,
+    user_id: UUID = Depends(get_current_user_id),
+    service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
-    user_id: UUID = _extract_user_id(current_user)
-    return await svc.sell_crypto(user_id, coin, quantity)
+    return await service.sell_crypto(user_id, coin, quantity)
+
 
 @router.post("/deposit", response_class=PlainTextResponse)
+@inject
 async def deposit_tether(
-        quantity: float,
-        svc: PortfolioService = Depends(get_portfolio_service),
-        current_user = Depends(get_current_user),
+    quantity: float,
+    user_id: UUID = Depends(get_current_user_id),
+    service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
-    user_id: UUID = _extract_user_id(current_user)
-    return await svc.deposit_tether(user_id, quantity)
+    return await service.deposit_tether(user_id, quantity)
 
 
 @router.post("/withdraw", response_class=PlainTextResponse)
-async def deposit_tether(
-        quantity: str,
-        svc: PortfolioService = Depends(get_portfolio_service),
-        current_user = Depends(get_current_user),
+@inject
+async def withdraw_tether(
+    quantity: str,
+    user_id: UUID = Depends(get_current_user_id),
+    service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
-    user_id: UUID = _extract_user_id(current_user)
-    return await svc.withdraw_tether(user_id, quantity)
+    return await service.withdraw_tether(user_id, quantity)
 
 
 @router.get("/p_and_l_coin", response_model=dict)
-async def deposit_tether(
-        coin: str,
-        svc: PortfolioService = Depends(get_portfolio_service),
-        current_user = Depends(get_current_user),
+@inject
+async def profit_and_loss_for_coin(
+    coin: str,
+    user_id: UUID = Depends(get_current_user_id),
+    service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
-    user_id: UUID = _extract_user_id(current_user)
-    return await svc.p_and_l_coin(user_id, coin)
+    return await service.p_and_l_coin(user_id, coin)
 
 
 @router.post("/transfer", response_class=PlainTextResponse)
+@inject
 async def transfer_coin(
-        coin: str,
-        quantity: str,
-        transfer_id: UUID,
-        svc: PortfolioService = Depends(get_portfolio_service),
-        current_user = Depends(get_current_user),
+    coin: str,
+    quantity: str,
+    transfer_id: UUID,
+    user_id: UUID = Depends(get_current_user_id),
+    service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
-    user_id: UUID = _extract_user_id(current_user)
-    return await svc.transfer_coin(user_id, coin, quantity, transfer_id)
+    return await service.transfer_coin(user_id, coin, quantity, transfer_id)

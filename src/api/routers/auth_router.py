@@ -1,23 +1,37 @@
 # src/user/AuthController.py
+
+from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
-from src.db import SessionLocal
-from src.auth.AuthService import AuthService
-from src.api.repositories.UserRepository import UserRepository
+
 from src.api.schemas.User import UserIn
+from src.auth.AuthService import AuthService
+from src.container import Container
+from src.db import SessionLocal
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-repo = UserRepository()
-auth = AuthService(repo)
+
 
 async def session_dep():
     async with SessionLocal() as s:
         async with s.begin():
             yield s
 
+
 @router.post("/register")
-async def register(user_in: UserIn, session = Depends(session_dep)):
-    return await auth.register(session, user_in)
+@inject
+async def register(
+    user_in: UserIn,
+    session=Depends(session_dep),
+    auth_service: AuthService = Depends(Provide[Container.auth_service]),
+):
+    return await auth_service.register(session, user_in)
+
 
 @router.post("/login")
-async def login(payload: dict, session = Depends(session_dep)):
-    return await auth.login(session, payload["email"], payload["password"])
+@inject
+async def login(
+    payload: dict,
+    session=Depends(session_dep),
+    auth_service: AuthService = Depends(Provide[Container.auth_service]),
+):
+    return await auth_service.login(session, payload["email"], payload["password"])

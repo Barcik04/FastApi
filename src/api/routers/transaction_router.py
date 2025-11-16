@@ -1,79 +1,59 @@
-
-from fastapi import APIRouter, Depends, Request, HTTPException, status
 from uuid import UUID
+
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends
 
 from src.api.schemas.Transaction import Transaction
 from src.api.services.TransactionService import TransactionService
-from src.auth.utils.deps import get_current_user
+from src.auth.utils.deps import get_current_user_id
+from src.container import Container
 
 
-router = APIRouter(
-    prefix="/transactions",
-    tags=["transactions"],
-    dependencies=[Depends(get_current_user)]
-)
-
-def get_transaction_service(request: Request) -> TransactionService:
-    return request.app.state.transaction_service
-
-def _extract_user_id(current_user) -> UUID:
-    if hasattr(current_user, "id") and current_user.id:
-        return UUID(str(current_user.id))
-    if isinstance(current_user, dict):
-        for k in ("id", "user_id", "uid", "sub"):
-            if k in current_user and current_user[k]:
-                return UUID(str(current_user[k]))
-    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail="Invalid auth payload: missing user id")
+router = APIRouter(prefix="/transactions", tags=["transactions"])
 
 
 @router.get("", response_model=list[Transaction])
+@inject
 async def list_for_user(
-
-    svc: TransactionService = Depends(get_transaction_service),
-    current_user = Depends(get_current_user),
+    user_id: UUID = Depends(get_current_user_id),
+    service: TransactionService = Depends(Provide[Container.transaction_service]),
 ):
-    user_id = _extract_user_id(current_user)
-    return await svc.list_for_user(user_id)
+    return await service.list_for_user(user_id)
 
 
 @router.get("/val", response_model=None)
+@inject
 async def graph_portfolio_val(
     days: int,
-    svc: TransactionService = Depends(get_transaction_service),
-    current_user=Depends(get_current_user),
-
+    user_id: UUID = Depends(get_current_user_id),
+    service: TransactionService = Depends(Provide[Container.transaction_service]),
 ):
-    user_id: UUID = _extract_user_id(current_user)
-    return await svc.graph_portfolio_val(user_id, days)
+    return await service.graph_portfolio_val(user_id, days)
 
 
 @router.get("/sep-coins", response_model=None)
+@inject
 async def graph_multiple_coins(
     days: int,
-    svc: TransactionService = Depends(get_transaction_service),
-    current_user=Depends(get_current_user),
-
+    user_id: UUID = Depends(get_current_user_id),
+    service: TransactionService = Depends(Provide[Container.transaction_service]),
 ):
-    user_id: UUID = _extract_user_id(current_user)
-    return await svc.graph_multiple_coins(user_id, days)
+    return await service.graph_multiple_coins(user_id, days)
 
 
 @router.get("/p_n_l_perc", response_model=None)
+@inject
 async def graph_p_n_l_percent(
-    svc: TransactionService = Depends(get_transaction_service),
-    current_user=Depends(get_current_user),
-
+    user_id: UUID = Depends(get_current_user_id),
+    service: TransactionService = Depends(Provide[Container.transaction_service]),
 ):
-    user_id: UUID = _extract_user_id(current_user)
-    return await svc.graph_p_n_l_percent(user_id)
+    return await service.graph_p_n_l_percent(user_id)
 
 
 @router.get("/p_n_l", response_model=None)
+@inject
 async def graph_p_n_l(
-    svc: TransactionService = Depends(get_transaction_service),
-    current_user=Depends(get_current_user),
-
+    user_id: UUID = Depends(get_current_user_id),
+    service: TransactionService = Depends(Provide[Container.transaction_service]),
 ):
-    user_id: UUID = _extract_user_id(current_user)
-    return await svc.graph_p_n_l(user_id)
+    return await service.graph_p_n_l(user_id)

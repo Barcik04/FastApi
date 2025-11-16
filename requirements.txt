@@ -11,3 +11,4 @@ passlib==1.7.4
 sqlalchemy
 python-jose
 bcrypt==4.0.1
+dependency-injector
