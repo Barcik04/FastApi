@@ -1,4 +1,3 @@
-"""Dependency injection container for FastAPI services."""
 
 from dependency_injector import containers, providers
 
@@ -14,37 +13,28 @@ from src.auth.AuthService import AuthService
 
 
 class Container(containers.DeclarativeContainer):
-    """Application container with service providers."""
 
-    wiring_config = containers.WiringConfiguration(
-        modules=[
-            "src.api.routers.auth_router",
-            "src.api.routers.portfolio_router",
-            "src.api.routers.trade_request_router",
-            "src.api.routers.transaction_router",
-            "src.api.routers.user_router",
-        ],
-    )
-
-    user_repository = providers.Factory(UserRepository)
-    portfolio_repository = providers.Factory(PortfolioRepository)
-    transaction_repository = providers.Factory(TransactionRepository)
-    trade_request_repository = providers.Factory(TradeRequestRepository)
+    user_repository = providers.Singleton(UserRepository)
+    portfolio_repository = providers.Singleton(PortfolioRepository)
+    transaction_repository = providers.Singleton(TransactionRepository)
+    trade_request_repository = providers.Singleton(TradeRequestRepository)
 
     user_service = providers.Factory(UserService, repo=user_repository)
     auth_service = providers.Factory(AuthService, repo=user_repository)
+
     portfolio_service = providers.Factory(
         PortfolioService,
         repo=portfolio_repository,
     )
+
     transaction_service = providers.Factory(
         TransactionService,
         transaction_repo=transaction_repository,
         portfolio_repo=portfolio_repository,
     )
+
     trade_request_service = providers.Factory(
         TradeRequestService,
         trade_request_repo=trade_request_repository,
         portfolio_repo=portfolio_repository,
     )
-

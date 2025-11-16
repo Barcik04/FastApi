@@ -1,7 +1,11 @@
 # main.py
-from contextlib import asynccontextmanager
+"""Main module of the app."""
 
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.exception_handlers import http_exception_handler
 
 from src.api.routers.auth_router import router as auth_router
 from src.api.routers.portfolio_router import router as portfolio_router
@@ -9,9 +13,9 @@ from src.api.routers.trade_request_router import router as trade_request_router
 from src.api.routers.transaction_router import router as transaction_router
 from src.api.routers.user_router import router as users_router
 from src.container import Container
-from src.db import close_db, init_db
+from src.db import init_db, close_db
 
-
+# === CONTAINER & WIRING (jak u profesora) ===
 container = Container()
 container.wire(modules=[
     "src.api.routers.auth_router",
@@ -23,7 +27,8 @@ container.wire(modules=[
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_: FastAPI) -> AsyncGenerator:
+    """Lifespan function working on app startup/shutdown."""
     await init_db()
     try:
         yield
@@ -32,9 +37,23 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="API", lifespan=lifespan)
-app.container = container
+
+# Nie musisz robić app.container = container,
+# ale jeśli tego gdzieś używasz - możesz zostawić.
+# app.container = container
+
+# === ROUTERS ===
 app.include_router(users_router)
 app.include_router(auth_router)
 app.include_router(portfolio_router)
 app.include_router(transaction_router)
 app.include_router(trade_request_router)
+
+
+# (opcjonalnie) możesz też dodać handler HTTPException jak u profa:
+@app.exception_handler(HTTPException)
+async def http_exception_handle_logging(
+    request: Request,
+    exception: HTTPException,
+) -> Response:
+    return await http_exception_handler(request, exception)

@@ -28,7 +28,7 @@ Content-Type: application/json
 ###
 
 GET http://127.0.0.1:8000/portfolios
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OGE0MWI4Ni04MWRiLTRjMDEtYWI0NC0zMWUxYTk0MDFiYmEiLCJleHAiOjE3NjI3OTAxMDksInR5cGUiOiJjb25maXJtYXRpb24ifQ.Eqw-xNWJVNpiVPXzmdOKaprQ8siFSdijo3en1etrTUk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjMyOTE1NDIsInR5cGUiOiJjb25maXJtYXRpb24ifQ.AndslgzhYI16z3Mnv_LVjd1L9MJgLviFQ5N84Z9sxDc
 
 ###
 
