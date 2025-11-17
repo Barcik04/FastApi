@@ -1,3 +1,6 @@
+"""A module containing trade request endpoints."""
+
+
 from uuid import UUID
 
 from dependency_injector.wiring import Provide, inject
@@ -22,6 +25,15 @@ async def show_user_requests(
     user_id: UUID = Depends(get_current_user_id),
     service: TradeRequestService = Depends(Provide[Container.trade_request_service]),
 ):
+    """An endpoint for retrieving all trade requests involving user.
+
+       Args:
+           user_id (UUID): The authenticated user's ID fetched from the JWT.
+           service (TradeRequestService, optional): The injected service dependency.
+
+       Returns:
+           list[TradeRequest]: The list of trade requests for the user.
+       """
     return await service.show_user_requests(user_id)
 
 
@@ -32,6 +44,17 @@ async def create_user_request(
     user_id: UUID = Depends(get_current_user_id),
     service: TradeRequestService = Depends(Provide[Container.trade_request_service]),
 ):
+    """An endpoint for creating a new trade request.
+
+      Args:
+          body (TradeRequestIn): The trade request body with trade details.
+          user_id (UUID): The authenticated user's ID fetched from the JWT token.
+          service (TradeRequestService, optional): The injected service dependency.
+
+      Returns:
+          str: A confirmation message.
+
+    """
     return await service.create_user_request(body, user_id)
 
 
@@ -42,4 +65,14 @@ async def update_user_request(
     user_id: UUID = Depends(get_current_user_id),
     service: TradeRequestService = Depends(Provide[Container.trade_request_service]),
 ):
+    """An endpoint for updating the status of a trade request.
+
+       Args:
+           body (TradeRequestUpdateDto): The update payload containing acceptance bool and request_id.
+           user_id (UUID): The authenticated user's ID fetched from the JWT token.
+           service (TradeRequestService, optional): The injected trade request service dependency.
+
+       Returns:
+           str: A confirmation message.
+    """
     return await service.update_user_request(user_id, body.accept, body.request_id)

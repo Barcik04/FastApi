@@ -1,4 +1,5 @@
-# src/user/portfolio_router.py
+"""A module containing trade request endpoints."""
+
 
 from uuid import UUID
 
@@ -20,6 +21,15 @@ async def show_user_portfolio(
     user_id: UUID = Depends(get_current_user_id),
     service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
+    """An endpoint for getting the authenticated user's portfolio.
+
+       Args:
+           user_id (UUID): The authenticated user ID fetched from the JWT token.
+           service (PortfolioService, optional): The injected service dependency.
+
+       Returns:
+           Portfolio: The portfolio of the user.
+       """
     return await service.show_user_portfolio(user_id)
 
 
@@ -31,6 +41,17 @@ async def buy_crypto(
     user_id: UUID = Depends(get_current_user_id),
     service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
+    """An endpoint for buying crypto.
+
+       Args:
+           coin (str): name of the crypto to buy.
+           quantity (float): The quantity of the crypto to buy.
+           user_id (UUID): The authenticated user ID fetched from the JWT token.
+           service (PortfolioService, optional): The injected service dependency.
+
+       Returns:
+           str: A confirmation message.
+       """
     return await service.buy_crypto(user_id, coin, quantity)
 
 
@@ -42,7 +63,20 @@ async def sell_crypto(
     user_id: UUID = Depends(get_current_user_id),
     service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
+    """An endpoint for selling crypto.
+
+       Args:
+           coin (str): the name of the crypto to sell.
+           quantity (str): The quantity of the crypto to sell.
+           user_id (UUID): The authenticated user ID fetched from the JWT token.
+           service (PortfolioService, optional): The injected service dependency.
+
+       Returns:
+           str: A confirmation message.
+       """
     return await service.sell_crypto(user_id, coin, quantity)
+
+
 
 
 @router.post("/deposit", response_class=PlainTextResponse)
@@ -52,7 +86,19 @@ async def deposit_tether(
     user_id: UUID = Depends(get_current_user_id),
     service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
+    """An endpoint for depositing tether.
+
+        Args:
+            quantity (float): The amount of tether to deposit.
+            user_id (UUID): The authenticated user ID fetched from the JWT token.
+            service (PortfolioService, optional): The injected service dependency.
+
+        Returns:
+            str: A confirmation message.
+        """
     return await service.deposit_tether(user_id, quantity)
+
+
 
 
 @router.post("/withdraw", response_class=PlainTextResponse)
@@ -62,6 +108,16 @@ async def withdraw_tether(
     user_id: UUID = Depends(get_current_user_id),
     service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
+    """An endpoint for withdrawing tether.
+
+      Args:
+          quantity (str): The amount of Tether to withdraw.
+          user_id (UUID): The authenticated user ID fetched from the JWT token.
+          service (PortfolioService, optional): The injected service dependency.
+
+      Returns:
+          str: A confirmation message.
+      """
     return await service.withdraw_tether(user_id, quantity)
 
 
@@ -72,6 +128,16 @@ async def profit_and_loss_for_coin(
     user_id: UUID = Depends(get_current_user_id),
     service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
+    """An endpoint for displaying profit and losses for the given coin.
+
+       Args:
+           coin (str): The name of the crypto to show graph for.
+           user_id (UUID): The authenticated user ID fetched from the JWT token.
+           service (PortfolioService, optional): The injected service dependency.
+
+       Returns:
+           dict: The profit and loss details for the given coin.
+       """
     return await service.p_and_l_coin(user_id, coin)
 
 
@@ -84,4 +150,16 @@ async def transfer_coin(
     user_id: UUID = Depends(get_current_user_id),
     service: PortfolioService = Depends(Provide[Container.portfolio_service]),
 ):
+    """An endpoint for transferring crypto between users.
+
+       Args:
+           coin (str): The name of the crypto to transfer.
+           quantity (str): The quantity of the crypto to transfer.
+           transfer_id (UUID): The ID of the user's portfolio receiving the transfer.
+           user_id (UUID): The authenticated user ID fetched from the JWT token.
+           service (PortfolioService, optional): The injected service dependency.
+
+       Returns:
+           str: A confirmation message.
+       """
     return await service.transfer_coin(user_id, coin, quantity, transfer_id)
