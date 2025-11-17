@@ -9,7 +9,6 @@ from src.api.services.PortfolioService import PortfolioService
 from src.api.services.TradeRequestService import TradeRequestService
 from src.api.services.TransactionService import TransactionService
 from src.api.services.UserService import UserService
-from src.auth.AuthService import AuthService
 
 
 class Container(containers.DeclarativeContainer):
@@ -20,7 +19,6 @@ class Container(containers.DeclarativeContainer):
     trade_request_repository = providers.Singleton(TradeRequestRepository)
 
     user_service = providers.Factory(UserService, repo=user_repository)
-    auth_service = providers.Factory(AuthService, repo=user_repository)
 
     portfolio_service = providers.Factory(
         PortfolioService,

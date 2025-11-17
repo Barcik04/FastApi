@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.models.PortfolioOrm import PortfolioOrm
-from src.api.models.UserOrm import UserORM
+from src.api.models.UserOrm import UserOrm
 from src.api.schemas.User import User, UserIn
 from src.auth.utils.password import hash_password
 
@@ -24,7 +24,7 @@ class UserRepository:
         Returns:
             User: A user representing created user.
         """
-        user = UserORM(
+        user = UserOrm(
             email=user_in.email,
             password_hash=hash_password(user_in.password),
         )
@@ -36,7 +36,9 @@ class UserRepository:
 
         return User(id=user.id, email=user.email, password="")
 
-    async def get_by_email(self, session: AsyncSession, email: str) -> Optional[UserORM]:
+
+
+    async def get_by_email(self, session: AsyncSession, email: str) -> Optional[UserOrm]:
         """
         Retrieve a user by their email.
 
@@ -45,10 +47,10 @@ class UserRepository:
             email (str): The email address to search for.
 
         Returns:
-            Optional[UserORM]: The matched UserORM instance, or None if not found.
+            Optional[UserOrm]: Found UserOrm, or None if not found.
         """
         res = await session.execute(
-            select(UserORM).where(UserORM.email == email)
+            select(UserOrm).where(UserOrm.email == email)
         )
         return res.scalar_one_or_none()
 
@@ -63,7 +65,7 @@ class UserRepository:
             session (AsyncSession): The database session.
 
         Returns:
-            List[User]: A list of user containing user.
+            List[User]: A list of users.
         """
-        res = await session.execute(select(UserORM.id, UserORM.email))
+        res = await session.execute(select(UserOrm.id, UserOrm.email))
         return [User(id=r.id, email=r.email, password="") for r in res.all()]

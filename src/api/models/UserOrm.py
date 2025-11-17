@@ -9,7 +9,7 @@ from src.db import Base
 from src.api.models.PortfolioOrm import PortfolioOrm
 
 
-class UserORM(Base):
+class UserOrm(Base):
     __tablename__ = "users"
 
     id: Mapped[uuid.UUID] = mapped_column(

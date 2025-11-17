@@ -7,7 +7,6 @@ from typing import AsyncGenerator
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.exception_handlers import http_exception_handler
 
-from src.api.routers.auth_router import router as auth_router
 from src.api.routers.portfolio_router import router as portfolio_router
 from src.api.routers.trade_request_router import router as trade_request_router
 from src.api.routers.transaction_router import router as transaction_router
@@ -18,7 +17,6 @@ from src.db import init_db, close_db
 
 container = Container()
 container.wire(modules=[
-    "src.api.routers.auth_router",
     "src.api.routers.portfolio_router",
     "src.api.routers.trade_request_router",
     "src.api.routers.transaction_router",
@@ -38,13 +36,9 @@ async def lifespan(_: FastAPI) -> AsyncGenerator:
 
 app = FastAPI(title="API", lifespan=lifespan)
 
-# Nie musisz robić app.container = container,
-# ale jeśli tego gdzieś używasz - możesz zostawić.
-# app.container = container
 
-# === ROUTERS ===
+
 app.include_router(users_router)
-app.include_router(auth_router)
 app.include_router(portfolio_router)
 app.include_router(transaction_router)
 app.include_router(trade_request_router)

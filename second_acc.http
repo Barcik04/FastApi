@@ -9,7 +9,7 @@ Content-Type: application/json
 
 ###
 
-POST http://127.0.0.1:8000/auth/login
+POST http://127.0.0.1:8000/users/login
 Content-Type: application/json
 
 {
@@ -20,7 +20,7 @@ Content-Type: application/json
 ###
 
 GET http://127.0.0.1:8000/portfolios
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NTM3OTRkZC1kZGU1LTRmMjItYTcwNS0xMjdiNjE3MGQ4ZmUiLCJleHAiOjE3NjI3MTc1NjUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.HUZ0PTbIVWza0s0Pw2HmoZDxpI-CjFB7pgabSD42nOg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjM0MDI4MzgsInR5cGUiOiJjb25maXJtYXRpb24ifQ.kWRiePRWWkOyCjK_ueKv5z9nnzv-A4zmhpxv-RxRkVY
 
 ###
 
