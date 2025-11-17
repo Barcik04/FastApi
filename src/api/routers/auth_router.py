@@ -1,4 +1,5 @@
-# src/user/AuthController.py
+"""A module containing continent endpoints."""
+
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends

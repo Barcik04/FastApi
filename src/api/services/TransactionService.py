@@ -1,3 +1,5 @@
+"""Module containing transaction service implementation."""
+
 from datetime import datetime, timedelta, timezone
 
 import httpx
@@ -13,6 +15,7 @@ from src.db import SessionLocal
 
 
 class TransactionService:
+    """A class implementing the transaction service."""
     def __init__(
             self,
             transaction_repo: TransactionRepository | None = None,
@@ -23,6 +26,14 @@ class TransactionService:
 
 
     async def list_for_user(self, owner_id: UUID) -> list[TransactionOrm]:
+        """The method for getting transactions made by a particular user.
+
+            Args:
+                owner_id (int): The id of the user.
+
+            Returns:
+                list[TransactionOrm]: list of transactions assigned to particular user
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 return await self.transaction_repo.show_user_transactions(session, owner_id)
@@ -30,6 +41,15 @@ class TransactionService:
 
 
     async def graph_portfolio_val(self, owner_id: UUID, days: int) -> None:
+        """The method for generating a graph showing the portfolio value up to a year backwards.
+
+            Args:
+                owner_id (int): The id of the user.
+                days (int): number of days backwards to track value of portfolio
+
+            Returns:
+                None
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 now = datetime.now(timezone.utc)
@@ -135,14 +155,25 @@ class TransactionService:
                     plt.gcf().autofmt_xdate()
                     plt.xlabel("Date")
                     plt.ylabel("Amount")
-                    plt.title("Portfolio in the last 24h")
+                    plt.title("Portfolio")
                     plt.tight_layout()
                     plt.legend(loc="lower right")
                     plt.show()
 
 
 
+
+
     async def graph_multiple_coins(self, owner_id: UUID, days: int) -> None:
+        """The method for generating a graph showing the portfolio value up to a year backwards seperated by each coin in portfolio.
+
+            Args:
+                owner_id (int): The id of the user.
+                days (int): number of days backwards to track value of portfolio
+
+            Returns:
+                None
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 now = datetime.now(timezone.utc)
@@ -251,8 +282,17 @@ class TransactionService:
 
 
 
+
     # DOESNT INCLUDE SELLING IN PNL!!!!!!!!!!!!!
     async def graph_p_n_l_percent(self, owner_id: UUID) -> None:
+        """The method for generating a graph showing the portfolio profit and losses value counting from the date of the first transaction.
+
+            Args:
+                owner_id (int): The id of the user.
+
+            Returns:
+                None
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 now = datetime.now(timezone.utc)
@@ -329,6 +369,14 @@ class TransactionService:
 
 
     async def graph_p_n_l(self, owner_id: UUID) -> None:
+        """The method for generating a graph showing the portfolio value up to a year backwards.
+
+            Args:
+                owner_id (int): The id of the user.
+
+            Returns:
+                None
+        """
         async with SessionLocal() as session:
             async with session.begin():
                 transactions = await self.transaction_repo.show_user_transactions(session, owner_id)
