@@ -1,0 +1,74 @@
+body {
+    font-family: sans-serif;
+    background: url("../imgs/btc.jpg") no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+}
+
+
+/*login-register form*/
+.log\/register {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;          /* to make justify-content & align-items work */
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+
+    border-radius: 10px;
+    border: 1px solid white;
+    padding: 20px 20px;
+    background: rgba(0, 0, 0, 0.73);
+}
+
+.log\/register button {
+    padding: 10px 26px 10px;
+    background: #420c73;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    font-size: 17px;
+}
+
+.log\/register button:hover {
+    background: #713f96;
+    transform: scale(1.08);
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.login {
+    display: none;
+    position: fixed;
+    border-radius: 10px;
+    border: 1px solid white;
+    background: rgba(0, 0, 0, 0.73);
+    z-index: 2000;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+.register {
+    display: none;
+    position: fixed;
+    border-radius: 10px;
+    border: 1px solid white;
+    background: rgba(0, 0, 0, 0.73);
+    z-index: 2000;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
