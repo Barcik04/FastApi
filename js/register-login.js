@@ -55,3 +55,49 @@ registerSubmitBtn.addEventListener('click', async () => {
         msgRegister.style.color = 'red';
     }
 });
+
+
+
+
+
+const emailLoginInput = document.getElementById('email');
+const passwordLoginInput = document.getElementById('password');
+const loginSubmitBtn = document.getElementById('signinBtn');
+const msg = document.getElementById('msg')
+
+loginSubmitBtn.addEventListener('click',  async() => {
+    const email = emailLoginInput.value.trim();
+    const password = passwordLoginInput.value.trim();
+
+    msg.textContent = '';
+
+    if (!email || !password) {
+        msgRegister.textContent = 'Please provide email and password.';
+        msgRegister.style.color = 'red';
+        return;
+    }
+
+
+    try {
+        const response = await axios.post('/users/login', {
+            email: email,
+            password: password
+        })
+
+        const token = response.data.access_token;
+
+        localStorage.setItem('jwt', token);
+
+        msg.textContent = 'Login successful!';
+        msg.style.color = 'green';
+        window.location.href = "../html/portfolio.html";
+        return response;
+
+    } catch (error) {
+        console.error(error);
+        msgRegister.textContent = 'Login failed.';
+        msgRegister.style.color = 'red';
+    }
+
+
+})

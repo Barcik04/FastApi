@@ -25,4 +25,7 @@ nav ul {
     transition: transform .2s;
 }
 
+.portfolioResult {
+    color: white;
+}
 
