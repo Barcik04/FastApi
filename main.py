@@ -1,4 +1,3 @@
-# main.py
 """Main module of the app."""
 
 from contextlib import asynccontextmanager
@@ -6,6 +5,7 @@ from typing import AsyncGenerator
 
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.exception_handlers import http_exception_handler
+from starlette.middleware.cors import CORSMiddleware
 
 from src.api.routers.portfolio_router import router as portfolio_router
 from src.api.routers.trade_request_router import router as trade_request_router
@@ -50,3 +50,22 @@ async def http_exception_handle_logging(
     exception: HTTPException,
 ) -> Response:
     return await http_exception_handler(request, exception)
+
+
+
+
+### FRONTEND CORS CONFIG
+origins = [
+    "http://localhost:63342",
+    "http://127.0.0.1:63342",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

@@ -1,4 +1,3 @@
-# src/user/UserOrm.py
 import uuid
 from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import UUID
