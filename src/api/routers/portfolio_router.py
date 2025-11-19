@@ -163,3 +163,5 @@ async def transfer_coin(
            str: A confirmation message.
        """
     return await service.transfer_coin(user_id, coin, quantity, transfer_id)
+
+
