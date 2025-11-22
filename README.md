@@ -8,6 +8,6 @@ DEMO user exclusive methods:
   --changing coin bought date
   --buying coins without restrictions
 
-### injection poprawic interfejsy i abstrakcyjne
+
 ### w servisie nie powinno byc sesji
 ### exception handling lepszy 
