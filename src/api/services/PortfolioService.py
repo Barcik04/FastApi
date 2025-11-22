@@ -9,10 +9,11 @@ from fastapi import HTTPException
 from src.api.models.TransactionOrm import TransactionOrm
 from src.api.models.PortfolioOrm import PortfolioOrm
 from src.api.repositories.PortfolioRepository import PortfolioRepository
+from src.api.services.IPortfolioService import IPortfolioService
 from src.db import SessionLocal
 
 
-class PortfolioService:
+class PortfolioService(IPortfolioService):
     """A class implementing the portfolio service."""
     def __init__(self, repo: PortfolioRepository):
         """The initializer of the `portfolio service`.

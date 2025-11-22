@@ -1,4 +1,5 @@
 """Module containing trade request service implementation."""
+from typing import Iterable
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,12 +8,14 @@ from src.api.models.TradeRequestOrm import TradeRequestOrm
 from src.api.repositories.PortfolioRepository import PortfolioRepository
 from src.api.repositories.TradeRequestRepository import TradeRequestRepository
 from uuid import UUID
+from src.api.services.ITradeRequestService import ITradeRequestService
+
 
 from src.api.schemas.TradeRequest import TradeRequestIn, TradeStatus
 from src.db import SessionLocal
 
 
-class TradeRequestService:
+class TradeRequestService(ITradeRequestService):
     """A class implementing the trade request service."""
     def __init__(self,
                  trade_request_repo: TradeRequestRepository | None = None,

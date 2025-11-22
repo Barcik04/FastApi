@@ -9,8 +9,9 @@ from src.auth.utils.token import generate_user_token
 from src.db import SessionLocal
 from src.api.schemas.User import User, UserIn
 from src.api.repositories.UserRepository import UserRepository
+from src.api.services.IUserService import IUserService
 
-class UserService:
+class UserService(IUserService):
     def __init__(self, repo: UserRepository):
         self.repo = repo
 

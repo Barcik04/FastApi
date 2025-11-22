@@ -11,10 +11,11 @@ import numpy as np
 from src.api.models.TransactionOrm import TransactionOrm
 from src.api.repositories.PortfolioRepository import PortfolioRepository
 from src.api.repositories.TransactionRepository import TransactionRepository
+from src.api.services.ITransactionService import ITransactionService
 from src.db import SessionLocal
 
 
-class TransactionService:
+class TransactionService(ITransactionService):
     """A class implementing the transaction service."""
     def __init__(
             self,
