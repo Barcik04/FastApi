@@ -12,7 +12,8 @@ from src.api.models.TransactionOrm import TransactionOrm
 from src.api.repositories.PortfolioRepository import PortfolioRepository
 from src.api.repositories.TransactionRepository import TransactionRepository
 from src.api.services.ITransactionService import ITransactionService
-from src.db import SessionLocal
+from sqlalchemy.ext.asyncio import AsyncSession
+
 
 
 class TransactionService(ITransactionService):
@@ -26,285 +27,307 @@ class TransactionService(ITransactionService):
         self.portfolio_repo = portfolio_repo or PortfolioRepository()
 
 
-    async def list_for_user(self, owner_id: UUID) -> list[TransactionOrm]:
+    async def list_for_user(self, owner_id: UUID, session: AsyncSession) -> list[TransactionOrm]:
         """The method for getting transactions made by a particular user.
 
             Args:
                 owner_id (int): The id of the user.
+                session (AsyncSession): The database session.
 
             Returns:
                 list[TransactionOrm]: list of transactions assigned to particular user
         """
-        async with SessionLocal() as session:
-            async with session.begin():
-                return await self.transaction_repo.show_user_transactions(session, owner_id)
+
+        async with session.begin():
+            return await self.transaction_repo.show_user_transactions(session, owner_id)
 
 
 
-    async def graph_portfolio_val(self, owner_id: UUID, days: int) -> None:
+
+    async def graph_portfolio_val(self, owner_id: UUID, days: int, session: AsyncSession) -> None:
         """The method for generating a graph showing the portfolio value up to a year backwards.
 
             Args:
                 owner_id (int): The id of the user.
                 days (int): number of days backwards to track value of portfolio
+                session (AsyncSession): DB session
 
             Returns:
                 None
         """
-        async with SessionLocal() as session:
-            async with session.begin():
-                now = datetime.now(timezone.utc)
-                portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
 
-                total_portfolio_val = [0] * 284
+        async with session.begin():
+            now = datetime.now(timezone.utc)
+            portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
 
-                days_back = int(days)
+            total_portfolio_val = [0] * 284
 
-                for crypto in portfolio.coins:
-                    if crypto == "tether":
+            days_back = int(days)
+
+            for crypto in portfolio.coins:
+                if crypto == "tether":
+                    continue
+                transactions = await self.transaction_repo.show_user_transactions_between_date_by_coin(session, now - timedelta(days=days_back), now, owner_id, crypto)
+                portfolio_quant = portfolio.coins.get(crypto, 0.0)
+
+                quants = []
+                for tx in transactions:
+                    quants.append(tx.quantity)
+                portfolio_transactions_quant = 0
+                for q in quants:
+                    portfolio_transactions_quant += q # 0.5
+                portfolio_start_quant = portfolio_quant - portfolio_transactions_quant # 0.2
+
+                url = f"https://api.coingecko.com/api/v3/coins/{crypto}/market_chart"
+                params = {"vs_currency": "usd", "days": f"{days_back}"}
+
+                async with httpx.AsyncClient() as client:
+                    response = await client.get(url, params=params)
+                    response.raise_for_status()
+                    price_usd = response.json()["prices"]
+
+                sorted_transactions = sorted(transactions, key=lambda x: x.date)
+
+
+                prices = []
+                timestamps = []
+                for timestamp, price in price_usd:
+                    time = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
+                    prices.append(price * portfolio_start_quant)
+                    timestamps.append(time)
+
+
+
+                prices_usd = []
+                for price in price_usd:
+                    prices_usd.append(price[1])
+
+                prices_final = []
+                previous_timestamp = timestamps[0]
+
+                for timestamp, price in zip(timestamps, prices_usd):
+                    if not sorted_transactions:
+                        prices_final.append(price * portfolio_start_quant)
+                        previous_timestamp = timestamp
                         continue
-                    transactions = await self.transaction_repo.show_user_transactions_between_date_by_coin(session, now - timedelta(days=days_back), now, owner_id, crypto)
-                    portfolio_quant = portfolio.coins.get(crypto, 0.0)
 
-                    quants = []
-                    for tx in transactions:
-                        quants.append(tx.quantity)
-                    portfolio_transactions_quant = 0
-                    for q in quants:
-                        portfolio_transactions_quant += q # 0.5
-                    portfolio_start_quant = portfolio_quant - portfolio_transactions_quant # 0.2
-
-                    url = f"https://api.coingecko.com/api/v3/coins/{crypto}/market_chart"
-                    params = {"vs_currency": "usd", "days": f"{days_back}"}
-
-                    async with httpx.AsyncClient() as client:
-                        response = await client.get(url, params=params)
-                        response.raise_for_status()
-                        price_usd = response.json()["prices"]
-
-                    sorted_transactions = sorted(transactions, key=lambda x: x.date)
-
-
-                    prices = []
-                    timestamps = []
-                    for timestamp, price in price_usd:
-                        time = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
-                        prices.append(price * portfolio_start_quant)
-                        timestamps.append(time)
-
-
-
-                    prices_usd = []
-                    for price in price_usd:
-                        prices_usd.append(price[1])
-
-                    prices_final = []
-                    previous_timestamp = timestamps[0]
-
-                    for timestamp, price in zip(timestamps, prices_usd):
-                        if not sorted_transactions:
-                            prices_final.append(price * portfolio_start_quant)
-                            previous_timestamp = timestamp
-                            continue
-
-                        if timestamp == timestamps[0]:
-                            if sorted_transactions[0].date <= timestamp:
-                                prices_final.append(price * (portfolio_start_quant + sorted_transactions[0].quantity))
-                                sorted_transactions.remove(sorted_transactions[0])
-                                portfolio_start_quant += sorted_transactions[0].quantity
-                                previous_timestamp = timestamp
-                            else:
-                                prices_final.append(price * portfolio_start_quant)
-                                previous_timestamp = timestamp
-                            continue
-                        elif timestamp > sorted_transactions[0].date > previous_timestamp:
+                    if timestamp == timestamps[0]:
+                        if sorted_transactions[0].date <= timestamp:
                             prices_final.append(price * (portfolio_start_quant + sorted_transactions[0].quantity))
-                            portfolio_start_quant += sorted_transactions[0].quantity
                             sorted_transactions.remove(sorted_transactions[0])
+                            portfolio_start_quant += sorted_transactions[0].quantity
                             previous_timestamp = timestamp
-                            continue
                         else:
                             prices_final.append(price * portfolio_start_quant)
                             previous_timestamp = timestamp
+                        continue
+                    elif timestamp > sorted_transactions[0].date > previous_timestamp:
+                        prices_final.append(price * (portfolio_start_quant + sorted_transactions[0].quantity))
+                        portfolio_start_quant += sorted_transactions[0].quantity
+                        sorted_transactions.remove(sorted_transactions[0])
+                        previous_timestamp = timestamp
+                        continue
+                    else:
+                        prices_final.append(price * portfolio_start_quant)
+                        previous_timestamp = timestamp
 
 
-                    for i in range(len(prices_final)):
-                        total_portfolio_val[i] += prices_final[i]
+                for i in range(len(prices_final)):
+                    total_portfolio_val[i] += prices_final[i]
 
 
-                if len(timestamps) != len(total_portfolio_val):
-                    total_portfolio_val = total_portfolio_val[:len(timestamps)]
+            if len(timestamps) != len(total_portfolio_val):
+                total_portfolio_val = total_portfolio_val[:len(timestamps)]
 
-                legend = {k: round(v, 3) for k, v in portfolio.coins.items() if k.lower() != "tether"}
-
-
-                if days <= 2:
-                    label_text = ", ".join([f"{k}: {v}" for k, v in legend.items()])
-                    plt.plot(timestamps, total_portfolio_val, label=label_text)
-                    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-                    plt.gcf().autofmt_xdate()
-                    plt.xlabel("Date")
-                    plt.ylabel("Amount")
-                    plt.title("Portfolio in the last 24h")
-                    plt.tight_layout()
-                    plt.legend(loc="lower right")
-                    plt.show()
-                else:
-                    label_text = ", ".join([f"{k}: {v}" for k, v in legend.items()])
-                    plt.plot(timestamps, total_portfolio_val, label=label_text)
-                    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-                    plt.gcf().autofmt_xdate()
-                    plt.xlabel("Date")
-                    plt.ylabel("Amount")
-                    plt.title("Portfolio")
-                    plt.tight_layout()
-                    plt.legend(loc="lower right")
-                    plt.show()
+            legend = {k: round(v, 3) for k, v in portfolio.coins.items() if k.lower() != "tether"}
 
 
+            if days <= 2:
+                label_text = ", ".join([f"{k}: {v}" for k, v in legend.items()])
+                plt.plot(timestamps, total_portfolio_val, label=label_text)
+                plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+                plt.gcf().autofmt_xdate()
+                plt.xlabel("Date")
+                plt.ylabel("Amount")
+                plt.title("Portfolio in the last 24h")
+                plt.tight_layout()
+                plt.legend(loc="lower right")
+                plt.show()
+            else:
+                label_text = ", ".join([f"{k}: {v}" for k, v in legend.items()])
+                plt.plot(timestamps, total_portfolio_val, label=label_text)
+                plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+                plt.gcf().autofmt_xdate()
+                plt.xlabel("Date")
+                plt.ylabel("Amount")
+                plt.title("Portfolio")
+                plt.tight_layout()
+                plt.legend(loc="lower right")
+                plt.show()
 
 
 
-    async def graph_multiple_coins(self, owner_id: UUID, days: int) -> None:
+
+
+
+    async def graph_multiple_coins(self, owner_id: UUID, days: int, session: AsyncSession) -> None:
         """The method for generating a graph showing the portfolio value up to a year backwards seperated by each coin in portfolio.
 
             Args:
                 owner_id (int): The id of the user.
                 days (int): number of days backwards to track value of portfolio
+                session (AsyncSession): DB session.
 
             Returns:
                 None
         """
-        async with SessionLocal() as session:
-            async with session.begin():
-                now = datetime.now(timezone.utc)
-                portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
 
-                total_portfolio_val = [[0] * 284 for _ in range(len(portfolio.coins))]
+        async with session.begin():
+            now = datetime.now(timezone.utc)
+            portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
+
+            total_portfolio_val = [[0] * 284 for _ in range(len(portfolio.coins))]
 
 
-                days_back = int(days)
+            days_back = int(days)
 
-                count_fors = 0
-                for crypto in portfolio.coins:
-                    if crypto == "tether":
+            count_fors = 0
+            for crypto in portfolio.coins:
+                if crypto == "tether":
+                    continue
+                transactions = await self.transaction_repo.show_user_transactions_between_date_by_coin(session, now - timedelta(days=days_back), now, owner_id, crypto)
+                portfolio_quant = portfolio.coins.get(crypto, 0.0)
+
+                quants = []
+                for tx in transactions:
+                    quants.append(tx.quantity)
+                portfolio_transactions_quant = 0
+                for q in quants:
+                    portfolio_transactions_quant += q # 0.5
+                portfolio_start_quant = portfolio_quant - portfolio_transactions_quant # 0.2
+
+                url = f"https://api.coingecko.com/api/v3/coins/{crypto}/market_chart"
+                params = {"vs_currency": "usd", "days": f"{days_back}"}
+
+                async with httpx.AsyncClient() as client:
+                    response = await client.get(url, params=params)
+                    response.raise_for_status()
+                    price_usd = response.json()["prices"]
+
+                sorted_transactions = sorted(transactions, key=lambda x: x.date)
+
+
+                prices = []
+                timestamps = []
+                for timestamp, price in price_usd:
+                    time = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
+                    prices.append(price * portfolio_start_quant)
+                    timestamps.append(time)
+
+
+
+                prices_usd = []
+                for price in price_usd:
+                    prices_usd.append(price[1])
+
+                prices_final = []
+                previous_timestamp = timestamps[0]
+
+                for timestamp, price in zip(timestamps, prices_usd):
+                    if not sorted_transactions:
+                        prices_final.append(price * portfolio_start_quant)
+                        previous_timestamp = timestamp
                         continue
-                    transactions = await self.transaction_repo.show_user_transactions_between_date_by_coin(session, now - timedelta(days=days_back), now, owner_id, crypto)
-                    portfolio_quant = portfolio.coins.get(crypto, 0.0)
 
-                    quants = []
-                    for tx in transactions:
-                        quants.append(tx.quantity)
-                    portfolio_transactions_quant = 0
-                    for q in quants:
-                        portfolio_transactions_quant += q # 0.5
-                    portfolio_start_quant = portfolio_quant - portfolio_transactions_quant # 0.2
-
-                    url = f"https://api.coingecko.com/api/v3/coins/{crypto}/market_chart"
-                    params = {"vs_currency": "usd", "days": f"{days_back}"}
-
-                    async with httpx.AsyncClient() as client:
-                        response = await client.get(url, params=params)
-                        response.raise_for_status()
-                        price_usd = response.json()["prices"]
-
-                    sorted_transactions = sorted(transactions, key=lambda x: x.date)
-
-
-                    prices = []
-                    timestamps = []
-                    for timestamp, price in price_usd:
-                        time = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
-                        prices.append(price * portfolio_start_quant)
-                        timestamps.append(time)
-
-
-
-                    prices_usd = []
-                    for price in price_usd:
-                        prices_usd.append(price[1])
-
-                    prices_final = []
-                    previous_timestamp = timestamps[0]
-
-                    for timestamp, price in zip(timestamps, prices_usd):
-                        if not sorted_transactions:
-                            prices_final.append(price * portfolio_start_quant)
-                            previous_timestamp = timestamp
-                            continue
-
-                        if timestamp == timestamps[0]:
-                            if sorted_transactions[0].date <= timestamp:
-                                prices_final.append(price * (portfolio_start_quant + sorted_transactions[0].quantity))
-                                sorted_transactions.remove(sorted_transactions[0])
-                                portfolio_start_quant += sorted_transactions[0].quantity
-                                previous_timestamp = timestamp
-                            else:
-                                prices_final.append(price * portfolio_start_quant)
-                                previous_timestamp = timestamp
-                            continue
-                        elif timestamp > sorted_transactions[0].date > previous_timestamp:
+                    if timestamp == timestamps[0]:
+                        if sorted_transactions[0].date <= timestamp:
                             prices_final.append(price * (portfolio_start_quant + sorted_transactions[0].quantity))
-                            portfolio_start_quant += sorted_transactions[0].quantity
                             sorted_transactions.remove(sorted_transactions[0])
+                            portfolio_start_quant += sorted_transactions[0].quantity
                             previous_timestamp = timestamp
-                            continue
                         else:
                             prices_final.append(price * portfolio_start_quant)
                             previous_timestamp = timestamp
+                        continue
+                    elif timestamp > sorted_transactions[0].date > previous_timestamp:
+                        prices_final.append(price * (portfolio_start_quant + sorted_transactions[0].quantity))
+                        portfolio_start_quant += sorted_transactions[0].quantity
+                        sorted_transactions.remove(sorted_transactions[0])
+                        previous_timestamp = timestamp
+                        continue
+                    else:
+                        prices_final.append(price * portfolio_start_quant)
+                        previous_timestamp = timestamp
 
 
-                    for i in range(len(prices_final)):
-                        total_portfolio_val[count_fors][i] += prices_final[i]
-                    count_fors += 1
+                for i in range(len(prices_final)):
+                    total_portfolio_val[count_fors][i] += prices_final[i]
+                count_fors += 1
 
-                for i in range(len(total_portfolio_val)):
-                    total_portfolio_val[i] = total_portfolio_val[i][:len(timestamps)]
-
-
-                if len(timestamps) != len(total_portfolio_val[0]):
-                    total_portfolio_val = total_portfolio_val[:len(timestamps)]
+            for i in range(len(total_portfolio_val)):
+                total_portfolio_val[i] = total_portfolio_val[i][:len(timestamps)]
 
 
+            if len(timestamps) != len(total_portfolio_val[0]):
+                total_portfolio_val = total_portfolio_val[:len(timestamps)]
 
-                legend = {k: round(v, 2) for k, v in portfolio.coins.items() if k.lower() != "tether"}
 
-                for i, (coin_name, _) in enumerate(legend.items()):
-                    plt.plot(timestamps, total_portfolio_val[i], label=coin_name)
 
-                plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-                plt.gcf().autofmt_xdate()
-                plt.xlabel("Date")
-                plt.ylabel("Value (USD)")
-                plt.title("Portfolio coins over time")
-                plt.tight_layout()
-                plt.legend(loc="lower right")
-                plt.show()
+            legend = {k: round(v, 2) for k, v in portfolio.coins.items() if k.lower() != "tether"}
+
+            for i, (coin_name, _) in enumerate(legend.items()):
+                plt.plot(timestamps, total_portfolio_val[i], label=coin_name)
+
+            plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+            plt.gcf().autofmt_xdate()
+            plt.xlabel("Date")
+            plt.ylabel("Value (USD)")
+            plt.title("Portfolio coins over time")
+            plt.tight_layout()
+            plt.legend(loc="lower right")
+            plt.show()
 
 
 
 
     # DOESNT INCLUDE SELLING IN PNL!!!!!!!!!!!!!
-    async def graph_p_n_l_percent(self, owner_id: UUID) -> None:
+    async def graph_p_n_l_percent(self, owner_id: UUID, session: AsyncSession) -> None:
         """The method for generating a graph showing the portfolio profit and losses value counting from the date of the first transaction.
 
             Args:
                 owner_id (int): The id of the user.
+                session (AsyncSession): database session.
 
             Returns:
                 None
         """
-        async with SessionLocal() as session:
-            async with session.begin():
-                now = datetime.now(timezone.utc)
-                transactions_general = await self.transaction_repo.show_user_transactions(session, owner_id)
 
-                sorted_transactions = sorted([t for t in transactions_general if t.bought_price > 0],key=lambda x: x.date)
-                oldest_transaction = sorted_transactions[0]
-                delta = now - oldest_transaction.date
-                days_back = max(1.0, delta.total_seconds() / 86400.0)
+        async with session.begin():
+            now = datetime.now(timezone.utc)
+            transactions_general = await self.transaction_repo.show_user_transactions(session, owner_id)
 
-                url = f"https://api.coingecko.com/api/v3/coins/{sorted_transactions[0].coin}/market_chart"
+            sorted_transactions = sorted([t for t in transactions_general if t.bought_price > 0],key=lambda x: x.date)
+            oldest_transaction = sorted_transactions[0]
+            delta = now - oldest_transaction.date
+            days_back = max(1.0, delta.total_seconds() / 86400.0)
+
+            url = f"https://api.coingecko.com/api/v3/coins/{sorted_transactions[0].coin}/market_chart"
+            params = {"vs_currency": "usd", "days": f"{days_back}"}
+
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url, params=params)
+                response.raise_for_status()
+                price_usd = response.json()["prices"]
+
+
+
+            p_n_ls_whole = np.zeros((len(sorted_transactions), len(price_usd)), dtype=float)
+            p_n_ls_whole_pos = 0
+            timestamps_oldest = []
+            for coin in sorted_transactions:
+
+
+                url = f"https://api.coingecko.com/api/v3/coins/{coin.coin}/market_chart"
                 params = {"vs_currency": "usd", "days": f"{days_back}"}
 
                 async with httpx.AsyncClient() as client:
@@ -312,83 +335,80 @@ class TransactionService(ITransactionService):
                     response.raise_for_status()
                     price_usd = response.json()["prices"]
 
+                timestamps = []
+                p_n_ls = []
+                for timestamp, price in price_usd:
+                    time = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
+                    timestamps.append(time)
+                    p_n_ls.append(price / coin.bought_price -  1)
+
+                if not timestamps_oldest:
+                    timestamps_oldest = timestamps.copy()
+
+                for i in range(len(p_n_ls)):
+                    if coin.date > timestamps_oldest[i]:
+                        p_n_ls_whole[p_n_ls_whole_pos][i] = 0.0
+                    else:
+                        p_n_ls_whole[p_n_ls_whole_pos][i] = p_n_ls[i]
+                p_n_ls_whole[p_n_ls_whole_pos] = p_n_ls_whole[p_n_ls_whole_pos][:len(timestamps)]
+                p_n_ls_whole_pos += 1
 
 
-                p_n_ls_whole = np.zeros((len(sorted_transactions), len(price_usd)), dtype=float)
-                p_n_ls_whole_pos = 0
-                timestamps_oldest = []
-                for coin in sorted_transactions:
+            plt.figure(figsize=(12, 6))
 
 
-                    url = f"https://api.coingecko.com/api/v3/coins/{coin.coin}/market_chart"
-                    params = {"vs_currency": "usd", "days": f"{days_back}"}
+            for idx, coin in enumerate(sorted_transactions):
+                values = np.array(p_n_ls_whole[idx], dtype=float)
+                values[values == 0.0] = np.nan
+                plt.plot(timestamps_oldest, values, label=coin.coin)
 
-                    async with httpx.AsyncClient() as client:
-                        response = await client.get(url, params=params)
-                        response.raise_for_status()
-                        price_usd = response.json()["prices"]
-
-                    timestamps = []
-                    p_n_ls = []
-                    for timestamp, price in price_usd:
-                        time = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
-                        timestamps.append(time)
-                        p_n_ls.append(price / coin.bought_price -  1)
-
-                    if not timestamps_oldest:
-                        timestamps_oldest = timestamps.copy()
-
-                    for i in range(len(p_n_ls)):
-                        if coin.date > timestamps_oldest[i]:
-                            p_n_ls_whole[p_n_ls_whole_pos][i] = 0.0
-                        else:
-                            p_n_ls_whole[p_n_ls_whole_pos][i] = p_n_ls[i]
-                    p_n_ls_whole[p_n_ls_whole_pos] = p_n_ls_whole[p_n_ls_whole_pos][:len(timestamps)]
-                    p_n_ls_whole_pos += 1
-
-
-                plt.figure(figsize=(12, 6))
-
-
-                for idx, coin in enumerate(sorted_transactions):
-                    values = np.array(p_n_ls_whole[idx], dtype=float)
-                    values[values == 0.0] = np.nan
-                    plt.plot(timestamps_oldest, values, label=coin.coin)
-
-                plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-                plt.gcf().autofmt_xdate()
-                plt.xlabel("Date")
-                plt.ylabel("PnL (%)")
-                plt.title("PnL Over Time by Coin")
-                plt.legend(loc="lower right")
-                plt.tight_layout()
-                plt.show()
+            plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+            plt.gcf().autofmt_xdate()
+            plt.xlabel("Date")
+            plt.ylabel("PnL (%)")
+            plt.title("PnL Over Time by Coin")
+            plt.legend(loc="lower right")
+            plt.tight_layout()
+            plt.show()
 
 
 
 
 
 
-    async def graph_p_n_l(self, owner_id: UUID) -> None:
+    async def graph_p_n_l(self, owner_id: UUID, session: AsyncSession) -> None:
         """The method for generating a graph showing the portfolio value up to a year backwards.
 
             Args:
                 owner_id (int): The id of the user.
+                session (AsyncSession): database session.
 
             Returns:
                 None
         """
-        async with SessionLocal() as session:
-            async with session.begin():
-                transactions = await self.transaction_repo.show_user_transactions(session, owner_id)
-                now = datetime.now(timezone.utc)
 
-                sorted_transactions = sorted([t for t in transactions if t.bought_price > 0], key=lambda x: x.date)
-                oldest_transaction = sorted_transactions[0]
-                delta = now - oldest_transaction.date
-                days_back = max(1.0, delta.total_seconds() / 86400.0)
+        async with session.begin():
+            transactions = await self.transaction_repo.show_user_transactions(session, owner_id)
+            now = datetime.now(timezone.utc)
 
-                url = f"https://api.coingecko.com/api/v3/coins/{sorted_transactions[0].coin}/market_chart"
+            sorted_transactions = sorted([t for t in transactions if t.bought_price > 0], key=lambda x: x.date)
+            oldest_transaction = sorted_transactions[0]
+            delta = now - oldest_transaction.date
+            days_back = max(1.0, delta.total_seconds() / 86400.0)
+
+            url = f"https://api.coingecko.com/api/v3/coins/{sorted_transactions[0].coin}/market_chart"
+            params = {"vs_currency": "usd", "days": f"{days_back}"}
+
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url, params=params)
+                response.raise_for_status()
+                price_usd = response.json()["prices"]
+
+            p_n_ls_whole = np.zeros((len(sorted_transactions), len(price_usd)), dtype=float)
+            p_n_ls_whole_pos = 0
+            timestamps_oldest = []
+            for coin in sorted_transactions:
+                url = f"https://api.coingecko.com/api/v3/coins/{coin.coin}/market_chart"
                 params = {"vs_currency": "usd", "days": f"{days_back}"}
 
                 async with httpx.AsyncClient() as client:
@@ -396,54 +416,42 @@ class TransactionService(ITransactionService):
                     response.raise_for_status()
                     price_usd = response.json()["prices"]
 
-                p_n_ls_whole = np.zeros((len(sorted_transactions), len(price_usd)), dtype=float)
-                p_n_ls_whole_pos = 0
-                timestamps_oldest = []
-                for coin in sorted_transactions:
-                    url = f"https://api.coingecko.com/api/v3/coins/{coin.coin}/market_chart"
-                    params = {"vs_currency": "usd", "days": f"{days_back}"}
+                prices = []
+                timestamps = []
+                for timestamp, price in price_usd:
+                    time = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
+                    timestamps.append(time)
+                    prices.append(price)
 
-                    async with httpx.AsyncClient() as client:
-                        response = await client.get(url, params=params)
-                        response.raise_for_status()
-                        price_usd = response.json()["prices"]
+                if not timestamps_oldest:
+                    timestamps_oldest = timestamps.copy()
 
-                    prices = []
-                    timestamps = []
-                    for timestamp, price in price_usd:
-                        time = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
-                        timestamps.append(time)
-                        prices.append(price)
+                p_n_ls = []
+                for i in prices:
+                    p_n_ls.append((i * coin.quantity) - (coin.bought_price * coin.quantity))
 
-                    if not timestamps_oldest:
-                        timestamps_oldest = timestamps.copy()
-
-                    p_n_ls = []
-                    for i in prices:
-                        p_n_ls.append((i * coin.quantity) - (coin.bought_price * coin.quantity))
-
-                    for i in range(len(p_n_ls)):
-                        if i >= len(timestamps_oldest):
-                            break
-                        if timestamps_oldest[i] >= timestamps[i]:
-                            p_n_ls_whole[p_n_ls_whole_pos][i] = p_n_ls[i]
-                        else:
-                            p_n_ls_whole[p_n_ls_whole_pos][i] = 0.0
-                    p_n_ls_whole_pos += 1
+                for i in range(len(p_n_ls)):
+                    if i >= len(timestamps_oldest):
+                        break
+                    if timestamps_oldest[i] >= timestamps[i]:
+                        p_n_ls_whole[p_n_ls_whole_pos][i] = p_n_ls[i]
+                    else:
+                        p_n_ls_whole[p_n_ls_whole_pos][i] = 0.0
+                p_n_ls_whole_pos += 1
 
 
-                concatenated_prices = np.sum(p_n_ls_whole, axis=0)
+            concatenated_prices = np.sum(p_n_ls_whole, axis=0)
 
 
 
-                plt.plot(timestamps_oldest, concatenated_prices)
-                plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-                plt.gcf().autofmt_xdate()
-                plt.xlabel("Date")
-                plt.ylabel("Amount")
-                plt.title("Profit & Loss Over Time")
-                plt.tight_layout()
-                plt.show()
+            plt.plot(timestamps_oldest, concatenated_prices)
+            plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+            plt.gcf().autofmt_xdate()
+            plt.xlabel("Date")
+            plt.ylabel("Amount")
+            plt.title("Profit & Loss Over Time")
+            plt.tight_layout()
+            plt.show()
 
 
 

@@ -1,4 +1,4 @@
-POST http://127.0.0.1:8000/auth/register
+POST http://127.0.0.1:8000/users/register
 Content-Type: application/json
 
 {
@@ -76,7 +76,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhO
 ###
 
 GET http://127.0.0.1:8000/transactions/p_n_l
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOGFhYTdhOC1hZmRmLTQxMTItOTlkYi0wMTVkYWU0ZmY0YjUiLCJleHAiOjE3NjMwMjMyMzAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.u4syXeP2bNjygFbQ65MlP5zkKF01q_2ls83ClmO_ebI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjM5MTEyNTYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.FpdoOFoQjEqO7W9gQQMLybN_k23fzsPGCk-cggcqLJs
 
 
 ###

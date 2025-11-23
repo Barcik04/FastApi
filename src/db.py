@@ -1,5 +1,5 @@
 import os
-from contextlib import asynccontextmanager
+from typing import Any, AsyncGenerator
 
 from dotenv import load_dotenv, find_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
@@ -14,8 +14,8 @@ class Base(DeclarativeBase):
     pass
 
 
-engine = create_async_engine(DB_URL)
-SessionLocal = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+engine = create_async_engine(DB_URL, echo=False)
+SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 
 async def init_db() -> None:
@@ -27,8 +27,6 @@ async def close_db() -> None:
     await engine.dispose()
 
 
-@asynccontextmanager
-async def get_session():
+async def get_session() -> AsyncGenerator[AsyncSession, Any]:
     async with SessionLocal() as session:
         yield session
-        await session.commit()
