@@ -4,6 +4,8 @@ from uuid import UUID
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
+
+from src.api.services.ITransactionService import ITransactionService
 from src.db import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,13 +24,13 @@ router = APIRouter(prefix="/transactions", tags=["transactions"])
 async def list_for_user(
     user_id: UUID = Depends(get_current_user_id),
     session: AsyncSession = Depends(get_session),
-    service: TransactionService = Depends(Provide[Container.transaction_service]),
+    service: ITransactionService = Depends(Provide[Container.transaction_service]),
 ):
     """An endpoint for getting all transactions for the particular user.
 
     Args:
         user_id (UUID): The authenticated user ID fetched from JWT.
-        service (TransactionService, optional): The injected service dependency.
+        service (ITransactionService, optional): The injected service dependency.
         session (AsyncSession): The injected session dependency.
 
     Returns:
@@ -44,14 +46,14 @@ async def graph_portfolio_val(
     days: int,
     user_id: UUID = Depends(get_current_user_id),
     session: AsyncSession = Depends(get_session),
-    service: TransactionService = Depends(Provide[Container.transaction_service]),
+    service: ITransactionService = Depends(Provide[Container.transaction_service]),
 ):
     """An endpoint for generating portfolio value graph with given days.
 
       Args:
           days (int): The number of days to display the graph in the past.
           user_id (UUID): The authenticated user ID fetched from the JWT.
-          service (TransactionService, optional): The injected service dependency.
+          service (ITransactionService, optional): The injected service dependency.
           session (AsyncSession): The injected session dependency.
 
       Returns:
@@ -66,14 +68,14 @@ async def graph_multiple_coins(
     days: int,
     user_id: UUID = Depends(get_current_user_id),
     session: AsyncSession = Depends(get_session),
-    service: TransactionService = Depends(Provide[Container.transaction_service]),
+    service: ITransactionService = Depends(Provide[Container.transaction_service]),
 ):
     """An endpoint for generating graph showing each coin PnL separately.
 
         Args:
             days (int): The number of days in the past to include in the calculation.
             user_id (UUID): The authenticated user ID fetched from the JWT.
-            service (TransactionService, optional): The injected service dependency.
+            service (ITransactionService, optional): The injected service dependency.
             session (AsyncSession): The injected session dependency.
 
         Returns:
@@ -87,13 +89,13 @@ async def graph_multiple_coins(
 async def graph_p_n_l_percent(
     user_id: UUID = Depends(get_current_user_id),
     session: AsyncSession = Depends(get_session),
-    service: TransactionService = Depends(Provide[Container.transaction_service]),
+    service: ITransactionService = Depends(Provide[Container.transaction_service]),
 ):
     """An endpoint for generating percentage-based PnL graph.
 
        Args:
            user_id (UUID): The authenticated user ID fetched from the JWT.
-           service (TransactionService, optional): The injected service dependency.
+           service (ITransactionService, optional): The injected service dependency.
            session (AsyncSession): The injected session dependency.
 
        Returns:
@@ -107,13 +109,13 @@ async def graph_p_n_l_percent(
 async def graph_p_n_l(
     user_id: UUID = Depends(get_current_user_id),
     session: AsyncSession = Depends(get_session),
-    service: TransactionService = Depends(Provide[Container.transaction_service]),
+    service: ITransactionService = Depends(Provide[Container.transaction_service]),
 ):
     """An endpoint for generating graph of PnL profit and loss in coin value.
 
     Args:
         user_id (UUID): The authenticated user ID fetched from the JWT.
-        service (TransactionService, optional): The injected service dependency.
+        service (ITransactionService, optional): The injected service dependency.
         session (AsyncSession): The injected session dependency.
 
     Returns:

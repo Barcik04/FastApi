@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from uuid import UUID
 import numpy as np
+from fastapi import HTTPException
 
 from src.api.models.TransactionOrm import TransactionOrm
 from src.api.repositories.PortfolioRepository import PortfolioRepository
@@ -57,6 +58,9 @@ class TransactionService(ITransactionService):
         """
 
         async with session.begin():
+            if days <= 0:
+                raise HTTPException(status_code=403, detail="Number of days cant be 0 or less")
+
             now = datetime.now(timezone.utc)
             portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
 
@@ -131,20 +135,36 @@ class TransactionService(ITransactionService):
                         prices_final.append(price * portfolio_start_quant)
                         previous_timestamp = timestamp
 
-
                 for i in range(len(prices_final)):
+                    if i >= len(total_portfolio_val):
+                        break
                     total_portfolio_val[i] += prices_final[i]
 
 
-            if len(timestamps) != len(total_portfolio_val):
+            if len(timestamps) <= len(total_portfolio_val):
                 total_portfolio_val = total_portfolio_val[:len(timestamps)]
+
+
+            if len(timestamps) > len(total_portfolio_val):
+                timestamps = timestamps[:len(total_portfolio_val)]
+
+
+            filter_ts = []
+            filtered_vals = []
+
+
+            for i in range(len(total_portfolio_val) - 1):
+                if timestamps[i] > sorted_transactions[0].date:
+                    filter_ts.append(timestamps[i])
+                    filtered_vals.append(total_portfolio_val[i])
+
 
             legend = {k: round(v, 3) for k, v in portfolio.coins.items() if k.lower() != "tether"}
 
 
             if days <= 2:
                 label_text = ", ".join([f"{k}: {v}" for k, v in legend.items()])
-                plt.plot(timestamps, total_portfolio_val, label=label_text)
+                plt.plot(filter_ts, filtered_vals, label=label_text)
                 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
                 plt.gcf().autofmt_xdate()
                 plt.xlabel("Date")
@@ -155,7 +175,7 @@ class TransactionService(ITransactionService):
                 plt.show()
             else:
                 label_text = ", ".join([f"{k}: {v}" for k, v in legend.items()])
-                plt.plot(timestamps, total_portfolio_val, label=label_text)
+                plt.plot(filter_ts, filtered_vals, label=label_text)
                 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
                 plt.gcf().autofmt_xdate()
                 plt.xlabel("Date")
@@ -183,10 +203,13 @@ class TransactionService(ITransactionService):
         """
 
         async with session.begin():
+            if days <= 0:
+                raise HTTPException(status_code=403, detail="Number of days cant be 0 or less")
+
             now = datetime.now(timezone.utc)
             portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
 
-            total_portfolio_val = [[0] * 284 for _ in range(len(portfolio.coins))]
+            total_portfolio_val = [[0] * 288 for _ in range(len(portfolio.coins))]
 
 
             days_back = int(days)
@@ -264,12 +287,11 @@ class TransactionService(ITransactionService):
                     total_portfolio_val[count_fors][i] += prices_final[i]
                 count_fors += 1
 
+
+            min_len = min(len(timestamps), len(total_portfolio_val[0]))
+            timestamps = timestamps[:min_len - 2]
             for i in range(len(total_portfolio_val)):
-                total_portfolio_val[i] = total_portfolio_val[i][:len(timestamps)]
-
-
-            if len(timestamps) != len(total_portfolio_val[0]):
-                total_portfolio_val = total_portfolio_val[:len(timestamps)]
+                total_portfolio_val[i] = total_portfolio_val[i][:min_len - 2]
 
 
 
@@ -307,6 +329,9 @@ class TransactionService(ITransactionService):
             transactions_general = await self.transaction_repo.show_user_transactions(session, owner_id)
 
             sorted_transactions = sorted([t for t in transactions_general if t.bought_price > 0],key=lambda x: x.date)
+            if not sorted_transactions:
+               raise HTTPException(status_code=404, detail="No purchase transactions found for the user")
+
             oldest_transaction = sorted_transactions[0]
             delta = now - oldest_transaction.date
             days_back = max(1.0, delta.total_seconds() / 86400.0)
@@ -354,12 +379,20 @@ class TransactionService(ITransactionService):
                 p_n_ls_whole_pos += 1
 
 
+
+
+
             plt.figure(figsize=(12, 6))
 
 
             for idx, coin in enumerate(sorted_transactions):
                 values = np.array(p_n_ls_whole[idx], dtype=float)
                 values[values == 0.0] = np.nan
+
+                if len(values) > len(timestamps_oldest):
+                    values[idx] = values[idx][:len(timestamps_oldest)]
+                if len(values) < len(timestamps_oldest):
+                    timestamps_oldest = timestamps_oldest[:len(values[idx])]
                 plt.plot(timestamps_oldest, values, label=coin.coin)
 
             plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
@@ -392,6 +425,11 @@ class TransactionService(ITransactionService):
             now = datetime.now(timezone.utc)
 
             sorted_transactions = sorted([t for t in transactions if t.bought_price > 0], key=lambda x: x.date)
+
+            if not sorted_transactions:
+               raise HTTPException(status_code=404, detail="No purchase transactions found for the user")
+            
+
             oldest_transaction = sorted_transactions[0]
             delta = now - oldest_transaction.date
             days_back = max(1.0, delta.total_seconds() / 86400.0)
@@ -442,9 +480,16 @@ class TransactionService(ITransactionService):
 
             concatenated_prices = np.sum(p_n_ls_whole, axis=0)
 
+            filtered_prices = []
+            filtered_ts = []
+            for i in range(len(timestamps_oldest)):
+                if timestamps_oldest[i] >= sorted_transactions[0].date:
+                    filtered_prices.append(concatenated_prices[i])
+                    filtered_ts.append(timestamps_oldest[i])
 
 
-            plt.plot(timestamps_oldest, concatenated_prices)
+
+            plt.plot(filtered_ts, filtered_prices)
             plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
             plt.gcf().autofmt_xdate()
             plt.xlabel("Date")

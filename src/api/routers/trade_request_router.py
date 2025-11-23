@@ -5,6 +5,11 @@ from uuid import UUID
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.api.services.ITradeRequestService import ITradeRequestService
+from src.db import get_session
+
 
 from src.api.schemas.TradeRequest import (
     TradeRequest,
@@ -23,18 +28,20 @@ router = APIRouter(prefix="/trade_requests", tags=["trade_requests"])
 @inject
 async def show_user_requests(
     user_id: UUID = Depends(get_current_user_id),
-    service: TradeRequestService = Depends(Provide[Container.trade_request_service]),
+    session: AsyncSession = Depends(get_session),
+    service: ITradeRequestService = Depends(Provide[Container.trade_request_service]),
 ):
     """An endpoint for retrieving all trade requests involving user.
 
        Args:
            user_id (UUID): The authenticated user's ID fetched from the JWT.
-           service (TradeRequestService, optional): The injected service dependency.
+           service (ITradeRequestService, optional): The injected service dependency.
+           session (AsyncSession): The database session.
 
        Returns:
            list[TradeRequest]: The list of trade requests for the user.
        """
-    return await service.show_user_requests(user_id)
+    return await service.show_user_requests(user_id, session)
 
 
 @router.post("/send", response_model=str)
@@ -42,20 +49,22 @@ async def show_user_requests(
 async def create_user_request(
     body: TradeRequestIn,
     user_id: UUID = Depends(get_current_user_id),
-    service: TradeRequestService = Depends(Provide[Container.trade_request_service]),
+    session: AsyncSession = Depends(get_session),
+    service: ITradeRequestService = Depends(Provide[Container.trade_request_service]),
 ):
     """An endpoint for creating a new trade request.
 
       Args:
           body (TradeRequestIn): The trade request body with trade details.
           user_id (UUID): The authenticated user's ID fetched from the JWT token.
-          service (TradeRequestService, optional): The injected service dependency.
+          service (ITradeRequestService, optional): The injected service dependency.
+          session (AsyncSession): The database session.
 
       Returns:
           str: A confirmation message.
 
     """
-    return await service.create_user_request(body, user_id)
+    return await service.create_user_request(body, user_id, session)
 
 
 @router.put("/update", response_model=str)
@@ -63,16 +72,18 @@ async def create_user_request(
 async def update_user_request(
     body: TradeRequestUpdateDto,
     user_id: UUID = Depends(get_current_user_id),
-    service: TradeRequestService = Depends(Provide[Container.trade_request_service]),
+    session: AsyncSession = Depends(get_session),
+    service: ITradeRequestService = Depends(Provide[Container.trade_request_service]),
 ):
     """An endpoint for updating the status of a trade request.
 
        Args:
            body (TradeRequestUpdateDto): The update payload containing acceptance bool and request_id.
            user_id (UUID): The authenticated user's ID fetched from the JWT token.
-           service (TradeRequestService, optional): The injected trade request service dependency.
+           service (ITradeRequestService, optional): The injected trade request service dependency.
+           session (AsyncSession): The database session.
 
        Returns:
            str: A confirmation message.
     """
-    return await service.update_user_request(user_id, body.accept, body.request_id)
+    return await service.update_user_request(user_id, body.accept, body.request_id, session)

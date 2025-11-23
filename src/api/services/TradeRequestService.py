@@ -1,5 +1,4 @@
 """Module containing trade request service implementation."""
-from typing import Iterable
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,7 +11,7 @@ from src.api.services.ITradeRequestService import ITradeRequestService
 
 
 from src.api.schemas.TradeRequest import TradeRequestIn, TradeStatus
-from src.db import SessionLocal
+
 
 
 class TradeRequestService(ITradeRequestService):
@@ -27,72 +26,75 @@ class TradeRequestService(ITradeRequestService):
 
 
 
-    async def show_user_requests(self, owner_id: UUID) -> list[TradeRequestOrm]:
+    async def show_user_requests(self, owner_id: UUID, session: AsyncSession) -> list[TradeRequestOrm]:
         """The method getting trade requests assigned to particular user.
 
                    Args:
                        owner_id (int): The id of the user.
+                       session (AsyncSession): database session.
 
                    Returns:
                        list[TradeRequestOrm]: list of trade requests assigned to a particular user.
                """
-        async with SessionLocal() as session:
-            async with session.begin():
-                portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
-                requests = await self.trade_request_repo.show_user_requests(session, portfolio.id)
-
-                return requests
 
 
+        async with session.begin():
+            portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
+            requests = await self.trade_request_repo.show_user_requests(session, portfolio.id)
+
+            return requests
 
 
 
-    async def create_user_request(self, body: TradeRequestIn, owner_id: UUID) -> str:
+
+
+    async def create_user_request(self, body: TradeRequestIn, owner_id: UUID, session: AsyncSession) -> str:
         """The method creates a trade request aimed to a particular user specified in body with coin and quantity.
 
             Args:
                 owner_id (int): The id of the user.
                 body (TradeRequestIn): The body DTO of the trade request contains: (coin: str, quantity: float, receiver_id: UUID)
+                session (AsyncSession): database session.
 
             Returns:
                 str: info of transaction status.
         """
-        async with SessionLocal() as session:
-            async with session.begin():
 
-                portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
-                if portfolio is None:
-                    raise HTTPException(status_code=404, detail="Sender portfolio not found")
+        async with session.begin():
 
-                portfolio_receiver = await self.portfolio_repo.find_portfolio_by_id(session, body.receiver_id)
-                if portfolio_receiver is None:
-                    raise HTTPException(
-                        status_code=400,
-                        detail=f"Couldnt find portfolio with given id: {body.receiver_id}"
-                    )
+            portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
+            if portfolio is None:
+                raise HTTPException(status_code=404, detail="Sender portfolio not found")
 
-                coins = dict(portfolio.coins)
-
-
-                if not portfolio.coins.get(body.coin):
-                    raise HTTPException(status_code=400, detail=f"There is no coin with that name in your portfolio: {body.coin}")
-                if portfolio.coins.get(body.coin) < body.quantity:
-                    raise HTTPException(status_code=400, detail=f"There is not enough quantity: {body.quantity} of coin in your portfolio: {body.coin}")
-                if portfolio_receiver is None:
-                    raise HTTPException(status_code=400, detail=f"Couldnt find portfolio with given id: {body.receiver_id}")
-
-                await self.trade_request_repo.create_request(
-                    session,
-                    coin=body.coin,
-                    quantity=body.quantity,
-                    sender_id=portfolio.id,
-                    receiver_id=portfolio_receiver.id,
+            portfolio_receiver = await self.portfolio_repo.find_portfolio_by_id(session, body.receiver_id)
+            if portfolio_receiver is None:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Couldnt find portfolio with given id: {body.receiver_id}"
                 )
 
-                portfolio.coins[body.coin] = coins.get(body.coin) - body.quantity
+            coins = dict(portfolio.coins)
 
 
-                return f"Successfully created a trade request!"
+            if not portfolio.coins.get(body.coin):
+                raise HTTPException(status_code=400, detail=f"There is no coin with that name in your portfolio: {body.coin}")
+            if portfolio.coins.get(body.coin) < body.quantity:
+                raise HTTPException(status_code=400, detail=f"There is not enough quantity: {body.quantity} of coin in your portfolio: {body.coin}")
+            if portfolio_receiver is None:
+                raise HTTPException(status_code=400, detail=f"Couldnt find portfolio with given id: {body.receiver_id}")
+
+            await self.trade_request_repo.create_request(
+                session,
+                coin=body.coin,
+                quantity=body.quantity,
+                sender_id=portfolio.id,
+                receiver_id=portfolio_receiver.id,
+            )
+
+            portfolio.coins[body.coin] = coins.get(body.coin) - body.quantity
+
+
+            return f"Successfully created a trade request!"
 
 
 
@@ -123,39 +125,40 @@ class TradeRequestService(ITradeRequestService):
 
 
 
-    async def update_user_request(self, owner_id: UUID, accept: bool, request_id: UUID) -> str:
+    async def update_user_request(self, owner_id: UUID, accept: bool, request_id: UUID, session: AsyncSession) -> str:
         """The method conducts trade request based on accept field and request_id.
 
             Args:
                 owner_id (UUID): The id of user.
                 accept (bool): Whether to accept the trade request.
                 request_id (UUID): The id of the trade request.
+                session (AsyncSession): database session.
 
             Returns:
                 str: info of transaction status.
         """
-        async with SessionLocal() as session:
-            async with session.begin():
-                receiver_portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
 
-                request = await self.trade_request_repo.find_request(session, request_id, receiver_portfolio.id)
+        async with session.begin():
+            receiver_portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
 
-                sender_portfolio = await self.portfolio_repo.find_portfolio_by_id(session, request.sender_id)
+            request = await self.trade_request_repo.find_request(session, request_id, receiver_portfolio.id)
 
-                if accept:
-                    request.status = TradeStatus.COMPLETED
-                    await self._proceed_trade(
-                        session=session,
-                        request=request,
-                        sender_portfolio=sender_portfolio,
-                        receiver_portfolio=receiver_portfolio
-                    )
-                    return "trade accepted!"
-                elif not accept:
-                    request.status = TradeStatus.REJECTED
-                    return "trade rejected!"
+            sender_portfolio = await self.portfolio_repo.find_portfolio_by_id(session, request.sender_id)
 
-                return "error"
+            if accept:
+                request.status = TradeStatus.COMPLETED
+                await self._proceed_trade(
+                    session=session,
+                    request=request,
+                    sender_portfolio=sender_portfolio,
+                    receiver_portfolio=receiver_portfolio
+                )
+                return "trade accepted!"
+            elif not accept:
+                request.status = TradeStatus.REJECTED
+                return "trade rejected!"
+
+            return "error"
 
 
 
