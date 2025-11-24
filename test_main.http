@@ -1,6 +1,6 @@
 # Test your FastAPI endpoints
 
-POST http://127.0.0.1:8000/auth/register
+POST http://127.0.0.1:8000/users/register
 Content-Type: application/json
 
 {
@@ -16,7 +16,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4YzUwZmFhM
 
 ###
 
-POST http://127.0.0.1:8000/auth/login
+POST http://127.0.0.1:8000/users/login
 Content-Type: application/json
 
 {
@@ -34,8 +34,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkN
 
 
 
-POST http://127.0.0.1:8000/portfolios/buy?coin=ripple&quantity=20000
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjI4OTEwNTUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.vkziu724US6t2mQS_NBE0DPqVAk317lFUE2sba9TY5s
+POST http://127.0.0.1:8000/portfolios/buy?coin=ripple&quantity=200000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NTAxMDA1NS1jOTc1LTQ2NmMtOGY4Yi1lMGNlMmVjMjAxZGMiLCJleHAiOjE3NjQwMTQyMDYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.mJHlhM-8FBtvGRHaRBFb1SCNjQ9nXFAyVM5e23qR6KU
 
 
 ###
@@ -48,7 +48,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZmE0ZGZmN
 ###
 
 POST http://127.0.0.1:8000/portfolios/deposit?quantity=900000
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjI4OTEwNTUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.vkziu724US6t2mQS_NBE0DPqVAk317lFUE2sba9TY5s
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NTAxMDA1NS1jOTc1LTQ2NmMtOGY4Yi1lMGNlMmVjMjAxZGMiLCJleHAiOjE3NjQwMTQyMDYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.mJHlhM-8FBtvGRHaRBFb1SCNjQ9nXFAyVM5e23qR6KU
 
 
 ###
@@ -104,18 +104,20 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkN
 ###
 
 GET http://127.0.0.1:8000/trade_requests
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjMyMzIyOTYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.p5yJV_TVKudMZDZhZr-FMQHVZgSGGZMeHaTu72YdF2c
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjQwMTQ5ODQsInR5cGUiOiJjb25maXJtYXRpb24ifQ.rXiJJupstdaxiYLmug8VGhoDeIg8TwXQ80vW1cICj1I
 
 ###
 
 POST http://127.0.0.1:8000/trade_requests/send
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjMyMzQ2NDEsInR5cGUiOiJjb25maXJtYXRpb24ifQ.eUgJq-oiEOrzLc2ATkaXHZNxB2sUkv1V_tV-LMVOTlU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NTAxMDA1NS1jOTc1LTQ2NmMtOGY4Yi1lMGNlMmVjMjAxZGMiLCJleHAiOjE3NjQwMTQyMDYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.mJHlhM-8FBtvGRHaRBFb1SCNjQ9nXFAyVM5e23qR6KU
 Content-Type: application/json
 
 {
-  "coin": "solana",
+  "coin": "ripple",
   "quantity": 5.0,
-  "receiver_id": "ccb27056-c23b-4dcf-bd23-36c6ee600863"
+  "coin_get": "bitcoin",
+  "quantity_get": 1,
+  "receiver_id": "b6e9eebb-c5e3-4242-8e33-f54fc83e5303"
 }
 
 

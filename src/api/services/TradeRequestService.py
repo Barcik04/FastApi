@@ -53,7 +53,7 @@ class TradeRequestService(ITradeRequestService):
 
             Args:
                 owner_id (int): The id of the user.
-                body (TradeRequestIn): The body DTO of the trade request contains: (coin: str, quantity: float, receiver_id: UUID)
+                body (TradeRequestIn): The body DTO of the trade request contains: (coin: str, quantity: float, coin_get: str, quantity_get: float, receiver_id: UUID)
                 session (AsyncSession): database session.
 
             Returns:
@@ -69,30 +69,27 @@ class TradeRequestService(ITradeRequestService):
             portfolio_receiver = await self.portfolio_repo.find_portfolio_by_id(session, body.receiver_id)
             if portfolio_receiver is None:
                 raise HTTPException(
-                    status_code=400,
+                    status_code=404,
                     detail=f"Couldnt find portfolio with given id: {body.receiver_id}"
                 )
 
-            coins = dict(portfolio.coins)
-
 
             if not portfolio.coins.get(body.coin):
-                raise HTTPException(status_code=400, detail=f"There is no coin with that name in your portfolio: {body.coin}")
+                raise HTTPException(status_code=404, detail=f"There is no coin with that name in your portfolio: {body.coin}")
             if portfolio.coins.get(body.coin) < body.quantity:
                 raise HTTPException(status_code=400, detail=f"There is not enough quantity: {body.quantity} of coin in your portfolio: {body.coin}")
             if portfolio_receiver is None:
-                raise HTTPException(status_code=400, detail=f"Couldnt find portfolio with given id: {body.receiver_id}")
+                raise HTTPException(status_code=404, detail=f"Couldnt find portfolio with given id: {body.receiver_id}")
 
             await self.trade_request_repo.create_request(
                 session,
                 coin=body.coin,
                 quantity=body.quantity,
+                coin_get=body.coin_get,
+                quantity_get=body.quantity_get,
                 sender_id=portfolio.id,
                 receiver_id=portfolio_receiver.id,
             )
-
-            portfolio.coins[body.coin] = coins.get(body.coin) - body.quantity
-
 
             return f"Successfully created a trade request!"
 
@@ -100,7 +97,7 @@ class TradeRequestService(ITradeRequestService):
 
 
 
-    async def _proceed_trade(self, session: AsyncSession,  request, sender_portfolio, receiver_portfolio) -> None:
+    async def _proceed_trade(self, session: AsyncSession, request, sender_portfolio, receiver_portfolio) -> None:
         """The private method used to update both sides of trade request (method used in update_user_request method below).
 
             Args:
@@ -115,8 +112,10 @@ class TradeRequestService(ITradeRequestService):
         sender_coins = dict(sender_portfolio.coins or {})
         receiver_coins = dict(receiver_portfolio.coins or {})
 
+
         sender_coins[request.coin] = sender_coins.get(request.coin, 0.0) - request.quantity
         receiver_coins[request.coin] = receiver_coins.get(request.coin, 0.0) + request.quantity
+
 
         sender_portfolio.coins = sender_coins
         receiver_portfolio.coins = receiver_coins
@@ -139,11 +138,17 @@ class TradeRequestService(ITradeRequestService):
         """
 
         async with session.begin():
+
             receiver_portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
 
-            request = await self.trade_request_repo.find_request(session, request_id, receiver_portfolio.id)
+            request = await self.trade_request_repo.find_request(session, request_id, None, None)
 
             sender_portfolio = await self.portfolio_repo.find_portfolio_by_id(session, request.sender_id)
+
+
+            if request.status == TradeStatus.REJECTED:
+                raise HTTPException(status_code=404, detail="This trade has already been rejected")
+
 
             if accept:
                 request.status = TradeStatus.COMPLETED

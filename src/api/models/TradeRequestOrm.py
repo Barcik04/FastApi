@@ -33,6 +33,10 @@ class TradeRequestOrm(Base):
 
     quantity: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
 
+    coin_get: Mapped[str] = mapped_column(String(120), nullable=False)
+
+    quantity_get: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+
     status: Mapped[TradeStatus] = mapped_column(
         SqlEnum(TradeStatus, name="trade_status"),
         nullable=False,

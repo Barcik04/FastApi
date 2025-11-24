@@ -40,7 +40,7 @@ async def list_for_user(
 
 
 
-@router.get("/val", response_model=None)
+@router.get("/val")
 @inject
 async def graph_portfolio_val(
     days: int,
@@ -62,7 +62,7 @@ async def graph_portfolio_val(
     return await service.graph_portfolio_val(user_id, days, session)
 
 
-@router.get("/sep-coins", response_model=None)
+@router.get("/sep-coins")
 @inject
 async def graph_multiple_coins(
     days: int,

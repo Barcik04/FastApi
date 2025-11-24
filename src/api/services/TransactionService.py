@@ -47,7 +47,7 @@ class TransactionService(ITransactionService):
 
 
 
-    async def graph_portfolio_val(self, owner_id: UUID, days: int, session: AsyncSession) -> None:
+    async def graph_portfolio_val(self, owner_id: UUID, days: int, session: AsyncSession):
         """The method for generating a graph showing the portfolio value up to a year backwards.
 
             Args:
@@ -151,48 +151,38 @@ class TransactionService(ITransactionService):
                 timestamps = timestamps[:len(total_portfolio_val)]
 
 
-            filter_ts = []
-            filtered_vals = []
-
-
-            for i in range(len(total_portfolio_val) - 1):
-                if timestamps[i] > sorted_transactions[0].date:
-                    filter_ts.append(timestamps[i])
-                    filtered_vals.append(total_portfolio_val[i])
-
-
             legend = {k: round(v, 3) for k, v in portfolio.coins.items() if k.lower() != "tether"}
 
+            label_text = ", ".join([f"{k}: {v}" for k, v in legend.items()])
+
+            fig, ax = plt.subplots()
+            ax.plot(timestamps, total_portfolio_val, label=label_text)
+            ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+            fig.autofmt_xdate()
+            ax.set_xlabel("Date")
+            ax.set_ylabel("Amount")
 
             if days <= 2:
-                label_text = ", ".join([f"{k}: {v}" for k, v in legend.items()])
-                plt.plot(filter_ts, filtered_vals, label=label_text)
-                plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-                plt.gcf().autofmt_xdate()
-                plt.xlabel("Date")
-                plt.ylabel("Amount")
-                plt.title("Portfolio in the last 24h")
-                plt.tight_layout()
-                plt.legend(loc="lower right")
-                plt.show()
+                ax.set_title("Portfolio in the last 24h")
             else:
-                label_text = ", ".join([f"{k}: {v}" for k, v in legend.items()])
-                plt.plot(filter_ts, filtered_vals, label=label_text)
-                plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-                plt.gcf().autofmt_xdate()
-                plt.xlabel("Date")
-                plt.ylabel("Amount")
-                plt.title("Portfolio")
-                plt.tight_layout()
-                plt.legend(loc="lower right")
-                plt.show()
+                ax.set_title("Portfolio")
+
+            ax.legend(loc="lower right")
+            fig.tight_layout()
+
+            buf = io.BytesIO()
+            fig.savefig(buf, format="png")
+            buf.seek(0)
+            plt.close(fig)
+
+            return StreamingResponse(buf, media_type="image/png")
 
 
 
 
 
 
-    async def graph_multiple_coins(self, owner_id: UUID, days: int, session: AsyncSession) -> None:
+    async def graph_multiple_coins(self, owner_id: UUID, days: int, session: AsyncSession):
         """The method for generating a graph showing the portfolio value up to a year backwards seperated by each coin in portfolio.
 
             Args:
@@ -299,17 +289,25 @@ class TransactionService(ITransactionService):
 
             legend = {k: round(v, 2) for k, v in portfolio.coins.items() if k.lower() != "tether"}
 
-            for i, (coin_name, _) in enumerate(legend.items()):
-                plt.plot(timestamps, total_portfolio_val[i], label=coin_name)
+            fig, ax = plt.subplots()
 
-            plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-            plt.gcf().autofmt_xdate()
-            plt.xlabel("Date")
-            plt.ylabel("Value (USD)")
-            plt.title("Portfolio coins over time")
-            plt.tight_layout()
-            plt.legend(loc="lower right")
-            plt.show()
+            for i, (coin_name, _) in enumerate(legend.items()):
+                ax.plot(timestamps, total_portfolio_val[i], label=coin_name)
+
+            ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+            fig.autofmt_xdate()
+            ax.set_xlabel("Date")
+            ax.set_ylabel("Value (USD)")
+            ax.set_title("Portfolio coins over time")
+            ax.legend(loc="lower right")
+            fig.tight_layout()
+
+            buf = io.BytesIO()
+            fig.savefig(buf, format="png")
+            buf.seek(0)
+            plt.close(fig)
+
+            return StreamingResponse(buf, media_type="image/png")
 
 
 
@@ -336,10 +334,11 @@ class TransactionService(ITransactionService):
 
             oldest_transaction = sorted_transactions[0]
             delta = now - oldest_transaction.date
-            days_back = max(1.0, delta.total_seconds() / 86400.0)
+            days_back = max(1, int(delta.total_seconds() // 86400))
+
 
             url = f"https://api.coingecko.com/api/v3/coins/{sorted_transactions[0].coin}/market_chart"
-            params = {"vs_currency": "usd", "days": f"{days_back}"}
+            params = {"vs_currency": "usd", "days": str(days_back)}
 
             async with httpx.AsyncClient() as client:
                 response = await client.get(url, params=params)
@@ -369,42 +368,61 @@ class TransactionService(ITransactionService):
                     timestamps.append(time)
                     p_n_ls.append(price / coin.bought_price -  1)
 
+
                 if not timestamps_oldest:
                     timestamps_oldest = timestamps.copy()
+
 
                 for i in range(len(p_n_ls)):
                     if coin.date > timestamps_oldest[i]:
                         p_n_ls_whole[p_n_ls_whole_pos][i] = 0.0
                     else:
                         p_n_ls_whole[p_n_ls_whole_pos][i] = p_n_ls[i]
-                p_n_ls_whole[p_n_ls_whole_pos] = p_n_ls_whole[p_n_ls_whole_pos][:len(timestamps)]
+
+
+                if len(timestamps_oldest) <= len(p_n_ls_whole[p_n_ls_whole_pos]):
+                    p_n_ls_whole[p_n_ls_whole_pos] = p_n_ls_whole[p_n_ls_whole_pos][:len(timestamps_oldest)]
+
+                if len(timestamps_oldest) > len(p_n_ls_whole[p_n_ls_whole_pos]):
+                    timestamps_oldest = timestamps_oldest[:len(p_n_ls_whole[p_n_ls_whole_pos])]
+
+
+                p_n_ls_whole[p_n_ls_whole_pos] = p_n_ls_whole[p_n_ls_whole_pos][:len(timestamps_oldest)]
                 p_n_ls_whole_pos += 1
 
 
 
 
-
-            plt.figure(figsize=(12, 6))
-
+            fig, ax = plt.subplots(figsize=(12, 6))
 
             for idx, coin in enumerate(sorted_transactions):
                 values = np.array(p_n_ls_whole[idx], dtype=float)
                 values[values == 0.0] = np.nan
 
                 if len(values) > len(timestamps_oldest):
-                    values[idx] = values[idx][:len(timestamps_oldest)]
-                if len(values) < len(timestamps_oldest):
-                    timestamps_oldest = timestamps_oldest[:len(values[idx])]
-                plt.plot(timestamps_oldest, values, label=coin.coin)
+                    values = values[:len(timestamps_oldest)]
+                    ts_local = timestamps_oldest
+                elif len(values) < len(timestamps_oldest):
+                    ts_local = timestamps_oldest[:len(values)]
+                else:
+                    ts_local = timestamps_oldest
 
-            plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-            plt.gcf().autofmt_xdate()
-            plt.xlabel("Date")
-            plt.ylabel("PnL (%)")
-            plt.title("PnL Over Time by Coin")
-            plt.legend(loc="lower right")
-            plt.tight_layout()
-            plt.show()
+                ax.plot(ts_local, values, label=coin.coin)
+
+            ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+            fig.autofmt_xdate()
+            ax.set_xlabel("Date")
+            ax.set_ylabel("PnL (%)")
+            ax.set_title("PnL Over Time by Coin")
+            ax.legend(loc="lower right")
+            fig.tight_layout()
+
+            buf = io.BytesIO()
+            fig.savefig(buf, format="png")
+            buf.seek(0)
+            plt.close(fig)
+
+            return StreamingResponse(buf, media_type="image/png")
 
 
 

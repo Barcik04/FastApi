@@ -16,6 +16,8 @@ class TradeRequestIn(BaseModel):
     """Model representing trade request DTO attributes."""
     coin: str
     quantity: float
+    coin_get: str
+    quantity_get: float
     receiver_id: UUID
 
 class TradeRequest(TradeRequestIn):
