@@ -104,7 +104,7 @@ async def graph_p_n_l_percent(
     return await service.graph_p_n_l_percent(user_id, session)
 
 
-@router.get("/p_n_l", response_model=None)
+@router.get("/p_n_l")
 @inject
 async def graph_p_n_l(
     user_id: UUID = Depends(get_current_user_id),

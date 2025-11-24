@@ -12,7 +12,6 @@ from src.api.services.IPortfolioService import IPortfolioService
 from src.db import get_session
 
 from src.api.schemas.Portfolio import Portfolio
-from src.api.services.PortfolioService import PortfolioService
 from src.auth.utils.deps import get_current_user_id
 from src.container import Container
 

@@ -8,6 +8,8 @@ import matplotlib.dates as mdates
 from uuid import UUID
 import numpy as np
 from fastapi import HTTPException
+import io
+from fastapi.responses import StreamingResponse
 
 from src.api.models.TransactionOrm import TransactionOrm
 from src.api.repositories.PortfolioRepository import PortfolioRepository
@@ -409,7 +411,7 @@ class TransactionService(ITransactionService):
 
 
 
-    async def graph_p_n_l(self, owner_id: UUID, session: AsyncSession) -> None:
+    async def graph_p_n_l(self, owner_id: UUID, session: AsyncSession):
         """The method for generating a graph showing the portfolio value up to a year backwards.
 
             Args:
@@ -488,15 +490,22 @@ class TransactionService(ITransactionService):
                     filtered_ts.append(timestamps_oldest[i])
 
 
+            fig, ax = plt.subplots()
+            ax.plot(filtered_ts, filtered_prices)
+            ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+            fig.autofmt_xdate()
+            ax.set_xlabel("Date")
+            ax.set_ylabel("Amount")
+            ax.set_title("Profit & Loss Over Time")
+            fig.tight_layout()
 
-            plt.plot(filtered_ts, filtered_prices)
-            plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-            plt.gcf().autofmt_xdate()
-            plt.xlabel("Date")
-            plt.ylabel("Amount")
-            plt.title("Profit & Loss Over Time")
-            plt.tight_layout()
-            plt.show()
+
+            buf = io.BytesIO()
+            fig.savefig(buf, format="png")
+            buf.seek(0)
+            plt.close(fig)
+
+            return StreamingResponse(buf, media_type="image/png")
 
 
 
