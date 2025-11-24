@@ -1,10 +1,12 @@
 axios.defaults.baseURL = 'http://127.0.0.1:8000';
 axios.defaults.withCredentials = false;
 
-const showPnlBtn = document.getElementById('showPnlBtn');
 const resultDiv = document.getElementById('portfolioResult');
 
-showPnlBtn.addEventListener('click', async() => {
+
+
+
+async function loadPortfolio() {
     const jwt = localStorage.getItem('jwt');
 
     try {
@@ -26,25 +28,42 @@ showPnlBtn.addEventListener('click', async() => {
         resultDiv.textContent = "Error loading portfolio.";
         console.log(error);
     }
+}
 
-    try {
-        const graphResponse = await axios.get('/transactions/p_n_l', {
-            headers: {
-                Authorization: `Bearer ${jwt}`
-            },
-            responseType: 'arraybuffer'
-        });
+window.addEventListener('DOMContentLoaded', loadPortfolio);
 
-        if (graphResponse.status === 200) {
-            const blob = new Blob([graphResponse.data], { type: 'image/png' });
-            const url = URL.createObjectURL(blob);
 
-            const img = document.getElementById('p_n_l_graph');
-            img.src = url;
-        }
-    } catch (error) {
-        resultDiv.textContent = "Error loading p_n_l_graph.";
-        console.log(error);
+
+
+try {
+    const graphResponse = await axios.get('/transactions/p_n_l', {
+        headers: {
+            Authorization: `Bearer ${jwt}`
+        },
+        responseType: 'arraybuffer'
+    });
+
+    if (graphResponse.status === 200) {
+        const arrayBufferToBase64 = (buffer) => {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            bytes.forEach((b) => {
+                binary += String.fromCharCode(b);
+            });
+            return window.btoa(binary);
+        };
+
+        const img = document.getElementById('p_n_l_graph');
+        const base64Image = arrayBufferToBase64(graphResponse.data);
+
+        img.src = `data:image/png;base64,${base64Image}`;
+        img.alt = 'Profit and loss graph';
+        img.style.display = 'block';
     }
+} catch (error) {
+    resultDiv.textContent = "Error loading p_n_l_graph.";
+    console.log(error);
+}
 
-})
+
+

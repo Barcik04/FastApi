@@ -32,7 +32,7 @@ nav ul {
     transform: translate(-50%, -50%);
 
     display: flex;
-    flex-direction: column;  /* column layout */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
@@ -41,11 +41,23 @@ nav ul {
 .portfolioId {
     color: white;
 }
+
+
 .portfolioDetails {
     display: flex;
     color: white;
     flex-direction: column;
     list-style: none;
 
+}
+
+
+.p_n_l_graph img {
+    max-width: 480px;
+    width: 100%;
+    margin-top: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    display: none;
 }
 
