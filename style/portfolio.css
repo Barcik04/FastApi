@@ -51,9 +51,12 @@ nav ul {
 
 }
 
+.p_n_l_graph {
+    color: white;
+}
 
 .p_n_l_graph img {
-    max-width: 480px;
+    max-width: 680px;
     width: 100%;
     margin-top: 16px;
     border: 1px solid rgba(255, 255, 255, 0.2);
