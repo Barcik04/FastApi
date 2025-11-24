@@ -25,7 +25,27 @@ nav ul {
     transition: transform .2s;
 }
 
-.portfolioResult {
+.pnlBtn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-direction: column;  /* column layout */
+    align-items: center;
+    justify-content: center;
+}
+
+
+.portfolioId {
     color: white;
+}
+.portfolioDetails {
+    display: flex;
+    color: white;
+    flex-direction: column;
+    list-style: none;
+
 }
 
