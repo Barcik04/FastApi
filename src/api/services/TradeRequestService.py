@@ -114,7 +114,11 @@ class TradeRequestService(ITradeRequestService):
 
 
         sender_coins[request.coin] = sender_coins.get(request.coin, 0.0) - request.quantity
+        sender_coins[request.coin_get] = sender_coins.get(request.coin_get, 0.0) + request.quantity_get
+
         receiver_coins[request.coin] = receiver_coins.get(request.coin, 0.0) + request.quantity
+        receiver_coins[request.coin_get] = receiver_coins.get(request.coin_get, 0.0) - request.quantity_get
+
 
 
         sender_portfolio.coins = sender_coins
@@ -146,7 +150,7 @@ class TradeRequestService(ITradeRequestService):
             sender_portfolio = await self.portfolio_repo.find_portfolio_by_id(session, request.sender_id)
 
 
-            if request.status == TradeStatus.REJECTED:
+            if request.status is (TradeStatus.REJECTED or TradeStatus.COMPLETED):
                 raise HTTPException(status_code=404, detail="This trade has already been rejected")
 
 
