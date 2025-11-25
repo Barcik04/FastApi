@@ -64,3 +64,35 @@ nav ul {
     display: none;
 }
 
+.tradeCenter {
+    color: white;
+    display: flex;
+    position: fixed;
+    top: 100px;
+    left: 100px;
+    flex-direction: column;
+}
+
+.tradeCenter div {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    margin: 16px 0 16px 0;
+    padding: 16px;
+}
+
+
+
+.tradeItem {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 39px 28px 0 20px;
+    list-style: none;
+}
+
+.tradeListUl {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+}

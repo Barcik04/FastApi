@@ -8,6 +8,7 @@ const showValGraphBtn = document.getElementById('showValGraphBtn');
 const showValGraphMultiCoinBtn = document.getElementById('showValGraphMultiCoinBtn');
 const showPnlGraphPercentageBtn = document.getElementById('showPnlGraphPercentageBtn');
 
+
 showPnlBtn.addEventListener('click', async() => {
     const jwt = localStorage.getItem('jwt');
 
@@ -186,4 +187,62 @@ showPnlGraphPercentageBtn.addEventListener('click', async() => {
         console.log(error);
     }
 })
+
+
+
+
+// YOUR TRADES
+const showTradesBtn = document.getElementById('showTrades');
+const tradeResults = document.getElementById('tradeList');
+
+showTradesBtn.addEventListener('click', async () => {
+    const jwt = localStorage.getItem('jwt');
+
+    try {
+        const response = await axios.get('/trade_requests', {
+            headers: {
+                Authorization: `Bearer ${jwt}`
+            }
+        });
+
+        if (response.status === 200) {
+            const trades = response.data;
+
+            tradeResults.innerHTML = "";
+
+            if (trades.length === 0) {
+                tradeResults.innerHTML = "<p>No trades found.</p>";
+                return;
+            }
+
+            const header = document.createElement('header');
+            header.className = "tradeListHeader";
+            header.textContent = "TRADES LIST";
+            tradeResults.appendChild(header);
+
+
+            const list = document.createElement('ul');
+            list.className = "tradeListUl";
+
+            trades.forEach(t => {
+                const item = document.createElement('li');
+                item.className = "tradeItem";
+                item.innerHTML = `
+                    <b style="display: block;">${t.coin} → ${t.coin_get}</b><br>
+                    Qty: ${t.quantity} &nbsp; | &nbsp; Qty: ${t.quantity_get}<br>
+                    Status: ${t.status}<br>
+                    <small>${t.created_at}</small>
+                `;
+
+                list.appendChild(item);
+            });
+
+            tradeResults.appendChild(list);
+        }
+    } catch (error) {
+        tradeResults.textContent = "Error loading trades.";
+        console.log(error);
+    }
+});
+
 
