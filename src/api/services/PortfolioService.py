@@ -321,6 +321,7 @@ class PortfolioService(IPortfolioService):
 
             if coins.get("tether") == 0:
                 bought_price.pop("tether")
+                coins.pop("tether")
 
             portfolio.coins = coins
             portfolio.bought_price = bought_price
