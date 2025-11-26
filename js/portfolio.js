@@ -191,9 +191,38 @@ showPnlGraphPercentageBtn.addEventListener('click', async() => {
 
 
 
-// YOUR TRADES
 const showTradesBtn = document.getElementById('showTrades');
 const tradeResults = document.getElementById('tradeList');
+
+// YOUR TRADES
+async function handleTradeAction(requestId, accept) {
+    const jwt = localStorage.getItem('jwt');
+
+    try {
+        const response = await axios.put(
+            '/trade_requests/update',
+            {
+                accept: accept,
+                request_id: requestId
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
+            }
+        );
+
+        if (response.status === 200) {
+            await showTrades.click;
+        }
+    } catch (error) {
+        console.error("Error updating trade:", error);
+        alert("Error updating trade: " + (error.response?.data?.detail || "Unknown error"));
+    }
+}
+
+
+
 
 showTradesBtn.addEventListener('click', async () => {
     const jwt = localStorage.getItem('jwt');
@@ -220,19 +249,51 @@ showTradesBtn.addEventListener('click', async () => {
             header.textContent = "TRADES LIST";
             tradeResults.appendChild(header);
 
-
             const list = document.createElement('ul');
             list.className = "tradeListUl";
 
             trades.forEach(t => {
                 const item = document.createElement('li');
                 item.className = "tradeItem";
-                item.innerHTML = `
-                    <b style="display: block;">${t.coin} → ${t.coin_get}</b><br>
+
+
+                const infoDiv = document.createElement('div');
+                infoDiv.innerHTML = `
+                    <b style="display: block;">${t.coin} → ${t.coin_get}</b>
                     Qty: ${t.quantity} &nbsp; | &nbsp; Qty: ${t.quantity_get}<br>
                     Status: ${t.status}<br>
                     <small>${t.created_at}</small>
                 `;
+
+                item.appendChild(infoDiv);
+
+
+                if (t.status === "PENDING") {
+                    const btnContainer = document.createElement('div');
+                    btnContainer.style.marginTop = "8px";
+                    btnContainer.style.display = "flex";
+                    btnContainer.style.gap = "8px";
+
+                    const acceptBtn = document.createElement('button');
+                    acceptBtn.textContent = "ACCEPT";
+                    acceptBtn.className = "tradeAcceptBtn";
+
+                    const declineBtn = document.createElement('button');
+                    declineBtn.textContent = "DECLINE";
+                    declineBtn.className = "tradeDeclineBtn";
+
+                    acceptBtn.addEventListener('click', async () => {
+                        await handleTradeAction(t.id, true);
+                    });
+
+                    declineBtn.addEventListener('click', async () => {
+                        await handleTradeAction(t.id, false);
+                    });
+
+                    btnContainer.appendChild(acceptBtn);
+                    btnContainer.appendChild(declineBtn);
+                    item.appendChild(btnContainer);
+                }
 
                 list.appendChild(item);
             });
@@ -244,5 +305,44 @@ showTradesBtn.addEventListener('click', async () => {
         console.log(error);
     }
 });
+
+
+
+
+const createTradeBtn = document.getElementById('createTradeBtn');
+
+createTradeBtn.addEventListener('click', async() => {
+    const jwt = localStorage.getItem('jwt');
+
+    const coin = document.getElementById('coinTrade').value;
+    const quantity = document.getElementById('quantityTrade').value;
+    const coinGet = document.getElementById('coinGetTrade').value;
+    const quantityGet = document.getElementById('quantityGetTrade').value;
+    const receiverId = document.getElementById('receiverPortfolioId').value;
+
+    try {
+        const response = axios.post('/trade_requests/send',
+            {
+                coin: coin,
+                quantity: parseFloat(quantity),
+                coin_get: coinGet,
+                quantity_get: parseFloat(quantityGet),
+                receiver_id: receiverId,
+            },
+            {
+            headers: {
+                Authorization: `Bearer ${jwt}`
+            },
+        })
+
+        if (response.status === 200) {
+            console.log('Trade Created Successfully.');
+        }
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+
 
 
