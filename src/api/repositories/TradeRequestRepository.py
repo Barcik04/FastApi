@@ -100,34 +100,19 @@ class TradeRequestRepository:
 
 
 
-    async def find_request(self, session: AsyncSession, request_id: UUID | None, receiver_id: UUID | None, sender_id: UUID | None) -> TradeRequestOrm | None:
+    async def find_request(self, session: AsyncSession, request_id: UUID) -> TradeRequestOrm | None:
         """The method getting the request of given request_id if it also contains receiver_id.
 
             Args:
                 request_id (UUID): The id of trade request.
                 session (AsyncSession): The database session.
-                receiver_id (UUID): The id of the portfolio from where the coins are received.
-                sender_id (UUID): The id of the portfolio from where the coins are sent.
 
             Returns:
                 TradeRequestOrm: Trade request found.
         """
 
-        conditions = []
-
-        if request_id is not None:
-            conditions.append(TradeRequestOrm.id == request_id)
-
-        if receiver_id is not None:
-            conditions.append(TradeRequestOrm.receiver_id == receiver_id)
-
-        if sender_id is not None:
-            conditions.append(TradeRequestOrm.sender_id == sender_id)
-
-        if not conditions:
-            return None
-
-        query = select(TradeRequestOrm).where(or_(*conditions))
-        res = await session.execute(query)
+        res = await session.execute(
+            select(TradeRequestOrm).where(TradeRequestOrm.id == request_id)
+        )
 
         return res.scalar()

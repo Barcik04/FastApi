@@ -26,21 +26,21 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Y
 
 
 
-POST http://127.0.0.1:8000/portfolios/buy?coin=solana&quantity=1000
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjM5MjQwMTcsInR5cGUiOiJjb25maXJtYXRpb24ifQ.mbaqUnLKlIwp9o6kDYokpiyNmDVEi4EQrjxblUFusZs
+POST http://127.0.0.1:8000/portfolios/buy?coin=solana&quantity=5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxY2QxNTA1ZC04NTlmLTQxOWQtOGE3MC03NWI3MGE1Y2FiN2IiLCJleHAiOjE3NjQxNjY2OTYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.SACjXa--Fdc4NB9AnAA1uNoOhPXphB_9xJYnL-uex3A
 
 
 ###
 
 
-POST http://127.0.0.1:8000/portfolios/sell?coin=solana&quantity=140
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYmRkNmZmZi01OWJjLTRkMjEtYWRkNS1jOWU3NGQ0ZTU0OWEiLCJleHAiOjE3NjI4OTQzNzYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.nDifuB9H6gQMV14S5UpIWQtmhuMQ4ekRTPdbCNNj6b4
+POST http://127.0.0.1:8000/portfolios/sell?coin=ripple&quantity=all
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxY2QxNTA1ZC04NTlmLTQxOWQtOGE3MC03NWI3MGE1Y2FiN2IiLCJleHAiOjE3NjQxNjc1NjYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.t0V8Kb765R9cbdFJR9RD-Gku60Sl1oEdy4RzYPyNuNc
 
 
 ###
 
 POST http://127.0.0.1:8000/portfolios/deposit?quantity=9000000
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjM5MTc3MTksInR5cGUiOiJjb25maXJtYXRpb24ifQ.LjKW4B72GYyRi5qxl2lRk36MWwNpLxbcqbL_Ay_U_lI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxY2QxNTA1ZC04NTlmLTQxOWQtOGE3MC03NWI3MGE1Y2FiN2IiLCJleHAiOjE3NjQxNjY2MzksInR5cGUiOiJjb25maXJtYXRpb24ifQ.LWGSyU7KGixvssJYwptxHFEKXslGX0uPATNUKkWCD_4
 
 
 ###
@@ -81,12 +81,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Y
 
 
 PUT http://127.0.0.1:8000/trade_requests/update
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjQxNjI2ODMsInR5cGUiOiJjb25maXJtYXRpb24ifQ.qG4-ovKPcB-5M37bj4qGXnq7PKRIb1sTy0hoQBAptF8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxY2QxNTA1ZC04NTlmLTQxOWQtOGE3MC03NWI3MGE1Y2FiN2IiLCJleHAiOjE3NjQxNjY3ODgsInR5cGUiOiJjb25maXJtYXRpb24ifQ.49XyGpOR9fw6o8aqLHZnhd3P0LTF9hksMcYZbRdrQMM
 Content-Type: application/json
 
 {
   "accept": true,
-  "request_id": "14dc943c-75c4-4796-9764-d453fc858f0d"
+  "request_id": "98862e75-50e0-4692-bb42-fa119b81591b"
 }
 
 
