@@ -112,10 +112,20 @@ nav ul {
     border: 1px solid rgba(255, 255, 255, 0.35);
     color: white;
     padding: 10px;
+    flex-direction: column;
+
 }
 
 .tetherTrans {
     display: flex;
     flex-direction: column;
+    margin-bottom: 120px;
 }
+
+.cryptoTrans {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 120px;
+}
+
 

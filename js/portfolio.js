@@ -347,7 +347,7 @@ createTradeBtn.addEventListener('click', async() => {
 const buyTetherBtn = document.getElementById('buyTether');
 const sellTetherBtn = document.getElementById('sellTether');
 
-async function buyOrSell(isBuy) {
+async function depositOrWithdraw(isBuy) {
     const jwt = localStorage.getItem('jwt');
 
     const quant = document.getElementById('tetherQuantity').value;
@@ -390,7 +390,80 @@ async function buyOrSell(isBuy) {
 }
 
 
-buyTetherBtn.addEventListener('click', () => buyOrSell(true));
-sellTetherBtn.addEventListener('click', () => buyOrSell(false));
+buyTetherBtn.addEventListener('click', () => depositOrWithdraw(true));
+sellTetherBtn.addEventListener('click', () => depositOrWithdraw(false));
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// BUY SELL CRYPTO
+
+const buyCryptoBtn = document.getElementById('buyCrypto');
+const sellCryptoBtn = document.getElementById('sellCrypto');
+
+
+async function buyOrSell(isBuy) {
+    const jwt = localStorage.getItem('jwt');
+
+    const name = document.getElementById('cryptoName').value;
+    const quant = document.getElementById('cryptoQuantity').value;
+
+
+    if (isBuy) {
+        try {
+            const response = await axios.post(`/portfolios/buy?coin=${encodeURIComponent(name)}&quantity=${encodeURIComponent(quant)}`,
+                null,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`
+                    }
+                })
+
+            if (response.status === 200) {
+                console.log('crypto bought correctly')
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    if (!isBuy) {
+        try {
+            const response = await axios.post(`/portfolios/sell?coin=${encodeURIComponent(name)}&quantity=${encodeURIComponent(quant)}`,
+                null,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`
+                    }
+                })
+
+            if (response.status === 200) {
+                console.log('crypto sold correctly')
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+}
+
+
+buyCryptoBtn.addEventListener('click', () => buyOrSell(true));
+sellCryptoBtn.addEventListener('click', () => buyOrSell(false));
