@@ -1,5 +1,5 @@
 """Module containing trade request service implementation."""
-
+import httpx
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -111,6 +111,15 @@ class TradeRequestService(ITradeRequestService):
         """
         sender_coins = dict(sender_portfolio.coins or {})
         receiver_coins = dict(receiver_portfolio.coins or {})
+        receiver_bought = dict(receiver_portfolio.bought_price or {})
+
+        url = "https://api.coingecko.com/api/v3/simple/price"
+        params = {"ids": request.coin, "vs_currencies": "usd"}
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            price_usd = response.json()[request.coin]["usd"]
 
 
         sender_coins[request.coin] = sender_coins.get(request.coin, 0.0) - request.quantity
@@ -118,6 +127,8 @@ class TradeRequestService(ITradeRequestService):
 
         receiver_coins[request.coin] = receiver_coins.get(request.coin, 0.0) + request.quantity
         receiver_coins[request.coin_get] = receiver_coins.get(request.coin_get, 0.0) - request.quantity_get
+        receiver_bought[request.coin] = receiver_bought.get(request.coin, price_usd)
+
 
 
 
@@ -143,11 +154,11 @@ class TradeRequestService(ITradeRequestService):
 
         async with session.begin():
 
-            receiver_portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
-
             request = await self.trade_request_repo.find_request(session, request_id, None, None)
 
-            sender_portfolio = await self.portfolio_repo.find_portfolio_by_id(session, request.sender_id)
+            receiver_portfolio = await self.portfolio_repo.find_portfolio_by_id(session, request.receiver_id)
+
+            sender_portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
 
 
             if request.status is (TradeStatus.REJECTED or TradeStatus.COMPLETED):
@@ -162,10 +173,12 @@ class TradeRequestService(ITradeRequestService):
                     sender_portfolio=sender_portfolio,
                     receiver_portfolio=receiver_portfolio
                 )
+
                 return "trade accepted!"
             elif not accept:
                 request.status = TradeStatus.REJECTED
                 return "trade rejected!"
+
 
             return "error"
 

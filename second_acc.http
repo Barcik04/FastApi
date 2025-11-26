@@ -81,12 +81,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Y
 
 
 PUT http://127.0.0.1:8000/trade_requests/update
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjQwNzk5NDAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.-xcEhuz7UVcDzihnwEHxf8-Y8_846CqcSMu25VPcf4Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjQxNjI2ODMsInR5cGUiOiJjb25maXJtYXRpb24ifQ.qG4-ovKPcB-5M37bj4qGXnq7PKRIb1sTy0hoQBAptF8
 Content-Type: application/json
 
 {
   "accept": true,
-  "request_id": "b423942f-31ce-4f26-8e49-9657c79809a3"
+  "request_id": "14dc943c-75c4-4796-9764-d453fc858f0d"
 }
 
 

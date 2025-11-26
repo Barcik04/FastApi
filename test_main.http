@@ -28,7 +28,7 @@ Content-Type: application/json
 ###
 
 GET http://127.0.0.1:8000/portfolios
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjMyOTE1NDIsInR5cGUiOiJjb25maXJtYXRpb24ifQ.AndslgzhYI16z3Mnv_LVjd1L9MJgLviFQ5N84Z9sxDc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NTAxMDA1NS1jOTc1LTQ2NmMtOGY4Yi1lMGNlMmVjMjAxZGMiLCJleHAiOjE3NjQxNjE5NDIsInR5cGUiOiJjb25maXJtYXRpb24ifQ.G2olbUqEo5XrgmNrGM-CY6y6iMV2A_s-AbB7DJjBt_8
 
 ###
 
@@ -109,14 +109,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Y
 ###
 
 POST http://127.0.0.1:8000/trade_requests/send
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NTAxMDA1NS1jOTc1LTQ2NmMtOGY4Yi1lMGNlMmVjMjAxZGMiLCJleHAiOjE3NjQwMTQyMDYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.mJHlhM-8FBtvGRHaRBFb1SCNjQ9nXFAyVM5e23qR6KU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NTAxMDA1NS1jOTc1LTQ2NmMtOGY4Yi1lMGNlMmVjMjAxZGMiLCJleHAiOjE3NjQxNjI2MzUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.gjBJ9lVVA9ejW3rE2FAVv4wyC7tH6DH1_fbMdzIN-1I
 Content-Type: application/json
 
 {
   "coin": "ripple",
   "quantity": 5.0,
   "coin_get": "bitcoin",
-  "quantity_get": 1,
+  "quantity_get": 0.1,
   "receiver_id": "b6e9eebb-c5e3-4242-8e33-f54fc83e5303"
 }
 
