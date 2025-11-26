@@ -103,3 +103,19 @@ nav ul {
     overflow-x: hidden;
     padding-right: 10px;
 }
+
+.tether {
+    display: flex;
+    position: absolute;
+    top: 100px;
+    right: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: white;
+    padding: 10px;
+}
+
+.tetherTrans {
+    display: flex;
+    flex-direction: column;
+}
+

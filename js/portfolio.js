@@ -344,5 +344,53 @@ createTradeBtn.addEventListener('click', async() => {
 })
 
 
+const buyTetherBtn = document.getElementById('buyTether');
+const sellTetherBtn = document.getElementById('sellTether');
+
+async function buyOrSell(isBuy) {
+    const jwt = localStorage.getItem('jwt');
+
+    const quant = document.getElementById('tetherQuantity').value;
+
+    if (isBuy) {
+        try {
+            const response = await axios.post(`/portfolios/deposit?quantity=${encodeURIComponent(quant)}`,
+                null,
+                {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
+            })
+
+            if (response.status === 200) {
+                console.log('Tether bought correctly')
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    if (!isBuy) {
+        try {
+            const response = await axios.post(`/portfolios/withdraw?quantity=${encodeURIComponent(quant)}`,
+                null,
+                {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
+            })
+
+            if (response.status === 200) {
+                console.log('Tether bought correctly')
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+}
+
+
+buyTetherBtn.addEventListener('click', () => buyOrSell(true));
+sellTetherBtn.addEventListener('click', () => buyOrSell(false));
 
 
