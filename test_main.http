@@ -20,8 +20,8 @@ POST http://127.0.0.1:8000/users/login
 Content-Type: application/json
 
 {
-  "email": "igora11111@gmail.com",
-  "password": "lkalala"
+  "email": "igor.bb00@gmail.com",
+  "password": "12345"
 }
 
 
@@ -64,8 +64,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhM
 
 ###
 
-POST http://127.0.0.1:8000/portfolios/transfer?coin=tether&quantity=1000&transfer_id=411038cb-cfa6-49a6-ac9c-e1a51ec0e8ae
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhMC04YjU3LTRkM2UtYmYyOS03YTA4YjA1OWUzNWYiLCJleHAiOjE3NjI2MTUwMjQsInR5cGUiOiJjb25maXJtYXRpb24ifQ._PWZMzIER3qohDCgzJo6vW_uWZ2x3aFTGXynnmEs7bI
+POST http://127.0.0.1:8000/portfolios/transfer?coin=solana&quantity=1&transfer_id=ddc6853a-9b1a-499f-9617-b755ce0d5cfc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODEwMmUxNS00YmI3LTRjYjMtOWQ0ZC1lNjc5NDNlZGEzNTAiLCJleHAiOjE3NjQyNTMxOTEsInR5cGUiOiJjb25maXJtYXRpb24ifQ.jBPulqP3AEdpr--n2-NPl32i2RYWhhrcA8ripLC9pQY
 
 ###
 

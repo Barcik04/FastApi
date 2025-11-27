@@ -18,3 +18,4 @@ class Portfolio(PortfolioIn):
     bought_price: dict[str, float]
     p_and_l: float
     model_config = ConfigDict(from_attributes=True, extra="ignore")
+

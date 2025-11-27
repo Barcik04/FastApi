@@ -393,8 +393,7 @@ class PortfolioService(IPortfolioService):
 
         async with session.begin():
             my_portfolio = await self.repo.show_user_portfolio(session, owner_id)
-            target_portfolio = await self.repo.show_user_portfolio(session, transfer_id)
-            target_portfolio = target_portfolio.id
+            target_portfolio = await self.repo.find_portfolio_by_id(session, transfer_id)
 
             my_coins = dict(my_portfolio.coins)
 

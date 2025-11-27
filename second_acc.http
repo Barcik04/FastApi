@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
   "email": "igor.bb00@gmail.com",
-  "password": "lkalala"
+  "password": "12345"
 }
 
 ###
@@ -26,8 +26,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Y
 
 
 
-POST http://127.0.0.1:8000/portfolios/buy?coin=solana&quantity=5000
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxY2QxNTA1ZC04NTlmLTQxOWQtOGE3MC03NWI3MGE1Y2FiN2IiLCJleHAiOjE3NjQxNjY2OTYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.SACjXa--Fdc4NB9AnAA1uNoOhPXphB_9xJYnL-uex3A
+POST http://127.0.0.1:8000/portfolios/buy?coin=solana&quantity=5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODEwMmUxNS00YmI3LTRjYjMtOWQ0ZC1lNjc5NDNlZGEzNTAiLCJleHAiOjE3NjQxNzk5ODgsInR5cGUiOiJjb25maXJtYXRpb24ifQ.4pxersX36lV5RbrbEQvE10sBEM1koAc_aG-fbb4sHx8
 
 
 ###
@@ -95,5 +95,7 @@ Content-Type: application/json
 GET http://127.0.0.1:8000/trade_requests
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjQwNzk5NDAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.-xcEhuz7UVcDzihnwEHxf8-Y8_846CqcSMu25VPcf4Q
 
+###
 
+POST 127.0.0.1:8000/portfolios/transfer
 
