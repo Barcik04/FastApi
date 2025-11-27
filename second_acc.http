@@ -51,8 +51,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhM
 
 ###
 
-GET http://127.0.0.1:8000/portfolios/p_and_l_coin?coin=bitcoin
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjM5MTc3MTksInR5cGUiOiJjb25maXJtYXRpb24ifQ.LjKW4B72GYyRi5qxl2lRk36MWwNpLxbcqbL_Ay_U_lI
+GET http://127.0.0.1:8000/portfolios/p_and_l_coin?coin=solana
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxY2QxNTA1ZC04NTlmLTQxOWQtOGE3MC03NWI3MGE1Y2FiN2IiLCJleHAiOjE3NjQyNzY2MzcsInR5cGUiOiJjb25maXJtYXRpb24ifQ.J3SAfGphiWmdCDOGNkJPiuMW9mNkuxs4gabzgdaz_xA
 
 
 ###
