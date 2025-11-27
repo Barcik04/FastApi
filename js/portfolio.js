@@ -26,6 +26,31 @@ showPnlBtn.addEventListener('click', async() => {
             document.getElementById('coins').textContent = `Coins: ${JSON.stringify(data.coins)}`;
             document.getElementById('boughtPrice').textContent = `Avg Bought Price: ${JSON.stringify(data.bought_price)}`;
             document.getElementById('pnl').textContent = `Profit and loss: ${data.p_and_l}`;
+
+            const pnlContainer = document.getElementById('pnlPerCoin');
+            pnlContainer.innerHTML = "<h3>PNL Per Coin:</h3>";
+
+            for (const coin in data.coins) {
+                if (!data.coins.hasOwnProperty(coin)) continue;
+
+                try {
+                    const coinResponse = await axios.get(`/portfolios/p_and_l_coin?coin=${coin}`, {
+                        headers: { Authorization: `Bearer ${jwt}` }
+                    });
+
+                    if (coinResponse.status === 200) {
+                        const { p_and_l, p_and_l_percent } = coinResponse.data;
+
+                        const item = document.createElement('p');
+                        item.textContent = `${coin.toUpperCase()}: PnL = ${p_and_l}, PnL % = ${p_and_l_percent.toFixed(2)}%`;
+                        pnlContainer.appendChild(item);
+                    }
+                } catch (coinErr) {
+                    const item = document.createElement('p');
+                    item.textContent = `${coin.toUpperCase()}: error`;
+                    pnlContainer.appendChild(item);
+                }
+            }
         }
     } catch (error) {
         resultDiv.textContent = "Error loading portfolio.";
