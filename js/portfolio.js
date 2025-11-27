@@ -467,3 +467,42 @@ async function buyOrSell(isBuy) {
 
 buyCryptoBtn.addEventListener('click', () => buyOrSell(true));
 sellCryptoBtn.addEventListener('click', () => buyOrSell(false));
+
+
+
+
+
+
+const transferBtn = document.getElementById('ProceedTransferBtn');
+
+transferBtn.addEventListener('click', async () => {
+    const jwt = localStorage.getItem('jwt');
+
+    const coinGet = document.getElementById('transferCoin').value;
+    const quantityGet = document.getElementById('transferCoinQuantity').value;
+    const receiverId = document.getElementById('transferPortfolioId').value;
+
+    try {
+        const response = await axios.post(
+            '/portfolios/transfer',
+            null,
+            {
+                params: {
+                    coin: coinGet,
+                    quantity: quantityGet,
+                    transfer_id: receiverId
+                },
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                }
+            }
+        );
+
+        if (response.status === 200) {
+            console.log('Transfer successfully.');
+            console.log(response.data);
+        }
+    } catch (error) {
+        console.log('Transfer error:', error.response?.status, error.response?.data || error);
+    }
+});
