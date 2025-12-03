@@ -1,17 +1,18 @@
 """Module containing TardeRequest repository implementation."""
 
 
+from abc import ABC, abstractmethod
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
-from sqlalchemy import select, or_
 
-from src.api.models.TradeRequestOrm import TradeRequestOrm
+from src.infrastructure.models.TradeRequestOrm import TradeRequestOrm
 
 
-class TradeRequestRepository:
+class ITradeRequestRepository(ABC):
     """A class representing trade request DB repository."""
 
 
+    @abstractmethod
     async def show_user_requests(self, session: AsyncSession, owner_id: UUID) -> list[TradeRequestOrm]:
         """The method getting all trade requests assigned to particular user.
 
@@ -22,14 +23,11 @@ class TradeRequestRepository:
             Returns:
                 list[TradeRequestOrm]: Trade requests assigned to a user.
         """
-        res = await session.execute(
-            select(TradeRequestOrm).where((TradeRequestOrm.receiver_id==owner_id) | (TradeRequestOrm.sender_id==owner_id))
-        )
-        return res.scalars().all()
 
 
 
 
+    @abstractmethod
     async def show_user_senders(self, session: AsyncSession, owner_id: UUID) -> list[TradeRequestOrm]:
         """The method getting all trade requests that were sent by user.
 
@@ -40,15 +38,11 @@ class TradeRequestRepository:
             Returns:
                 list[TradeRequestOrm]: Trade requests assigned to a user if a trade is sent by this user.
         """
-        res = await session.execute(
-            select(TradeRequestOrm).where(TradeRequestOrm.sender_id==owner_id)
-        )
-
-        return res.scalars().all()
 
 
 
 
+    @abstractmethod
     async def show_user_receivers(self, session: AsyncSession, owner_id: UUID) -> list[TradeRequestOrm]:
         """The method getting all trade requests that were sent to user.
 
@@ -59,16 +53,12 @@ class TradeRequestRepository:
             Returns:
                 list[TradeRequestOrm]: Trade requests assigned to a user if a trade is sent to this user.
         """
-        res = await session.execute(
-            select(TradeRequestOrm).where(TradeRequestOrm.receiver_id==owner_id)
-        )
-
-        return res.scalars().all()
 
 
 
 
 
+    @abstractmethod
     async def create_request(self, session: AsyncSession, coin: str, quantity: float, coin_get: str, quantity_get: float, sender_id: UUID,  receiver_id: UUID) -> TradeRequestOrm:
         """The method creating a trade request with given coin name, quantity, sender_id and receiver_id.
 
@@ -84,22 +74,11 @@ class TradeRequestRepository:
             Returns:
                 TradeRequestOrm: trade request object.
         """
-        obj = TradeRequestOrm(
-            sender_id=sender_id,
-            receiver_id=receiver_id,
-            coin=coin,
-            quantity=quantity,
-            coin_get=coin_get,
-            quantity_get=quantity_get
-        )
-        session.add(obj)
-        await session.flush()
-        await session.refresh(obj)
-        return obj
 
 
 
 
+    @abstractmethod
     async def find_request(self, session: AsyncSession, request_id: UUID) -> TradeRequestOrm | None:
         """The method getting the request of given request_id if it also contains receiver_id.
 
@@ -111,8 +90,3 @@ class TradeRequestRepository:
                 TradeRequestOrm: Trade request found.
         """
 
-        res = await session.execute(
-            select(TradeRequestOrm).where(TradeRequestOrm.id == request_id)
-        )
-
-        return res.scalar()

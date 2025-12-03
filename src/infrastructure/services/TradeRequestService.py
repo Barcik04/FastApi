@@ -3,14 +3,14 @@ import httpx
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.models.TradeRequestOrm import TradeRequestOrm
-from src.api.repositories.PortfolioRepository import PortfolioRepository
-from src.api.repositories.TradeRequestRepository import TradeRequestRepository
+from src.infrastructure.models.TradeRequestOrm import TradeRequestOrm
+from src.infrastructure.repositories.PortfolioRepository import PortfolioRepository
+from src.infrastructure.repositories.TradeRequestRepository import TradeRequestRepository
 from uuid import UUID
 
-from src.api.services.ITradeRequestService import ITradeRequestService
+from src.infrastructure.services.ITradeRequestService import ITradeRequestService
 
-from src.api.schemas.TradeRequest import TradeRequestIn, TradeStatus
+from src.core.domain.TradeRequest import TradeRequestIn, TradeStatus
 
 
 

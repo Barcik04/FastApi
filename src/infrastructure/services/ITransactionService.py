@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.models.TransactionOrm import TransactionOrm
+from src.infrastructure.models.TransactionOrm import TransactionOrm
 
 
 class ITransactionService(ABC):

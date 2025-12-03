@@ -1,14 +1,14 @@
 
 from dependency_injector import containers, providers
 
-from src.api.repositories.PortfolioRepository import PortfolioRepository
-from src.api.repositories.TradeRequestRepository import TradeRequestRepository
-from src.api.repositories.TransactionRepository import TransactionRepository
-from src.api.repositories.UserRepository import UserRepository
-from src.api.services.PortfolioService import PortfolioService
-from src.api.services.TradeRequestService import TradeRequestService
-from src.api.services.TransactionService import TransactionService
-from src.api.services.UserService import UserService
+from src.infrastructure.repositories.PortfolioRepository import PortfolioRepository
+from src.infrastructure.repositories.TradeRequestRepository import TradeRequestRepository
+from src.infrastructure.repositories.TransactionRepository import TransactionRepository
+from src.infrastructure.repositories.UserRepository import UserRepository
+from src.infrastructure.services import PortfolioService
+from src.infrastructure.services import TradeRequestService
+from src.infrastructure.services.TransactionService import TransactionService
+from src.infrastructure.services.UserService import UserService
 
 
 class Container(containers.DeclarativeContainer):

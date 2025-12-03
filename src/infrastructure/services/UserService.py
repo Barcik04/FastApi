@@ -5,12 +5,12 @@ from typing import List
 from fastapi import HTTPException
 from starlette import status
 
-from src.auth.utils.password import verify_password
-from src.auth.utils.token import generate_user_token
+from src.infrastructure.utils.password import verify_password
+from src.infrastructure.utils.token import generate_user_token
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.api.schemas.User import User, UserIn
-from src.api.repositories.UserRepository import UserRepository
-from src.api.services.IUserService import IUserService
+from src.core.domain.User import User, UserIn
+from src.infrastructure.repositories.UserRepository import UserRepository
+from src.infrastructure.services.IUserService import IUserService
 
 class UserService(IUserService):
     def __init__(self, repo: UserRepository):

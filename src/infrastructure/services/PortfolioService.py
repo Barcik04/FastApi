@@ -6,10 +6,10 @@ from uuid import UUID
 import httpx
 from fastapi import HTTPException
 
-from src.api.models.TransactionOrm import TransactionOrm
-from src.api.models.PortfolioOrm import PortfolioOrm
-from src.api.repositories.PortfolioRepository import PortfolioRepository
-from src.api.services.IPortfolioService import IPortfolioService
+from src.infrastructure.models.TransactionOrm import TransactionOrm
+from src.infrastructure.models.PortfolioOrm import PortfolioOrm
+from src.infrastructure.repositories.PortfolioRepository import PortfolioRepository
+from src.infrastructure.services.IPortfolioService import IPortfolioService
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

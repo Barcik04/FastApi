@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.schemas.User import User, UserIn
+from src.core.domain.User import User, UserIn
 
 
 class IUserService(ABC):

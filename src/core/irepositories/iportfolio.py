@@ -1,15 +1,16 @@
-"""Module containing portfolio repository implementation."""
+"""Module containing portfolio abstract repository implementation."""
 
+from abc import ABC, abstractmethod
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
-from src.api.models.PortfolioOrm import PortfolioOrm
-from sqlalchemy import select
+from src.infrastructure.models.PortfolioOrm import PortfolioOrm
 
 
 
-class PortfolioRepository:
+class IPortfolioRepository(ABC):
     """A class representing portfolio DB repository."""
 
+    @abstractmethod
     async def show_user_portfolio(self, session: AsyncSession, owner_id: UUID) -> PortfolioOrm:
         """The method finds user's portfolio from the data storage.
 
@@ -20,14 +21,11 @@ class PortfolioRepository:
         Returns:
             PortfolioOrm: found Portfolio in the data storage.
         """
-        res = await session.execute(
-            select(PortfolioOrm).where(PortfolioOrm.owner_id == owner_id)
-        )
-        return res.scalar()
 
 
 
 
+    @abstractmethod
     async def find_portfolio_by_id(self, session: AsyncSession, portfolio_id: UUID) -> PortfolioOrm:
         """The method finds portfolio from the data storage by given portfolio ID.
 
@@ -38,11 +36,6 @@ class PortfolioRepository:
         Returns:
             PortfolioOrm: found Portfolio in the data storage.
         """
-        res = await session.execute(
-            select(PortfolioOrm).where(PortfolioOrm.id == portfolio_id)
-        )
-        return res.scalar()
-
 
 
 

@@ -11,10 +11,10 @@ from fastapi import HTTPException
 import io
 from fastapi.responses import StreamingResponse
 
-from src.api.models.TransactionOrm import TransactionOrm
-from src.api.repositories.PortfolioRepository import PortfolioRepository
-from src.api.repositories.TransactionRepository import TransactionRepository
-from src.api.services.ITransactionService import ITransactionService
+from src.infrastructure.models.TransactionOrm import TransactionOrm
+from src.infrastructure.repositories.PortfolioRepository import PortfolioRepository
+from src.infrastructure.repositories.TransactionRepository import TransactionRepository
+from src.infrastructure.services.ITransactionService import ITransactionService
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

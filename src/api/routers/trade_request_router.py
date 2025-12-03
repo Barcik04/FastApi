@@ -7,17 +7,16 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.services.ITradeRequestService import ITradeRequestService
+from src.infrastructure.services import ITradeRequestService
 from src.db import get_session
 
 
-from src.api.schemas.TradeRequest import (
+from src.core.domain.TradeRequest import (
     TradeRequest,
     TradeRequestIn,
     TradeRequestUpdateDto,
 )
-from src.api.services.TradeRequestService import TradeRequestService
-from src.auth.utils.deps import get_current_user_id
+from src.infrastructure.utils.deps import get_current_user_id
 from src.container import Container
 
 

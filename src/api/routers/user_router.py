@@ -7,10 +7,9 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.schemas.User import User, UserIn
-from src.api.services.IUserService import IUserService
-from src.api.services.UserService import UserService
-from src.auth.utils.deps import get_current_user_id
+from src.core.domain.User import User, UserIn
+from src.infrastructure.services.IUserService import IUserService
+from src.infrastructure.utils.deps import get_current_user_id
 from src.container import Container
 from src.db import get_session
 

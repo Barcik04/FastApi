@@ -5,8 +5,8 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from src.api.models.TradeRequestOrm import TradeRequestOrm
-from src.api.schemas.TradeRequest import TradeRequestIn
+from src.infrastructure.models.TradeRequestOrm import TradeRequestOrm
+from src.core.domain.TradeRequest import TradeRequestIn
 
 
 class ITradeRequestService(ABC):

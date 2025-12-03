@@ -5,14 +5,13 @@ from uuid import UUID
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 
-from src.api.services.ITransactionService import ITransactionService
+from src.infrastructure.services.ITransactionService import ITransactionService
 from src.db import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from src.api.schemas.Transaction import Transaction
-from src.api.services.TransactionService import TransactionService
-from src.auth.utils.deps import get_current_user_id
+from src.core.domain.Transaction import Transaction
+from src.infrastructure.utils.deps import get_current_user_id
 from src.container import Container
 
 

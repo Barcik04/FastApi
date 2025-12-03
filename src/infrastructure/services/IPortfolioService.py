@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from src.api.models.PortfolioOrm import PortfolioOrm
+from src.infrastructure.models.PortfolioOrm import PortfolioOrm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

@@ -8,11 +8,11 @@ from fastapi import APIRouter, Depends
 from starlette.responses import PlainTextResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.services.IPortfolioService import IPortfolioService
+from src.infrastructure.services.IPortfolioService import IPortfolioService
 from src.db import get_session
 
-from src.api.schemas.Portfolio import Portfolio
-from src.auth.utils.deps import get_current_user_id
+from src.core.domain.Portfolio import Portfolio
+from src.infrastructure.utils.deps import get_current_user_id
 from src.container import Container
 
 router = APIRouter(prefix="/portfolios", tags=["portfolios"])

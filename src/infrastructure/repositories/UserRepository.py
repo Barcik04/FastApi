@@ -4,13 +4,14 @@ from typing import Optional, List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.models.PortfolioOrm import PortfolioOrm
-from src.api.models.UserOrm import UserOrm
-from src.api.schemas.User import User, UserIn
-from src.auth.utils.password import hash_password
+from src.core.irepositories.iuser import IUserRepository
+from src.infrastructure.models.PortfolioOrm import PortfolioOrm
+from src.infrastructure.models.UserOrm import UserOrm
+from src.core.domain.User import User, UserIn
+from src.infrastructure.utils.password import hash_password
 
 
-class UserRepository:
+class UserRepository(IUserRepository):
     """A class responsible for performing user-related DB operations."""
 
     async def register_user(self, session: AsyncSession, user_in: UserIn) -> User:

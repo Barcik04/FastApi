@@ -3,9 +3,9 @@ from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.api.models.TransactionOrm import TransactionOrm
+from src.infrastructure.models.TransactionOrm import TransactionOrm
 from src.db import Base
-from src.api.models.PortfolioOrm import PortfolioOrm
+from src.infrastructure.models.PortfolioOrm import PortfolioOrm
 
 
 class UserOrm(Base):
