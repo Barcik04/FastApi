@@ -5,8 +5,8 @@ from src.infrastructure.repositories.PortfolioRepository import PortfolioReposit
 from src.infrastructure.repositories.TradeRequestRepository import TradeRequestRepository
 from src.infrastructure.repositories.TransactionRepository import TransactionRepository
 from src.infrastructure.repositories.UserRepository import UserRepository
-from src.infrastructure.services import PortfolioService
-from src.infrastructure.services import TradeRequestService
+from src.infrastructure.services.PortfolioService import PortfolioService
+from src.infrastructure.services.TradeRequestService import TradeRequestService
 from src.infrastructure.services.TransactionService import TransactionService
 from src.infrastructure.services.UserService import UserService
 
