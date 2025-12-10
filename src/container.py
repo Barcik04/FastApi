@@ -9,6 +9,9 @@ from src.infrastructure.services.PortfolioService import PortfolioService
 from src.infrastructure.services.TradeRequestService import TradeRequestService
 from src.infrastructure.services.TransactionService import TransactionService
 from src.infrastructure.services.UserService import UserService
+from src.infrastructure.services.MessageService import MessageService
+from src.infrastructure.repositories.MessageRepository import MessageRepository
+
 
 
 class Container(containers.DeclarativeContainer):
@@ -17,6 +20,8 @@ class Container(containers.DeclarativeContainer):
     portfolio_repository = providers.Singleton(PortfolioRepository)
     transaction_repository = providers.Singleton(TransactionRepository)
     trade_request_repository = providers.Singleton(TradeRequestRepository)
+    message_repository = providers.Singleton(MessageRepository)
+
 
     user_service = providers.Factory(UserService, repo=user_repository)
 
@@ -35,4 +40,9 @@ class Container(containers.DeclarativeContainer):
         TradeRequestService,
         trade_request_repo=trade_request_repository,
         portfolio_repo=portfolio_repository,
+    )
+
+    message_service = providers.Factory(
+        MessageService,
+        repo=message_repository,
     )

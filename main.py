@@ -8,6 +8,7 @@ from fastapi.exception_handlers import http_exception_handler
 from starlette.middleware.cors import CORSMiddleware
 
 from src.api.routers.portfolio_router import router as portfolio_router
+from src.api.routers.message_router import router as message_router
 from src.api.routers.trade_request_router import router as trade_request_router
 from src.api.routers.transaction_router import router as transaction_router
 from src.api.routers.user_router import router as users_router
@@ -21,6 +22,7 @@ container.wire(modules=[
     "src.api.routers.trade_request_router",
     "src.api.routers.transaction_router",
     "src.api.routers.user_router",
+    "src.api.routers.message_router",
 ])
 
 
@@ -42,6 +44,8 @@ app.include_router(users_router)
 app.include_router(portfolio_router)
 app.include_router(transaction_router)
 app.include_router(trade_request_router)
+app.include_router(message_router)
+
 
 
 @app.exception_handler(HTTPException)
