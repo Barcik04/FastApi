@@ -21,9 +21,8 @@ router = APIRouter(prefix="/messages", tags=["messages"])
 async def show_user_messages(
     user_id: UUID = Depends(get_current_user_id),
     session: AsyncSession = Depends(get_session),
-    service: IMessageService = Depends(Provide[Container.message_service]),
-):
-    """An endpoint for retrieving all messages for the authenticated user."""
+    service: IMessageService = Depends(Provide[Container.message_service])):
+    """An endpoint for fetching all messages for user."""
 
     return await service.show_user_messages(user_id, session)
 
@@ -34,8 +33,7 @@ async def send_message(
     body: MessageIn,
     user_id: UUID = Depends(get_current_user_id),
     session: AsyncSession = Depends(get_session),
-    service: IMessageService = Depends(Provide[Container.message_service]),
-):
+    service: IMessageService = Depends(Provide[Container.message_service])):
     """An endpoint for sending a message to another user."""
 
     return await service.send_message(body, user_id, session)
