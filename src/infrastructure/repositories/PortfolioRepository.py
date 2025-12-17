@@ -22,10 +22,11 @@ class PortfolioRepository(IPortfolioRepository):
         Returns:
             PortfolioOrm: found Portfolio in the data storage.
         """
-        res = await session.execute(
-            select(PortfolioOrm).where(PortfolioOrm.owner_id == owner_id)
-        )
-        return res.scalar()
+        async with session.begin():
+            res = await session.execute(
+                select(PortfolioOrm).where(PortfolioOrm.owner_id == owner_id)
+            )
+            return res.scalar()
 
 
 
@@ -40,10 +41,11 @@ class PortfolioRepository(IPortfolioRepository):
         Returns:
             PortfolioOrm: found Portfolio in the data storage.
         """
-        res = await session.execute(
-            select(PortfolioOrm).where(PortfolioOrm.id == portfolio_id)
-        )
-        return res.scalar()
+        async with session.begin():
+            res = await session.execute(
+                select(PortfolioOrm).where(PortfolioOrm.id == portfolio_id)
+            )
+            return res.scalar()
 
 
 

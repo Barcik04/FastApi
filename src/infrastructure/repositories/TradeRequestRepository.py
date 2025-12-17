@@ -23,10 +23,11 @@ class TradeRequestRepository(ITradeRequestRepository):
             Returns:
                 list[TradeRequestOrm]: Trade requests assigned to a user.
         """
-        res = await session.execute(
-            select(TradeRequestOrm).where((TradeRequestOrm.receiver_id==owner_id) | (TradeRequestOrm.sender_id==owner_id))
-        )
-        return res.scalars().all()
+        async with session.begin():
+            res = await session.execute(
+                select(TradeRequestOrm).where((TradeRequestOrm.receiver_id==owner_id) | (TradeRequestOrm.sender_id==owner_id))
+            )
+            return res.scalars().all()
 
 
 
@@ -41,11 +42,12 @@ class TradeRequestRepository(ITradeRequestRepository):
             Returns:
                 list[TradeRequestOrm]: Trade requests assigned to a user if a trade is sent by this user.
         """
-        res = await session.execute(
-            select(TradeRequestOrm).where(TradeRequestOrm.sender_id==owner_id)
-        )
+        async with session.begin():
+            res = await session.execute(
+                select(TradeRequestOrm).where(TradeRequestOrm.sender_id==owner_id)
+            )
 
-        return res.scalars().all()
+            return res.scalars().all()
 
 
 
@@ -60,11 +62,12 @@ class TradeRequestRepository(ITradeRequestRepository):
             Returns:
                 list[TradeRequestOrm]: Trade requests assigned to a user if a trade is sent to this user.
         """
-        res = await session.execute(
-            select(TradeRequestOrm).where(TradeRequestOrm.receiver_id==owner_id)
-        )
+        async with session.begin():
+            res = await session.execute(
+                select(TradeRequestOrm).where(TradeRequestOrm.receiver_id==owner_id)
+            )
 
-        return res.scalars().all()
+            return res.scalars().all()
 
 
 
@@ -93,10 +96,11 @@ class TradeRequestRepository(ITradeRequestRepository):
             coin_get=coin_get,
             quantity_get=quantity_get
         )
-        session.add(obj)
-        await session.flush()
-        await session.refresh(obj)
-        return obj
+        async with session.begin():
+            session.add(obj)
+            await session.flush()
+            await session.refresh(obj)
+            return obj
 
 
 
@@ -111,9 +115,9 @@ class TradeRequestRepository(ITradeRequestRepository):
             Returns:
                 TradeRequestOrm: Trade request found.
         """
+        async with session.begin():
+            res = await session.execute(
+                select(TradeRequestOrm).where(TradeRequestOrm.id == request_id)
+            )
 
-        res = await session.execute(
-            select(TradeRequestOrm).where(TradeRequestOrm.id == request_id)
-        )
-
-        return res.scalar()
+            return res.scalar()

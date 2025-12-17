@@ -46,15 +46,14 @@ class UserService(IUserService):
             dict: body of user in db.
         """
 
-        async with session.begin():
-            existing = await self._repository.get_by_email(session, user_in.email)
-            if existing:
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail="Email already exists",
-                )
-            user = await self._repository.register_user(session, user_in)
-            return {"id": user.id, "email": user.email}
+        existing = await self._repository.get_by_email(session, user_in.email)
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Email already exists",
+            )
+        user = await self._repository.register_user(session, user_in)
+        return {"id": user.id, "email": user.email}
 
 
 

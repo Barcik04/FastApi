@@ -29,13 +29,14 @@ class UserRepository(IUserRepository):
             email=user_in.email,
             password_hash=hash_password(user_in.password),
         )
-        session.add(user)
-        await session.flush()
+        async with session.begin():
+            session.add(user)
+            await session.flush()
 
-        session.add(PortfolioOrm(owner_id=user.id, name=f"{user.id}"))
-        await session.flush()
+            session.add(PortfolioOrm(owner_id=user.id, name=f"{user.id}"))
+            await session.flush()
 
-        return User(id=user.id, email=user.email, password="")
+            return User(id=user.id, email=user.email, password="")
 
 
 
@@ -50,10 +51,11 @@ class UserRepository(IUserRepository):
         Returns:
             Optional[UserOrm]: Found UserOrm, or None if not found.
         """
-        res = await session.execute(
-            select(UserOrm).where(UserOrm.email == email)
-        )
-        return res.scalar_one_or_none()
+        async with session.begin():
+            res = await session.execute(
+                select(UserOrm).where(UserOrm.email == email)
+            )
+            return res.scalar_one_or_none()
 
 
 
@@ -68,5 +70,6 @@ class UserRepository(IUserRepository):
         Returns:
             List[User]: A list of users.
         """
-        res = await session.execute(select(UserOrm.id, UserOrm.email))
-        return [User(id=r.id, email=r.email, password="") for r in res.all()]
+        async with session.begin():
+            res = await session.execute(select(UserOrm.id, UserOrm.email))
+            return [User(id=r.id, email=r.email, password="") for r in res.all()]

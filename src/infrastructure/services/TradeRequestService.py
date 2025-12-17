@@ -46,10 +46,9 @@ class TradeRequestService(ITradeRequestService):
             list[TradeRequestOrm]: list of trade requests assigned to a particular user.
         """
 
-        async with session.begin():
-            portfolio = await self._portfolio_repository.show_user_portfolio(session, owner_id)
-            requests = await self._trade_request_repository.show_user_requests(session, portfolio.id)
-            return requests
+        portfolio = await self._portfolio_repository.show_user_portfolio(session, owner_id)
+        requests = await self._trade_request_repository.show_user_requests(session, portfolio.id)
+        return requests
 
     async def create_user_request(self, body: TradeRequestIn, owner_id: UUID, session: AsyncSession) -> str:
         """The method creates a trade request aimed to a particular user specified in body with coin and quantity.
@@ -64,41 +63,40 @@ class TradeRequestService(ITradeRequestService):
             str: info of transaction status.
         """
 
-        async with session.begin():
-            portfolio = await self._portfolio_repository.show_user_portfolio(session, owner_id)
-            if portfolio is None:
-                raise HTTPException(status_code=404, detail="Sender portfolio not found")
+        portfolio = await self._portfolio_repository.show_user_portfolio(session, owner_id)
+        if portfolio is None:
+            raise HTTPException(status_code=404, detail="Sender portfolio not found")
 
-            portfolio_receiver = await self._portfolio_repository.find_portfolio_by_id(session, body.receiver_id)
-            if portfolio_receiver is None:
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"Couldnt find portfolio with given id: {body.receiver_id}",
-                )
-
-            if not portfolio.coins.get(body.coin):
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"There is no coin with that name in your portfolio: {body.coin}",
-                )
-
-            if portfolio.coins.get(body.coin) < body.quantity:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"There is not enough quantity: {body.quantity} of coin in your portfolio: {body.coin}",
-                )
-
-            await self._trade_request_repository.create_request(
-                session,
-                coin=body.coin,
-                quantity=body.quantity,
-                coin_get=body.coin_get,
-                quantity_get=body.quantity_get,
-                sender_id=portfolio.id,
-                receiver_id=portfolio_receiver.id,
+        portfolio_receiver = await self._portfolio_repository.find_portfolio_by_id(session, body.receiver_id)
+        if portfolio_receiver is None:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Couldnt find portfolio with given id: {body.receiver_id}",
             )
 
-            return "Successfully created a trade request!"
+        if not portfolio.coins.get(body.coin):
+            raise HTTPException(
+                status_code=404,
+                detail=f"There is no coin with that name in your portfolio: {body.coin}",
+            )
+
+        if portfolio.coins.get(body.coin) < body.quantity:
+            raise HTTPException(
+                status_code=400,
+                detail=f"There is not enough quantity: {body.quantity} of coin in your portfolio: {body.coin}",
+            )
+
+        await self._trade_request_repository.create_request(
+            session,
+            coin=body.coin,
+            quantity=body.quantity,
+            coin_get=body.coin_get,
+            quantity_get=body.quantity_get,
+            sender_id=portfolio.id,
+            receiver_id=portfolio_receiver.id,
+        )
+
+        return "Successfully created a trade request!"
 
     async def _proceed_trade(self, session: AsyncSession, request, sender_portfolio, receiver_portfolio) -> None:
         """The private method used to update both sides of trade request (method used in update_user_request method below).
@@ -163,30 +161,29 @@ class TradeRequestService(ITradeRequestService):
             str: info of transaction status.
         """
 
-        async with session.begin():
-            request = await self._trade_request_repository.find_request(session, request_id)
+        request = await self._trade_request_repository.find_request(session, request_id)
 
-            sender_portfolio = await self._portfolio_repository.find_portfolio_by_id(session, request.sender_id)
-            receiver_portfolio = await self._portfolio_repository.show_user_portfolio(session, owner_id)
+        sender_portfolio = await self._portfolio_repository.find_portfolio_by_id(session, request.sender_id)
+        receiver_portfolio = await self._portfolio_repository.show_user_portfolio(session, owner_id)
 
-            if request.receiver_id != receiver_portfolio.id and accept:
-                raise HTTPException(status_code=403, detail="This method was sent by you so you can only reject it")
+        if request.receiver_id != receiver_portfolio.id and accept:
+            raise HTTPException(status_code=403, detail="This method was sent by you so you can only reject it")
 
-            if request.status is (TradeStatus.REJECTED or TradeStatus.COMPLETED):
-                raise HTTPException(status_code=404, detail="This trade has already been rejected")
+        if request.status is (TradeStatus.REJECTED or TradeStatus.COMPLETED):
+            raise HTTPException(status_code=404, detail="This trade has already been rejected")
 
-            if accept:
-                request.status = TradeStatus.COMPLETED
-                await self._proceed_trade(
-                    session=session,
-                    request=request,
-                    sender_portfolio=sender_portfolio,
-                    receiver_portfolio=receiver_portfolio,
-                )
-                return "trade accepted!"
+        if accept:
+            request.status = TradeStatus.COMPLETED
+            await self._proceed_trade(
+                session=session,
+                request=request,
+                sender_portfolio=sender_portfolio,
+                receiver_portfolio=receiver_portfolio,
+            )
+            return "trade accepted!"
 
-            if not accept:
-                request.status = TradeStatus.REJECTED
-                return "trade rejected!"
+        if not accept:
+            request.status = TradeStatus.REJECTED
+            return "trade rejected!"
 
-            return "error"
+        return "error"

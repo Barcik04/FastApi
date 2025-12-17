@@ -38,32 +38,31 @@ class PortfolioService(IPortfolioService):
             PortfolioOrm: portfolio assigned to a user.
         """
 
-        async with session.begin():
-            portfolio = await self._repository.show_user_portfolio(session, owner_id)
+        portfolio = await self._repository.show_user_portfolio(session, owner_id)
 
-            coins = dict(portfolio.coins)
-            bought_price = dict(portfolio.bought_price)
-            p_and_l = 0.0
-            account_val = 0.0
+        coins = dict(portfolio.coins)
+        bought_price = dict(portfolio.bought_price)
+        p_and_l = 0.0
+        account_val = 0.0
 
-            for coin in coins:
-                url = "https://api.coingecko.com/api/v3/simple/price"
-                params = {"ids": coin, "vs_currencies": "usd"}
+        for coin in coins:
+            url = "https://api.coingecko.com/api/v3/simple/price"
+            params = {"ids": coin, "vs_currencies": "usd"}
 
-                async with httpx.AsyncClient() as client:
-                    response = await client.get(url, params=params)
-                    response.raise_for_status()
-                    price_usd = response.json()[coin]["usd"]
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url, params=params)
+                response.raise_for_status()
+                price_usd = response.json()[coin]["usd"]
 
-                coin_bought_price = bought_price[coin]
-                price_diff = price_usd / coin_bought_price
+            coin_bought_price = bought_price[coin]
+            price_diff = price_usd / coin_bought_price
 
-                coin_val = coins[coin] * price_usd * price_diff
-                p_and_l += coin_val - (coins[coin] * price_usd)
-                account_val += price_usd * coins.get(coin)
+            coin_val = coins[coin] * price_usd * price_diff
+            p_and_l += coin_val - (coins[coin] * price_usd)
+            account_val += price_usd * coins.get(coin)
 
-            portfolio.p_and_l = p_and_l
-            return portfolio
+        portfolio.p_and_l = p_and_l
+        return portfolio
 
     async def buy_crypto(self, owner_id: UUID, coin: str, quantity: float, session: AsyncSession) -> str:
         """The method proceeds to assign coin with given quantity to user portfolio
@@ -79,60 +78,40 @@ class PortfolioService(IPortfolioService):
             str: message with transaction information.
         """
 
-        async with session.begin():
-            portfolio = await self._repository.show_user_portfolio(session, owner_id)
+        portfolio = await self._repository.show_user_portfolio(session, owner_id)
 
-            coins = dict(portfolio.coins)
-            bought_price = dict(portfolio.bought_price)
+        coins = dict(portfolio.coins)
+        bought_price = dict(portfolio.bought_price)
 
-            prev_quantity = portfolio.coins.get(coin, 0.0)
-            prev_avg_price = portfolio.bought_price.get(coin, 0.0)
+        prev_quantity = portfolio.coins.get(coin, 0.0)
+        prev_avg_price = portfolio.bought_price.get(coin, 0.0)
 
-            url = "https://api.coingecko.com/api/v3/simple/price"
-            params = {"ids": coin, "vs_currencies": "usd"}
+        url = "https://api.coingecko.com/api/v3/simple/price"
+        params = {"ids": coin, "vs_currencies": "usd"}
 
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url, params=params)
-                response.raise_for_status()
-                price_usd = response.json()[coin]["usd"]
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            price_usd = response.json()[coin]["usd"]
 
-            coin_value = price_usd * quantity
-            tether = coins.get("tether", 0.0)
+        coin_value = price_usd * quantity
+        tether = coins.get("tether", 0.0)
 
-            if coin_value > tether:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Not enough theater in your account to buy: {quantity} of {coin}.",
-                )
+        if coin_value > tether:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Not enough theater in your account to buy: {quantity} of {coin}.",
+            )
 
-            coins["tether"] = coins.get("tether") - coin_value
+        coins["tether"] = coins.get("tether") - coin_value
 
-            if prev_quantity == 0:
-                coins[coin] = coins.get(coin, 0) + quantity
-                portfolio.coins = coins
-
-                new_avg_price = (
-                    ((prev_avg_price / 1) * prev_quantity) + (price_usd * quantity)
-                ) / (prev_quantity + quantity)
-
-                bought_price[coin] = new_avg_price
-                portfolio.bought_price = bought_price
-
-                tr = TransactionOrm(
-                    owner_id=owner_id,
-                    coin=coin,
-                    date=datetime.now(),
-                    quantity=quantity,
-                    bought_price=price_usd,
-                )
-                session.add(tr)
-
-                return f"Transaction successful! Bought: {quantity}, of {coin}, with price: {price_usd}"
-
-            new_avg_price = (prev_avg_price * prev_quantity + price_usd * quantity) / (prev_quantity + quantity)
-
+        if prev_quantity == 0:
             coins[coin] = coins.get(coin, 0) + quantity
             portfolio.coins = coins
+
+            new_avg_price = (
+                ((prev_avg_price / 1) * prev_quantity) + (price_usd * quantity)
+            ) / (prev_quantity + quantity)
 
             bought_price[coin] = new_avg_price
             portfolio.bought_price = bought_price
@@ -148,6 +127,28 @@ class PortfolioService(IPortfolioService):
 
             return f"Transaction successful! Bought: {quantity}, of {coin}, with price: {price_usd}"
 
+        new_avg_price = (prev_avg_price * prev_quantity + price_usd * quantity) / (prev_quantity + quantity)
+
+        coins[coin] = coins.get(coin, 0) + quantity
+        portfolio.coins = coins
+
+        bought_price[coin] = new_avg_price
+        portfolio.bought_price = bought_price
+
+        tr = TransactionOrm(
+            owner_id=owner_id,
+            coin=coin,
+            date=datetime.now(),
+            quantity=quantity,
+            bought_price=price_usd,
+        )
+        session.add(tr)
+
+        return f"Transaction successful! Bought: {quantity}, of {coin}, with price: {price_usd}"
+
+
+
+
     async def sell_crypto(self, owner_id: UUID, coin: str, quantity: str, session: AsyncSession) -> str:
         """The method updates user portfolio and sells given coin and its quantity
         if theres enough coin in user portfolio
@@ -162,62 +163,64 @@ class PortfolioService(IPortfolioService):
             str: message with transaction information.
         """
 
-        async with session.begin():
-            portfolio = await self._repository.show_user_portfolio(session, owner_id)
+        portfolio = await self._repository.show_user_portfolio(session, owner_id)
 
-            coins = dict(portfolio.coins)
-            bought_price = dict(portfolio.bought_price)
-            quantity_portfolio = portfolio.coins.get(coin, 0.0)
+        coins = dict(portfolio.coins)
+        bought_price = dict(portfolio.bought_price)
+        quantity_portfolio = portfolio.coins.get(coin, 0.0)
 
-            if quantity == "all":
-                quantity = coins.get(coin, 0.0)
-            else:
-                quantity = float(quantity)
+        if quantity == "all":
+            quantity = coins.get(coin, 0.0)
+        else:
+            quantity = float(quantity)
 
-            if quantity_portfolio < quantity:
-                raise HTTPException(status_code=400, detail=f"Not enough {coin} to sell. You have {coins.get(coin)}.")
+        if quantity_portfolio < quantity:
+            raise HTTPException(status_code=400, detail=f"Not enough {coin} to sell. You have {coins.get(coin)}.")
 
-            if coin not in coins:
-                raise HTTPException(status_code=404, detail=f"No '{coin}' in your portfolio.")
+        if coin not in coins:
+            raise HTTPException(status_code=404, detail=f"No '{coin}' in your portfolio.")
 
-            coins[coin] = coins.get(coin) - quantity
-            if coins[coin] == 0:
-                coins.pop(coin)
-                bought_price.pop(coin)
+        coins[coin] = coins.get(coin) - quantity
+        if coins[coin] == 0:
+            coins.pop(coin)
+            bought_price.pop(coin)
 
-            url = "https://api.coingecko.com/api/v3/simple/price"
-            params = {"ids": coin, "vs_currencies": "usd"}
+        url = "https://api.coingecko.com/api/v3/simple/price"
+        params = {"ids": coin, "vs_currencies": "usd"}
 
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url, params=params)
-                response.raise_for_status()
-                price_usd = response.json()[coin]["usd"]
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            price_usd = response.json()[coin]["usd"]
 
-            url = "https://api.coingecko.com/api/v3/simple/price"
-            params = {"ids": "tether", "vs_currencies": "usd"}
+        url = "https://api.coingecko.com/api/v3/simple/price"
+        params = {"ids": "tether", "vs_currencies": "usd"}
 
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url, params=params)
-                response.raise_for_status()
-                tether_price = response.json()["tether"]["usd"]
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            tether_price = response.json()["tether"]["usd"]
 
-            coins.get("tether", 0.0)
-            tether = bought_price.get("tether", tether_price)
-            coins["tether"] += quantity * price_usd
-            bought_price["tether"] = tether
+        coins.get("tether", 0.0)
+        tether = bought_price.get("tether", tether_price)
+        coins["tether"] += quantity * price_usd
+        bought_price["tether"] = tether
 
-            portfolio.coins = coins
-            portfolio.bought_price = bought_price
+        portfolio.coins = coins
+        portfolio.bought_price = bought_price
 
-            tr = TransactionOrm(
-                owner_id=owner_id,
-                coin=coin,
-                date=datetime.now(),
-                quantity=quantity * (-1),
-            )
-            session.add(tr)
+        tr = TransactionOrm(
+            owner_id=owner_id,
+            coin=coin,
+            date=datetime.now(),
+            quantity=quantity * (-1),
+        )
+        session.add(tr)
 
-            return f"Transaction successful! Sold: {quantity}, of {coin}, with price: {price_usd}"
+        return f"Transaction successful! Sold: {quantity}, of {coin}, with price: {price_usd}"
+
+
+
 
     async def deposit_tether(self, owner_id: UUID, quantity: float, session: AsyncSession) -> str:
         """The method updates user portfolio and adds "tether" coin which is used to buy other coins.
@@ -231,29 +234,30 @@ class PortfolioService(IPortfolioService):
             str: message with transaction information.
         """
 
-        async with session.begin():
-            portfolio = await self._repository.show_user_portfolio(session, owner_id)
+        portfolio = await self._repository.show_user_portfolio(session, owner_id)
 
-            bought_price = dict(portfolio.bought_price)
-            coins = dict(portfolio.coins)
+        bought_price = dict(portfolio.bought_price)
+        coins = dict(portfolio.coins)
 
-            url = "https://api.coingecko.com/api/v3/simple/price"
-            params = {"ids": "tether", "vs_currencies": "usd"}
+        url = "https://api.coingecko.com/api/v3/simple/price"
+        params = {"ids": "tether", "vs_currencies": "usd"}
 
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url, params=params)
-                response.raise_for_status()
-                price_usd = response.json()["tether"]["usd"]
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            price_usd = response.json()["tether"]["usd"]
 
-            tether = coins.get("tether", 0.0)
+        tether = coins.get("tether", 0.0)
 
-            coins["tether"] = tether + quantity
-            bought_price["tether"] = bought_price.get("tether", price_usd)
+        coins["tether"] = tether + quantity
+        bought_price["tether"] = bought_price.get("tether", price_usd)
 
-            portfolio.coins = coins
-            portfolio.bought_price = bought_price
+        portfolio.coins = coins
+        portfolio.bought_price = bought_price
 
-            return f"Transaction successful! {quantity} of theater bought!"
+        return f"Transaction successful! {quantity} of theater bought!"
+
+
 
     async def withdraw_tether(self, owner_id: UUID, quantity: str, session: AsyncSession) -> str:
         """The method proceeds to withdraw tether from user portfolio to user's "bank account".
@@ -267,45 +271,44 @@ class PortfolioService(IPortfolioService):
             str: message with transaction information.
         """
 
-        async with session.begin():
-            portfolio = await self._repository.show_user_portfolio(session, owner_id)
+        portfolio = await self._repository.show_user_portfolio(session, owner_id)
 
-            if portfolio is None:
-                raise HTTPException(status_code=404, detail="Portfolio not found for this user.")
+        if portfolio is None:
+            raise HTTPException(status_code=404, detail="Portfolio not found for this user.")
 
-            coins = dict(portfolio.coins)
-            bought_price = dict(portfolio.bought_price)
+        coins = dict(portfolio.coins)
+        bought_price = dict(portfolio.bought_price)
 
-            url = "https://api.coingecko.com/api/v3/simple/price"
-            params = {"ids": "tether", "vs_currencies": "usd"}
+        url = "https://api.coingecko.com/api/v3/simple/price"
+        params = {"ids": "tether", "vs_currencies": "usd"}
 
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url, params=params)
-                response.raise_for_status()
-                price_usd = response.json()["tether"]["usd"]
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            price_usd = response.json()["tether"]["usd"]
 
-            if quantity == "all":
-                quantity = coins.get("tether", 0.0)
-            else:
-                quantity = float(quantity)
+        if quantity == "all":
+            quantity = coins.get("tether", 0.0)
+        else:
+            quantity = float(quantity)
 
-            if coins.get("tether", 0.0) < quantity:
-                raise HTTPException(status_code=404, detail=f"Not enough tether in your portfolio.")
+        if coins.get("tether", 0.0) < quantity:
+            raise HTTPException(status_code=404, detail=f"Not enough tether in your portfolio.")
 
-            coins["tether"] = coins.get("tether", 0.0) - quantity
-            usd = (2 - price_usd) * quantity
+        coins["tether"] = coins.get("tether", 0.0) - quantity
+        usd = (2 - price_usd) * quantity
 
-            if coins.get("tether") == 0:
-                bought_price.pop("tether")
-                coins.pop("tether")
+        if coins.get("tether") == 0:
+            bought_price.pop("tether")
+            coins.pop("tether")
 
-            portfolio.coins = coins
-            portfolio.bought_price = bought_price
+        portfolio.coins = coins
+        portfolio.bought_price = bought_price
 
-            return (
-                f"Withdrawal successful! You withdrew: {quantity} of tether. "
-                f"{usd} USD will be transferred into your bank account shortly"
-            )
+        return (
+            f"Withdrawal successful! You withdrew: {quantity} of tether. "
+            f"{usd} USD will be transferred into your bank account shortly"
+        )
 
     async def p_and_l_coin(self, owner_id: UUID, coin: str, session: AsyncSession) -> dict[str, float]:
         """method calculates and displays profit and losses for the given coin.
@@ -319,30 +322,29 @@ class PortfolioService(IPortfolioService):
             dict[str, float]: dictionary with p_n_L in $ and %.
         """
 
-        async with session.begin():
-            portfolio = await self._repository.show_user_portfolio(session, owner_id)
+        portfolio = await self._repository.show_user_portfolio(session, owner_id)
 
-            coins = dict(portfolio.coins)
-            bought_price = dict(portfolio.bought_price)
+        coins = dict(portfolio.coins)
+        bought_price = dict(portfolio.bought_price)
 
-            url = "https://api.coingecko.com/api/v3/simple/price"
-            params = {"ids": coin, "vs_currencies": "usd"}
+        url = "https://api.coingecko.com/api/v3/simple/price"
+        params = {"ids": coin, "vs_currencies": "usd"}
 
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url, params=params)
-                response.raise_for_status()
-                price_usd = response.json()[coin]["usd"]
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            price_usd = response.json()[coin]["usd"]
 
-            if coin not in coins:
-                raise HTTPException(status_code=400, detail=f"{coin} not in your portfolio.")
+        if coin not in coins:
+            raise HTTPException(status_code=400, detail=f"{coin} not in your portfolio.")
 
-            bought_val = bought_price.get(coin)
-            coin_quant = coins.get(coin)
+        bought_val = bought_price.get(coin)
+        coin_quant = coins.get(coin)
 
-            p_and_l_percent = (1 - price_usd / bought_val) * 100
-            p_and_l = (price_usd * coin_quant) - (bought_val * coin_quant)
+        p_and_l_percent = (1 - price_usd / bought_val) * 100
+        p_and_l = (price_usd * coin_quant) - (bought_val * coin_quant)
 
-            return {"p_and_l": p_and_l, "p_and_l_percent": p_and_l_percent}
+        return {"p_and_l": p_and_l, "p_and_l_percent": p_and_l_percent}
 
     async def transfer_coin(
         self,
@@ -365,43 +367,42 @@ class PortfolioService(IPortfolioService):
             str: basic status information of the transfer.
         """
 
-        async with session.begin():
-            my_portfolio = await self._repository.show_user_portfolio(session, owner_id)
-            target_portfolio = await self._repository.find_portfolio_by_id(session, transfer_id)
+        my_portfolio = await self._repository.show_user_portfolio(session, owner_id)
+        target_portfolio = await self._repository.find_portfolio_by_id(session, transfer_id)
 
-            my_coins = dict(my_portfolio.coins)
-            target_coins = dict(target_portfolio.coins)
-            target_bought_price = dict(target_portfolio.bought_price)
+        my_coins = dict(my_portfolio.coins)
+        target_coins = dict(target_portfolio.coins)
+        target_bought_price = dict(target_portfolio.bought_price)
 
-            if coin not in my_coins:
-                raise HTTPException(status_code=400, detail=f"{coin} not found in your portfolio.")
+        if coin not in my_coins:
+            raise HTTPException(status_code=400, detail=f"{coin} not found in your portfolio.")
 
-            if quantity == "all":
-                quantity = my_coins.get(coin, 0.0)
-            else:
-                quantity = float(quantity)
+        if quantity == "all":
+            quantity = my_coins.get(coin, 0.0)
+        else:
+            quantity = float(quantity)
 
-            if my_coins[coin] < quantity:
-                raise HTTPException(status_code=400, detail=f"Not enough {coin} in your portfolio.")
+        if my_coins[coin] < quantity:
+            raise HTTPException(status_code=400, detail=f"Not enough {coin} in your portfolio.")
 
-            url = "https://api.coingecko.com/api/v3/simple/price"
-            params = {"ids": coin, "vs_currencies": "usd"}
+        url = "https://api.coingecko.com/api/v3/simple/price"
+        params = {"ids": coin, "vs_currencies": "usd"}
 
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url, params=params)
-                response.raise_for_status()
-                price_usd = response.json()[coin]["usd"]
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            price_usd = response.json()[coin]["usd"]
 
-            my_coins[coin] -= quantity
-            target_coins[coin] = target_coins.get(coin, 0.0) + quantity
-            target_bought_price.setdefault(coin, price_usd)
+        my_coins[coin] -= quantity
+        target_coins[coin] = target_coins.get(coin, 0.0) + quantity
+        target_bought_price.setdefault(coin, price_usd)
 
-            if my_coins.get(coin) == 0:
-                my_coins.pop(coin)
-                target_bought_price.pop(coin)
+        if my_coins.get(coin) == 0:
+            my_coins.pop(coin)
+            target_bought_price.pop(coin)
 
-            my_portfolio.coins = my_coins
-            target_portfolio.coins = target_coins
-            target_portfolio.bought_price = target_bought_price
+        my_portfolio.coins = my_coins
+        target_portfolio.coins = target_coins
+        target_portfolio.bought_price = target_bought_price
 
-            return f"Transaction successful! {quantity} of {coin} transferred to portfolio with id: {target_portfolio} ."
+        return f"Transaction successful! {quantity} of {coin} transferred to portfolio with id: {target_portfolio} ."

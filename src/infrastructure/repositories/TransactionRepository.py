@@ -23,10 +23,11 @@ class TransactionRepository(ITransactionRepository):
                    Returns:
                        list[TransactionOrm]: Transactions assigned to a user.
                """
-        res = await session.execute(
-            select(TransactionOrm).where(TransactionOrm.owner_id == owner_id)
-        )
-        return res.scalars().all()
+        async with session.begin():
+            res = await session.execute(
+                select(TransactionOrm).where(TransactionOrm.owner_id == owner_id)
+            )
+            return res.scalars().all()
 
 
 
@@ -43,10 +44,11 @@ class TransactionRepository(ITransactionRepository):
                      Returns:
                          list[TransactionOrm]: Transactions assigned to a user contained between two dates.
                  """
-        res = await session.execute(
-            select(TransactionOrm).where((TransactionOrm.owner_id == owner_id) & (TransactionOrm.date >= start_date) & (TransactionOrm.date <= end_date))
-        )
-        return res.scalars().all()
+        async with session.begin():
+            res = await session.execute(
+                select(TransactionOrm).where((TransactionOrm.owner_id == owner_id) & (TransactionOrm.date >= start_date) & (TransactionOrm.date <= end_date))
+            )
+            return res.scalars().all()
 
 
 
@@ -65,9 +67,11 @@ class TransactionRepository(ITransactionRepository):
                      Returns:
                          list[TransactionOrm]: Transactions assigned to a user contained between two dates.
                  """
-        res = await session.execute(
-            select(TransactionOrm).where((TransactionOrm.owner_id == owner_id) & (TransactionOrm.date >= start_date) & (
-                        TransactionOrm.date <= end_date) & (TransactionOrm.coin == coin))
-        )
-        return res.scalars().all()
+
+        async with session.begin():
+            res = await session.execute(
+                select(TransactionOrm).where((TransactionOrm.owner_id == owner_id) & (TransactionOrm.date >= start_date) & (
+                            TransactionOrm.date <= end_date) & (TransactionOrm.coin == coin))
+            )
+            return res.scalars().all()
 
