@@ -23,26 +23,26 @@ class Container(containers.DeclarativeContainer):
     message_repository = providers.Singleton(MessageRepository)
 
 
-    user_service = providers.Factory(UserService, repo=user_repository)
+    user_service = providers.Factory(UserService, repository=user_repository)
 
     portfolio_service = providers.Factory(
         PortfolioService,
-        repo=portfolio_repository,
+        repository=portfolio_repository,
     )
 
     transaction_service = providers.Factory(
         TransactionService,
-        transaction_repo=transaction_repository,
-        portfolio_repo=portfolio_repository,
+        transaction_repository=transaction_repository,
+        portfolio_repository=portfolio_repository,
     )
 
     trade_request_service = providers.Factory(
         TradeRequestService,
-        trade_request_repo=trade_request_repository,
-        portfolio_repo=portfolio_repository,
+        trade_request_repository=trade_request_repository,
+        portfolio_repository=portfolio_repository,
     )
 
     message_service = providers.Factory(
         MessageService,
-        repo=message_repository,
+        repository=message_repository,
     )
