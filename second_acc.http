@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
   "email": "igor.bb00@gmail.com",
-  "password": "12345"
+  "password": "lkalala"
 }
 
 ###
@@ -40,7 +40,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxY2QxNTA1Z
 ###
 
 POST http://127.0.0.1:8000/portfolios/deposit?quantity=9000000
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxY2QxNTA1ZC04NTlmLTQxOWQtOGE3MC03NWI3MGE1Y2FiN2IiLCJleHAiOjE3NjQxNjY2MzksInR5cGUiOiJjb25maXJtYXRpb24ifQ.LWGSyU7KGixvssJYwptxHFEKXslGX0uPATNUKkWCD_4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZWE3ZDc4Ny03NDVlLTQxODYtOTA1OS02ZDU1MjU1MDM3YjIiLCJleHAiOjE3NjU5NzAxOTcsInR5cGUiOiJjb25maXJtYXRpb24ifQ.FYPKY7wi3f9tP39Ucg451vqIYjeVVMpYxj9l6ejTCp0
 
 
 ###

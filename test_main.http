@@ -121,5 +121,15 @@ Content-Type: application/json
 }
 
 
+###
+
+
+GET localhost:8000/transactions/sep-coins?days=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODEwMmUxNS00YmI3LTRjYjMtOWQ0ZC1lNjc5NDNlZGEzNTAiLCJleHAiOjE3NjUzODYzNDMsInR5cGUiOiJjb25maXJtYXRpb24ifQ.nOyyglgPuMVnTs698h5gVXsHqwyXA4_fHe5tsk3JRTI
+
+
+
+
+
 
 

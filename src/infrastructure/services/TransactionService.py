@@ -12,8 +12,8 @@ import io
 from fastapi.responses import StreamingResponse
 
 from src.infrastructure.models.TransactionOrm import TransactionOrm
-from src.infrastructure.repositories.PortfolioRepository import PortfolioRepository
-from src.infrastructure.repositories.TransactionRepository import TransactionRepository
+from src.core.irepositories.itransaction import ITransactionRepository
+from src.core.irepositories.iportfolio import IPortfolioRepository
 from src.infrastructure.services.ITransactionService import ITransactionService
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,13 +21,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 class TransactionService(ITransactionService):
     """A class implementing the transaction service."""
+    _transaction_repository: ITransactionRepository
+    _portfolio_repository: IPortfolioRepository
+
     def __init__(
             self,
-            transaction_repo: TransactionRepository | None = None,
-            portfolio_repo: PortfolioRepository | None = None,
-    ):
-        self.transaction_repo = transaction_repo or TransactionRepository()
-        self.portfolio_repo = portfolio_repo or PortfolioRepository()
+            transaction_repository: ITransactionRepository,
+            portfolio_repository: IPortfolioRepository,
+    ) -> None:
+        """The initializer of the `transaction service`.
+
+        Args:
+            transaction_repository (ITransactionRepository): The reference to the transaction repository.
+            portfolio_repository (IPortfolioRepository): The reference to the portfolio repository.
+        """
+        self._transaction_repository = transaction_repository
+        self._portfolio_repository = portfolio_repository
 
 
     async def list_for_user(self, owner_id: UUID, session: AsyncSession) -> list[TransactionOrm]:
@@ -42,7 +51,7 @@ class TransactionService(ITransactionService):
         """
 
         async with session.begin():
-            return await self.transaction_repo.show_user_transactions(session, owner_id)
+            return await self._transaction_repository.show_user_transactions(session, owner_id)
 
 
 
@@ -64,7 +73,7 @@ class TransactionService(ITransactionService):
                 raise HTTPException(status_code=403, detail="Number of days cant be 0 or less")
 
             now = datetime.now(timezone.utc)
-            portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
+            portfolio = await self._portfolio_repository.show_user_portfolio(session, owner_id)
 
             total_portfolio_val = [0] * 284
 
@@ -73,7 +82,7 @@ class TransactionService(ITransactionService):
             for crypto in portfolio.coins:
                 if crypto == "tether":
                     continue
-                transactions = await self.transaction_repo.show_user_transactions_between_date_by_coin(session, now - timedelta(days=days_back), now, owner_id, crypto)
+                transactions = await self._transaction_repository.show_user_transactions_between_date_by_coin(session, now - timedelta(days=days_back), now, owner_id, crypto)
                 portfolio_quant = portfolio.coins.get(crypto, 0.0)
 
                 quants = []
@@ -199,7 +208,7 @@ class TransactionService(ITransactionService):
                 raise HTTPException(status_code=403, detail="Number of days cant be 0 or less")
 
             now = datetime.now(timezone.utc)
-            portfolio = await self.portfolio_repo.show_user_portfolio(session, owner_id)
+            portfolio = await self._portfolio_repository.show_user_portfolio(session, owner_id)
 
             total_portfolio_val = [[0] * 288 for _ in range(len(portfolio.coins))]
 
@@ -210,7 +219,7 @@ class TransactionService(ITransactionService):
             for crypto in portfolio.coins:
                 if crypto == "tether":
                     continue
-                transactions = await self.transaction_repo.show_user_transactions_between_date_by_coin(session, now - timedelta(days=days_back), now, owner_id, crypto)
+                transactions = await self._transaction_repository.show_user_transactions_between_date_by_coin(session, now - timedelta(days=days_back), now, owner_id, crypto)
                 portfolio_quant = portfolio.coins.get(crypto, 0.0)
 
                 quants = []
@@ -326,7 +335,7 @@ class TransactionService(ITransactionService):
 
         async with session.begin():
             now = datetime.now(timezone.utc)
-            transactions_general = await self.transaction_repo.show_user_transactions(session, owner_id)
+            transactions_general = await self._transaction_repository.show_user_transactions(session, owner_id)
 
             sorted_transactions = sorted([t for t in transactions_general if t.bought_price > 0],key=lambda x: x.date)
             if not sorted_transactions:
@@ -441,14 +450,14 @@ class TransactionService(ITransactionService):
         """
 
         async with session.begin():
-            transactions = await self.transaction_repo.show_user_transactions(session, owner_id)
+            transactions = await self._transaction_repository.show_user_transactions(session, owner_id)
             now = datetime.now(timezone.utc)
 
             sorted_transactions = sorted([t for t in transactions if t.bought_price > 0], key=lambda x: x.date)
 
             if not sorted_transactions:
                raise HTTPException(status_code=404, detail="No purchase transactions found for the user")
-            
+
 
             oldest_transaction = sorted_transactions[0]
             delta = now - oldest_transaction.date

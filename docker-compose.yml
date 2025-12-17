@@ -21,13 +21,13 @@ services:
     build: .
     working_dir: /app
     volumes:
-      - ./src:/app/src
+      - .:/app
       - ./.env:/app/.env:ro
     env_file: .env
     depends_on:
       db:
         condition: service_healthy
-    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
 

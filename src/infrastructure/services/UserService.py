@@ -9,12 +9,19 @@ from src.infrastructure.utils.password import verify_password
 from src.infrastructure.utils.token import generate_user_token
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.domain.User import User, UserIn
-from src.infrastructure.repositories.UserRepository import UserRepository
+from src.core.irepositories.iuser import IUserRepository
 from src.infrastructure.services.IUserService import IUserService
 
 class UserService(IUserService):
-    def __init__(self, repo: UserRepository):
-        self.repo = repo
+    _repository: IUserRepository
+
+    def __init__(self, repository: IUserRepository) -> None:
+        """The initializer of the `user service`.
+
+        Args:
+            repository (IUserRepository): The reference to the user repository.
+        """
+        self._repository = repository
 
 
     async def get_all_users(self, session: AsyncSession) -> List[User]:
@@ -23,7 +30,7 @@ class UserService(IUserService):
             Returns:
                 List[User]: List of all users in db.
         """
-        return await self.repo.get_users(session)
+        return await self._repository.get_users(session)
 
 
 
@@ -40,13 +47,13 @@ class UserService(IUserService):
         """
 
         async with session.begin():
-            existing = await self.repo.get_by_email(session, user_in.email)
+            existing = await self._repository.get_by_email(session, user_in.email)
             if existing:
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
                     detail="Email already exists",
                 )
-            user = await self.repo.register_user(session, user_in)
+            user = await self._repository.register_user(session, user_in)
             return {"id": user.id, "email": user.email}
 
 
@@ -64,7 +71,7 @@ class UserService(IUserService):
             dict: token bearer
         """
 
-        user = await self.repo.get_by_email(session, email)
+        user = await self._repository.get_by_email(session, email)
         if not user or not verify_password(password, user.password_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
