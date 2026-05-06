@@ -1,0 +1,101 @@
+POST http://127.0.0.1:8000/users/register
+Content-Type: application/json
+
+{
+  "email": "igor.bb00@gmail.com",
+  "password": "lkalala"
+}
+
+
+###
+
+POST http://127.0.0.1:8000/users/login
+Content-Type: application/json
+
+{
+  "email": "igor.bb00@gmail.com",
+  "password": "lkalala"
+}
+
+###
+
+GET http://127.0.0.1:8000/portfolios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OWVhNzMzMy1jMWQ5LTQwMDktYTZhZi1mMzQxMDc0OWEyYTMiLCJleHAiOjE3Njg0MTMyNDksInR5cGUiOiJjb25maXJtYXRpb24ifQ.5Yn8slropMpt5h3Q2u0mrfISmiwWkYQeueHu00HP87E
+
+###
+
+
+
+POST http://127.0.0.1:8000/portfolios/buy?coin=solana&quantity=5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OWVhNzMzMy1jMWQ5LTQwMDktYTZhZi1mMzQxMDc0OWEyYTMiLCJleHAiOjE3Njg0MTI5NjUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.Y_spRJqTeEI4Ya1nq4-rccAF4PTCr2m23vHY9utur10
+
+
+###
+
+
+POST http://127.0.0.1:8000/portfolios/sell?coin=ripple&quantity=all
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxY2QxNTA1ZC04NTlmLTQxOWQtOGE3MC03NWI3MGE1Y2FiN2IiLCJleHAiOjE3NjQxNjc1NjYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.t0V8Kb765R9cbdFJR9RD-Gku60Sl1oEdy4RzYPyNuNc
+
+
+###
+
+POST http://127.0.0.1:8000/portfolios/deposit?quantity=9000000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OWVhNzMzMy1jMWQ5LTQwMDktYTZhZi1mMzQxMDc0OWEyYTMiLCJleHAiOjE3Njg0MTI5NjUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.Y_spRJqTeEI4Ya1nq4-rccAF4PTCr2m23vHY9utur10
+
+
+###
+
+POST http://127.0.0.1:8000/portfolios/withdraw?quantity=all
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhMC04YjU3LTRkM2UtYmYyOS03YTA4YjA1OWUzNWYiLCJleHAiOjE3NjI2MDc1ODYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.q05isFZvAzTH39v58dSfWxmt8yVbgYjd9AQptMkYkvk
+
+
+###
+
+GET http://127.0.0.1:8000/portfolios/p_and_l_coin?coin=solana
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxY2QxNTA1ZC04NTlmLTQxOWQtOGE3MC03NWI3MGE1Y2FiN2IiLCJleHAiOjE3NjQyNzY2MzcsInR5cGUiOiJjb25maXJtYXRpb24ifQ.J3SAfGphiWmdCDOGNkJPiuMW9mNkuxs4gabzgdaz_xA
+
+
+###
+
+GET 127.0.0.1:8000/transactions/p_n_l
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjM5OTc4MzYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.kcas6A1-DnrBDF_otwuAOn7smSNRjm7HRms1Xn7ljiA
+
+###
+
+
+GET http://127.0.0.1:8000/transactions/val?days=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjQwMDQyODIsInR5cGUiOiJjb25maXJtYXRpb24ifQ._2aVE_3QeIljvjDZlsVWbSQ2bKny2zbDoYiUQL_9SZk
+
+
+###
+
+GET 127.0.0.1:8000/transactions/sep-coins?days=5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjM5MjQyMzksInR5cGUiOiJjb25maXJtYXRpb24ifQ.pznvPcuFOhjxKZEHQMUR8s4HiX2d4JQInM6eP1joGAk
+
+###
+
+GET 127.0.0.1:8000/transactions/p_n_l_perc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjQwMTAyNTUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.vYDIguPP90J9RfCF-ZW2Hn2Iz4bN-SCOoQqf7zYRwBs
+
+###
+
+
+PUT http://127.0.0.1:8000/trade_requests/update
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxY2QxNTA1ZC04NTlmLTQxOWQtOGE3MC03NWI3MGE1Y2FiN2IiLCJleHAiOjE3NjQxNjY3ODgsInR5cGUiOiJjb25maXJtYXRpb24ifQ.49XyGpOR9fw6o8aqLHZnhd3P0LTF9hksMcYZbRdrQMM
+Content-Type: application/json
+
+{
+  "accept": true,
+  "request_id": "98862e75-50e0-4692-bb42-fa119b81591b"
+}
+
+
+###
+
+GET http://127.0.0.1:8000/trade_requests
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjQwNzk5NDAsInR5cGUiOiJjb25maXJtYXRpb24ifQ.-xcEhuz7UVcDzihnwEHxf8-Y8_846CqcSMu25VPcf4Q
+
+###
+
+POST 127.0.0.1:8000/portfolios/transfer
+

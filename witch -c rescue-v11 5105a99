@@ -1,0 +1,45 @@
+[33m5105a99[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/test[m[33m, [m[1;31morigin/master[m[33m)[m HEAD@{0}: checkout: moving from test to master
+[33mcf4d6fb[m[33m ([m[1;32mtest[m[33m)[m HEAD@{1}: checkout: moving from master to test
+[33m5105a99[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/test[m[33m, [m[1;31morigin/master[m[33m)[m HEAD@{2}: checkout: moving from master to master
+[33m5105a99[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/test[m[33m, [m[1;31morigin/master[m[33m)[m HEAD@{3}: branch: Reset to origin/master
+[33m5105a99[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/test[m[33m, [m[1;31morigin/master[m[33m)[m HEAD@{4}: checkout: moving from test to master
+[33mcf4d6fb[m[33m ([m[1;32mtest[m[33m)[m HEAD@{5}: checkout: moving from master to test
+[33m5105a99[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/test[m[33m, [m[1;31morigin/master[m[33m)[m HEAD@{6}: checkout: moving from test to master
+[33mcf4d6fb[m[33m ([m[1;32mtest[m[33m)[m HEAD@{7}: checkout: moving from master to test
+[33m5105a99[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/test[m[33m, [m[1;31morigin/master[m[33m)[m HEAD@{8}: commit: V11
+[33mefd833a[m HEAD@{9}: commit: V10
+[33m67bfb20[m HEAD@{10}: commit: V9
+[33m7161aae[m HEAD@{11}: commit: V8
+[33mcf4d6fb[m[33m ([m[1;32mtest[m[33m)[m HEAD@{12}: merge test: Fast-forward
+[33m141e888[m HEAD@{13}: checkout: moving from test to master
+[33mcf4d6fb[m[33m ([m[1;32mtest[m[33m)[m HEAD@{14}: commit: V7
+[33m141e888[m HEAD@{15}: checkout: moving from master to test
+[33m141e888[m HEAD@{16}: checkout: moving from test to master
+[33m141e888[m HEAD@{17}: checkout: moving from master to test
+[33m141e888[m HEAD@{18}: merge test: Fast-forward
+[33m9cbd7cc[m HEAD@{19}: checkout: moving from test to master
+[33m141e888[m HEAD@{20}: checkout: moving from master to test
+[33m9cbd7cc[m HEAD@{21}: checkout: moving from test to master
+[33m141e888[m HEAD@{22}: commit: V6
+[33m10216ea[m HEAD@{23}: commit: V5
+[33m9cbd7cc[m HEAD@{24}: checkout: moving from master to test
+[33m9cbd7cc[m HEAD@{25}: pull --no-stat -v --progress origin test: Fast-forward
+[33m1583550[m HEAD@{26}: checkout: moving from test to master
+[33m9cbd7cc[m HEAD@{27}: checkout: moving from master to test
+[33m1583550[m HEAD@{28}: checkout: moving from test to master
+[33m9cbd7cc[m HEAD@{29}: commit: V4
+[33mdc37d74[m HEAD@{30}: checkout: moving from master to test
+[33m1583550[m HEAD@{31}: checkout: moving from test to master
+[33mdc37d74[m HEAD@{32}: checkout: moving from master to test
+[33m1583550[m HEAD@{33}: checkout: moving from test to master
+[33mdc37d74[m HEAD@{34}: commit: V3
+[33m582e310[m HEAD@{35}: commit: V2
+[33m5e8ddba[m HEAD@{36}: commit: V1
+[33m1583550[m HEAD@{37}: checkout: moving from master to test
+[33m1583550[m HEAD@{38}: commit: V7
+[33m021a885[m HEAD@{39}: commit: V6
+[33m6135c73[m HEAD@{40}: commit: V5
+[33mb018c32[m HEAD@{41}: commit: V4
+[33ma75afae[m HEAD@{42}: commit: V3
+[33m45a1cbb[m HEAD@{43}: commit: V2
+[33m004fddd[m HEAD@{44}: commit (initial): V1

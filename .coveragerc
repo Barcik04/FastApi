@@ -1,0 +1,9 @@
+[run]
+source = .
+branch = True
+
+[report]
+omit =
+    */tests/*
+    */venv/*
+    */.venv/*

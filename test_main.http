@@ -1,0 +1,135 @@
+# Test your FastAPI endpoints
+
+POST http://127.0.0.1:8000/users/register
+Content-Type: application/json
+
+{
+  "email": "igora11111@gmail.com",
+  "password": "lkalala"
+}
+
+
+###
+
+GET http://127.0.0.1:8000/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4YzUwZmFhMy03ZmI4LTQ2ZGEtYTg4Ni03OTRlNzZiMTY0Y2MiLCJleHAiOjE3NjI0MjYyMDUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.JvTGyFZ_SK-I9kMgUJk8WYimLxsjHuWv0OcZPe7VUwE
+
+###
+
+POST http://127.0.0.1:8000/users/login
+Content-Type: application/json
+
+{
+  "email": "igor.bb00@gmail.com",
+  "password": "12345"
+}
+
+
+###
+
+GET http://127.0.0.1:8000/portfolios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NTAxMDA1NS1jOTc1LTQ2NmMtOGY4Yi1lMGNlMmVjMjAxZGMiLCJleHAiOjE3NjQxNjE5NDIsInR5cGUiOiJjb25maXJtYXRpb24ifQ.G2olbUqEo5XrgmNrGM-CY6y6iMV2A_s-AbB7DJjBt_8
+
+###
+
+
+
+POST http://127.0.0.1:8000/portfolios/buy?coin=ripple&quantity=200000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOTNkYjdiMy02MDJiLTQ0NzUtOWQyMy03YWYwOWU1YmRhNzQiLCJleHAiOjE3NjQxNjY2NjMsInR5cGUiOiJjb25maXJtYXRpb24ifQ.cFYT8HJ8ajBpTttKzGTVVmocmkTG7uGRPTZl-d_9ekk
+
+
+###
+
+
+POST http://127.0.0.1:8000/portfolios/sell?coin=solana&quantity=0.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZmE0ZGZmNC1jOWY3LTQ5NWItOWExOS00MWI1YWMyMmJkMTgiLCJleHAiOjE3NjI3MTU4MTksInR5cGUiOiJjb25maXJtYXRpb24ifQ.kGeIZqfZ7top2pnakQj3yb6CvpiSA3JA2PLikD5huKo
+
+
+###
+
+POST http://127.0.0.1:8000/portfolios/deposit?quantity=900000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOTNkYjdiMy02MDJiLTQ0NzUtOWQyMy03YWYwOWU1YmRhNzQiLCJleHAiOjE3NjQxNjY2NjMsInR5cGUiOiJjb25maXJtYXRpb24ifQ.cFYT8HJ8ajBpTttKzGTVVmocmkTG7uGRPTZl-d_9ekk
+
+
+###
+
+POST http://127.0.0.1:8000/portfolios/withdraw?quantity=all
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxYTg1ZDQ0NC02NzI2LTQ3ZTctOWNhMi04MDU4NjJiOGQ0ZjUiLCJleHAiOjE3NjI3MDkyMDUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.RGX0a0kSHqx_ntb79ThE1tqFXg1RP15EZxjFKHjCKHk
+
+
+###
+
+GET http://127.0.0.1:8000/portfolios/p_and_l_coin?coin=tether
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhMC04YjU3LTRkM2UtYmYyOS03YTA4YjA1OWUzNWYiLCJleHAiOjE3NjI2MDY4ODMsInR5cGUiOiJjb25maXJtYXRpb24ifQ.UVbAhumllu0UwZ7HsG_hiPN5Xz6BKnYrKPVw41j4dOU
+
+###
+
+POST http://127.0.0.1:8000/portfolios/transfer?coin=solana&quantity=1&transfer_id=ddc6853a-9b1a-499f-9617-b755ce0d5cfc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODEwMmUxNS00YmI3LTRjYjMtOWQ0ZC1lNjc5NDNlZGEzNTAiLCJleHAiOjE3NjQyNTMxOTEsInR5cGUiOiJjb25maXJtYXRpb24ifQ.jBPulqP3AEdpr--n2-NPl32i2RYWhhrcA8ripLC9pQY
+
+###
+
+GET http://127.0.0.1:8000/crypto-data
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWI0MzFhMC04YjU3LTRkM2UtYmYyOS03YTA4YjA1OWUzNWYiLCJleHAiOjE3NjI2MzUwOTYsInR5cGUiOiJjb25maXJtYXRpb24ifQ.ztrO6ToLyBZauK-n6S1qUC1eR77rEq09B04LxskkFko
+
+###
+
+GET http://127.0.0.1:8000/crypto-data/amount_graph?mode=2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0NTA3OTA5YS02ODY0LTQ0OTYtYWE2NC0wNDkxZGY0YjA2ODEiLCJleHAiOjE3NjI2OTYzNzgsInR5cGUiOiJjb25maXJtYXRpb24ifQ.zih34dgowxMe64d7jGm37FQiFzHu1BzOdwhkqxHgzfg
+
+
+###
+
+GET http://127.0.0.1:8000/crypto-data/24h?days=2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OGE0MWI4Ni04MWRiLTRjMDEtYWI0NC0zMWUxYTk0MDFiYmEiLCJleHAiOjE3NjI3OTAxMDksInR5cGUiOiJjb25maXJtYXRpb24ifQ.Eqw-xNWJVNpiVPXzmdOKaprQ8siFSdijo3en1etrTUk
+
+###
+
+
+GET http://127.0.0.1:8000/crypto-data/tests?days=3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZmE0ZGZmNC1jOWY3LTQ5NWItOWExOS00MWI1YWMyMmJkMTgiLCJleHAiOjE3NjI3ODc3MTUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.KruiCk4QbwsTLOWEm6Q8H6tf0Otaji8kqTjbO_TDTgY
+
+
+###
+
+GET http://127.0.0.1:8000/crypto-data/sep-coins?days=2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OGE0MWI4Ni04MWRiLTRjMDEtYWI0NC0zMWUxYTk0MDFiYmEiLCJleHAiOjE3NjI3OTI4MTEsInR5cGUiOiJjb25maXJtYXRpb24ifQ.PcBgFyjCpJbPTQSuM6M-XueZ_6nyabZlDcXcX8opyco
+
+
+###
+
+GET http://127.0.0.1:8000/crypto-data/p_n_l_perc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkOTA1NjFkNS04OTc2LTQ5MjktODg1YS1jN2JmOGM5OTYxNGQiLCJleHAiOjE3NjI4OTEwNTUsInR5cGUiOiJjb25maXJtYXRpb24ifQ.vkziu724US6t2mQS_NBE0DPqVAk317lFUE2sba9TY5s
+
+###
+
+GET http://127.0.0.1:8000/trade_requests
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWM3ODg5Yi05ZGE1LTQzMWEtYTdmZS1mYzI5NWM0ZmJjMmYiLCJleHAiOjE3NjQwMTQ5ODQsInR5cGUiOiJjb25maXJtYXRpb24ifQ.rXiJJupstdaxiYLmug8VGhoDeIg8TwXQ80vW1cICj1I
+
+###
+
+POST http://127.0.0.1:8000/trade_requests/send
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOTNkYjdiMy02MDJiLTQ0NzUtOWQyMy03YWYwOWU1YmRhNzQiLCJleHAiOjE3NjQxNjY3MjcsInR5cGUiOiJjb25maXJtYXRpb24ifQ.Ct2NXzQ5bK0oTI2g6USqLN4xoX2E_vdq8yO0NjbS6wI
+Content-Type: application/json
+
+{
+  "coin": "ripple",
+  "quantity": 5.0,
+  "coin_get": "solana",
+  "quantity_get": 5.0,
+  "receiver_id": "fc9452bf-9f6d-47b2-9761-bc799757dd3d"
+}
+
+
+###
+
+
+GET localhost:8000/transactions/sep-coins?days=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODEwMmUxNS00YmI3LTRjYjMtOWQ0ZC1lNjc5NDNlZGEzNTAiLCJleHAiOjE3NjUzODYzNDMsInR5cGUiOiJjb25maXJtYXRpb24ifQ.nOyyglgPuMVnTs698h5gVXsHqwyXA4_fHe5tsk3JRTI
+
+
+
+
+
+
+
