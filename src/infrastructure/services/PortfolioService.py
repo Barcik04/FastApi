@@ -204,8 +204,30 @@ class PortfolioService(IPortfolioService):
             str: message with transaction information.
         """
 
+        if session is None:
+            raise ValueError("session cannot be None")
+
+        if owner_id is None:
+            raise ValueError("owner_id cannot be None")
+
+        if coin is None:
+            raise ValueError("coin cannot be None")
+
+        if coin == "":
+            raise ValueError("coin cannot be empty")
+
+        if quantity is None:
+            raise ValueError("quantity cannot be None")
+
+        if quantity <= 0:
+            raise ValueError("quantity cannot be 0 or lower")
+
+
         async with session.begin():
             portfolio = await self._repository.show_user_portfolio(session, owner_id)
+
+            if portfolio is None:
+                raise ValueError("user has no portfolio")
 
             coins = dict(portfolio.coins)
             bought_price = dict(portfolio.bought_price)
@@ -216,16 +238,13 @@ class PortfolioService(IPortfolioService):
             else:
                 quantity = float(quantity)
 
-            if quantity_portfolio < quantity:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Not enough {coin} to sell. You have {coins.get(coin)}.",
-                )
-
             if coin not in coins:
-                raise HTTPException(
-                    status_code=404, detail=f"No '{coin}' in your portfolio."
-                )
+                raise ValueError(f"No '{coin}' in your portfolio.")
+
+            if quantity_portfolio < quantity:
+                raise ValueError(f"Not enough coin in your account to sell: {quantity} of {coin}.")
+
+
 
             coins[coin] = coins.get(coin) - quantity
             if coins[coin] == 0:
@@ -248,10 +267,8 @@ class PortfolioService(IPortfolioService):
                 response.raise_for_status()
                 tether_price = response.json()["tether"]["usd"]
 
-            coins.get("tether", 0.0)
-            tether = bought_price.get("tether", tether_price)
-            coins["tether"] += quantity * price_usd
-            bought_price["tether"] = tether
+            coins["tether"] = coins.get("tether", 0.0) + quantity * price_usd
+            bought_price["tether"] = bought_price.get("tether", tether_price)
 
             portfolio.coins = coins
             portfolio.bought_price = bought_price
@@ -280,8 +297,26 @@ class PortfolioService(IPortfolioService):
             str: message with transaction information.
         """
 
+        if session is None:
+            raise ValueError("session cannot be None")
+
+        if owner_id is None:
+            raise ValueError("owner_id cannot be None")
+
+        if quantity is None:
+            raise ValueError("quantity cannot be None")
+
+        if quantity <= 0:
+            raise ValueError("quantity cannot be 0 or lower")
+
+        if quantity > 1_000_000_000:
+            raise ValueError("quantity is too large")
+
         async with session.begin():
             portfolio = await self._repository.show_user_portfolio(session, owner_id)
+
+            if portfolio is None:
+                raise ValueError("user has no portfolio")
 
             bought_price = dict(portfolio.bought_price)
             coins = dict(portfolio.coins)
@@ -318,13 +353,28 @@ class PortfolioService(IPortfolioService):
             str: message with transaction information.
         """
 
+
+        if session is None:
+            raise ValueError("session cannot be None")
+
+        if owner_id is None:
+            raise ValueError("owner_id cannot be None")
+
+        if quantity is None:
+            raise ValueError("quantity cannot be None")
+
+        if quantity <= 0:
+            raise ValueError("quantity cannot be 0 or lower")
+
+        if quantity > 1_000_000_000:
+            raise ValueError("quantity is too large")
+
+
         async with session.begin():
             portfolio = await self._repository.show_user_portfolio(session, owner_id)
 
             if portfolio is None:
-                raise HTTPException(
-                    status_code=404, detail="Portfolio not found for this user."
-                )
+                raise ValueError("user has no portfolio")
 
             coins = dict(portfolio.coins)
             bought_price = dict(portfolio.bought_price)
@@ -343,9 +393,7 @@ class PortfolioService(IPortfolioService):
                 quantity = float(quantity)
 
             if coins.get("tether", 0.0) < quantity:
-                raise HTTPException(
-                    status_code=404, detail=f"Not enough tether in your portfolio."
-                )
+                raise ValueError("Not enough tether in your portfolio.")
 
             coins["tether"] = coins.get("tether", 0.0) - quantity
             usd = (2 - price_usd) * quantity
