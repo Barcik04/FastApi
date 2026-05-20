@@ -424,8 +424,22 @@ class PortfolioService(IPortfolioService):
             dict[str, float]: dictionary with p_n_L in $ and %.
         """
 
+
+        if session is None:
+            raise ValueError("session cannot be None")
+
+        if owner_id is None:
+            raise ValueError("owner_id cannot be None")
+
+        if coin is None:
+            raise ValueError("coin cannot be None")
+
+
         async with session.begin():
             portfolio = await self._repository.show_user_portfolio(session, owner_id)
+
+            if portfolio is None:
+                raise ValueError("user has no portfolio")
 
             coins = dict(portfolio.coins)
             bought_price = dict(portfolio.bought_price)
@@ -439,9 +453,7 @@ class PortfolioService(IPortfolioService):
                 price_usd = response.json()[coin]["usd"]
 
             if coin not in coins:
-                raise HTTPException(
-                    status_code=400, detail=f"{coin} not in your portfolio."
-                )
+                raise ValueError(f"{coin} not in your portfolio.")
 
             bought_val = bought_price.get(coin)
             coin_quant = coins.get(coin)
@@ -472,20 +484,48 @@ class PortfolioService(IPortfolioService):
             str: basic status information of the transfer.
         """
 
+
+        if session is None:
+            raise ValueError("session cannot be None")
+
+        if owner_id is None:
+            raise ValueError("owner_id cannot be None")
+
+        if coin is None:
+            raise ValueError("quantity cannot be None")
+
+        if quantity is None:
+            raise ValueError("quantity cannot be None")
+
+        if quantity <= 0:
+            raise ValueError("quantity cannot be 0 or lower")
+
+        if quantity > 1_000_000_000:
+            raise ValueError("quantity is too large")
+
+        if transfer_id is None:
+            raise ValueError("transfer_id cannot be None")
+
+
+
         async with session.begin():
             my_portfolio = await self._repository.show_user_portfolio(session, owner_id)
             target_portfolio = await self._repository.find_portfolio_by_id(
                 session, transfer_id
             )
 
+            if my_portfolio is None:
+                raise ValueError("user has no portfolio")
+
+            if target_portfolio is None:
+                raise ValueError("couldn't find target_portfolio")
+
             my_coins = dict(my_portfolio.coins)
             target_coins = dict(target_portfolio.coins)
             target_bought_price = dict(target_portfolio.bought_price)
 
             if coin not in my_coins:
-                raise HTTPException(
-                    status_code=400, detail=f"{coin} not found in your portfolio."
-                )
+                raise ValueError(f"{coin} not found in your portfolio.")
 
             if quantity == "all":
                 quantity = my_coins.get(coin, 0.0)
@@ -493,9 +533,7 @@ class PortfolioService(IPortfolioService):
                 quantity = float(quantity)
 
             if my_coins[coin] < quantity:
-                raise HTTPException(
-                    status_code=400, detail=f"Not enough {coin} in your portfolio."
-                )
+                raise ValueError(f"Not enough {coin} in your portfolio.")
 
             url = "https://api.coingecko.com/api/v3/simple/price"
             params = {"ids": coin, "vs_currencies": "usd"}

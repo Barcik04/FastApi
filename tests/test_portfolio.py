@@ -876,3 +876,371 @@ class PortfolioTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(portfolio.coins["tether"], 50.0)
         self.assertEqual(portfolio.bought_price["tether"], 1.0)
 
+
+
+
+
+
+    async def test_p_and_l_coin_and_portfolio_is_none(self):
+        self.portfolio_repository = MagicMock()
+
+        self.service = PortfolioService(self.portfolio_repository)
+
+        self.portfolio_repository.show_user_portfolio = AsyncMock(return_value=None)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.p_and_l_coin(uuid4(), "bitcoin", self.session)
+
+        self.assertEqual(context.exception.args[0], "user has no portfolio")
+
+
+
+
+    async def test_p_and_l_coin_and_session_is_none(self):
+        self.portfolio_repository = MagicMock()
+
+        self.service = PortfolioService( self.portfolio_repository)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.p_and_l_coin(uuid4(), "bitcoin", None)
+
+        self.assertEqual(context.exception.args[0], "session cannot be None")
+
+
+
+    async def test_p_and_l_coin_and_owner_id_is_none(self):
+        self.portfolio_repository = MagicMock()
+
+        self.service = PortfolioService( self.portfolio_repository)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.p_and_l_coin(None, "bitcoin", self.session)
+
+        self.assertEqual(context.exception.args[0], "owner_id cannot be None")
+
+
+
+    async def test_p_and_l_coin_and_coin_is_none(self):
+        self.portfolio_repository = MagicMock()
+
+        self.service = PortfolioService( self.portfolio_repository)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.p_and_l_coin(uuid4(), None, self.session)
+
+        self.assertEqual(context.exception.args[0], "coin cannot be None")
+
+
+    async def test_p_n_l_coin_and_no_coin_in_portfolio(self):
+        owner_id = uuid4()
+
+        portfolio = Portfolio(
+            name="name",
+            id=uuid4(),
+            owner_id=owner_id,
+            coins={"tether": 100.0},
+            bought_price={"tether": 1.0},
+            p_and_l=0.0,
+        )
+
+        self.portfolio_repository = MagicMock()
+        self.service = PortfolioService(self.portfolio_repository)
+
+        self.portfolio_repository.show_user_portfolio = AsyncMock(return_value=portfolio)
+
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.p_and_l_coin(owner_id, "bitcoin", self.session)
+
+        self.assertEqual(context.exception.args[0], "bitcoin not in your portfolio.")
+
+
+
+    async def test_p_n_l_coin_happy_path(self):
+        owner_id = uuid4()
+
+        portfolio = Portfolio(
+            name="name",
+            id=uuid4(),
+            owner_id=owner_id,
+            coins={"tether": 100.0},
+            bought_price={"tether": 1.0},
+            p_and_l=0.0,
+        )
+
+        self.portfolio_repository = MagicMock()
+        self.service = PortfolioService(self.portfolio_repository)
+
+        self.portfolio_repository.show_user_portfolio = AsyncMock(return_value=portfolio)
+
+        mock_response = MagicMock()
+        mock_response.raise_for_status.return_value = None
+        mock_response.json.return_value = {
+            "tether": {
+                "usd": 1.0
+            }
+        }
+
+        mock_client = AsyncMock()
+        mock_client.get.return_value = mock_response
+
+        with patch("src.infrastructure.services.PortfolioService.httpx.AsyncClient") as mock_async_client:
+            mock_async_client.return_value.__aenter__.return_value = mock_client
+
+            result = await self.service.p_and_l_coin(
+                owner_id=owner_id,
+                coin="tether",
+                session=self.session,
+            )
+
+
+        self.assertEqual(result, {"p_and_l": 0.0, "p_and_l_percent": 0.0})
+
+
+
+
+    async def test_transfer_coin_and_session_is_none(self):
+        self.portfolio_repository = MagicMock()
+
+        self.service = PortfolioService( self.portfolio_repository)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.transfer_coin(uuid4(), "bitcoin", 10.0, uuid4(), None)
+
+        self.assertEqual(context.exception.args[0], "session cannot be None")
+
+
+
+    async def test_transfer_coin_and_owner_id_is_none(self):
+        self.portfolio_repository = MagicMock()
+
+        self.service = PortfolioService( self.portfolio_repository)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.transfer_coin(None, "bitcoin", 10.0, uuid4(), self.session)
+
+        self.assertEqual(context.exception.args[0], "owner_id cannot be None")
+
+
+
+    async def test_transfer_coin_and_quantity_is_none(self):
+        self.portfolio_repository = MagicMock()
+
+        self.service = PortfolioService( self.portfolio_repository)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.transfer_coin(uuid4(), "bitcoin", None, uuid4(), self.session)
+
+        self.assertEqual(context.exception.args[0], "quantity cannot be None")
+
+
+    async def test_transfer_coin_and_quantity_is_negative(self):
+        self.portfolio_repository = MagicMock()
+
+        self.service = PortfolioService( self.portfolio_repository)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.transfer_coin(uuid4(), "bitcoin", -1.0, uuid4(), self.session)
+
+        self.assertEqual(context.exception.args[0], "quantity cannot be 0 or lower")
+
+
+    async def test_transfer_coin_and_quantity_is_too_large(self):
+        self.portfolio_repository = MagicMock()
+        self.service = PortfolioService( self.portfolio_repository)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.transfer_coin(uuid4(), "bitcoin",1_000_000_001, uuid4(), self.session)
+
+        self.assertEqual(context.exception.args[0], "quantity is too large")
+
+
+
+    async def test_transfer_coin_and_portfolio_is_none(self):
+        self.portfolio_repository = MagicMock()
+
+        self.service = PortfolioService(self.portfolio_repository)
+
+        self.portfolio_repository.show_user_portfolio = AsyncMock(return_value=None)
+        self.portfolio_repository.find_portfolio_by_id = AsyncMock(return_value=None)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.transfer_coin(uuid4(), "bitcoin", 10.0, uuid4(), self.session)
+
+        self.assertEqual(context.exception.args[0], "user has no portfolio")
+
+
+
+    async def test_transfer_coin_and_user_portfolio_is_none(self):
+
+        self.portfolio_repository = MagicMock()
+
+        self.portfolio_repository.show_user_portfolio = AsyncMock(return_value=None)
+        self.portfolio_repository.find_portfolio_by_id = AsyncMock(return_value=None)
+
+        self.service = PortfolioService( self.portfolio_repository)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.transfer_coin(uuid4(), "bitcoin", 10.0, uuid4(), self.session)
+
+        self.assertEqual(context.exception.args[0], "user has no portfolio")
+
+
+    async def test_transfer_coin_and_transfer_portfolio_is_none(self):
+        owner_id = uuid4()
+
+        portfolio = Portfolio(
+            name="name",
+            id=uuid4(),
+            owner_id=owner_id,
+            coins={"tether": 100.0},
+            bought_price={"tether": 1.0},
+            p_and_l=0.0,
+        )
+
+        self.portfolio_repository = MagicMock()
+
+        self.portfolio_repository.show_user_portfolio = AsyncMock(return_value=portfolio)
+        self.portfolio_repository.find_portfolio_by_id = AsyncMock(return_value=None)
+
+        self.service = PortfolioService(self.portfolio_repository)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.transfer_coin(uuid4(), "bitcoin", 10.0, uuid4(), self.session)
+
+        self.assertEqual(context.exception.args[0], "couldn't find target_portfolio")
+
+
+    async def test_transfer_coin_and_coin_is_not_in_user_portfolio(self):
+        owner_id = uuid4()
+        transfer_id = uuid4()
+
+        portfolio = Portfolio(
+            name="name",
+            id=uuid4(),
+            owner_id=owner_id,
+            coins={"tether": 100.0},
+            bought_price={"tether": 1.0},
+            p_and_l=0.0,
+        )
+
+
+        portfolio2 = Portfolio(
+            name="name2",
+            id=uuid4(),
+            owner_id=transfer_id,
+            coins={"tether": 100.0},
+            bought_price={"tether": 1.0},
+            p_and_l=0.0,
+        )
+
+        self.portfolio_repository = MagicMock()
+
+        self.portfolio_repository.show_user_portfolio = AsyncMock(return_value=portfolio)
+        self.portfolio_repository.find_portfolio_by_id = AsyncMock(return_value=portfolio2)
+
+        self.service = PortfolioService(self.portfolio_repository)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.transfer_coin(uuid4(), "bitcoin", 10.0, uuid4(), self.session)
+
+        self.assertEqual(context.exception.args[0], "bitcoin not found in your portfolio.")
+
+
+
+    async def test_transfer_coin_and_not_enough_coin_in_user_portfolio(self):
+        owner_id = uuid4()
+        transfer_id = uuid4()
+
+        portfolio = Portfolio(
+            name="name",
+            id=uuid4(),
+            owner_id=owner_id,
+            coins={"bitcoin": 100.0},
+            bought_price={"bitcoin": 1.0},
+            p_and_l=0.0,
+        )
+
+
+        portfolio2 = Portfolio(
+            name="name2",
+            id=uuid4(),
+            owner_id=transfer_id,
+            coins={"tether": 100.0},
+            bought_price={"tether": 1.0},
+            p_and_l=0.0,
+        )
+
+        self.portfolio_repository = MagicMock()
+
+        self.portfolio_repository.show_user_portfolio = AsyncMock(return_value=portfolio)
+        self.portfolio_repository.find_portfolio_by_id = AsyncMock(return_value=portfolio2)
+
+        self.service = PortfolioService(self.portfolio_repository)
+
+        with self.assertRaises(ValueError) as context:
+            await self.service.transfer_coin(uuid4(), "bitcoin", 101.0, uuid4(), self.session)
+
+        self.assertEqual(context.exception.args[0], "Not enough bitcoin in your portfolio.")
+
+
+
+    async def test_transfer_coin_happy_path(self):
+        owner_id = uuid4()
+        transfer_id = uuid4()
+
+        portfolio = Portfolio(
+            name="name",
+            id=uuid4(),
+            owner_id=owner_id,
+            coins={"bitcoin": 100.0},
+            bought_price={"bitcoin": 1.0},
+            p_and_l=0.0,
+        )
+
+        portfolio2 = Portfolio(
+            name="name2",
+            id=transfer_id,
+            owner_id=uuid4(),
+            coins={"tether": 100.0},
+            bought_price={"tether": 1.0},
+            p_and_l=0.0,
+        )
+
+        self.portfolio_repository = MagicMock()
+        self.service = PortfolioService(self.portfolio_repository)
+
+        self.portfolio_repository.show_user_portfolio = AsyncMock(return_value=portfolio)
+        self.portfolio_repository.find_portfolio_by_id = AsyncMock(return_value=portfolio2)
+
+        mock_response = MagicMock()
+        mock_response.raise_for_status.return_value = None
+        mock_response.json.return_value = {
+            "bitcoin": {
+                "usd": 50000.0
+            }
+        }
+
+        mock_client = AsyncMock()
+        mock_client.get.return_value = mock_response
+
+        with patch("src.infrastructure.services.PortfolioService.httpx.AsyncClient") as mock_async_client:
+            mock_async_client.return_value.__aenter__.return_value = mock_client
+
+            result = await self.service.transfer_coin(
+                owner_id=owner_id,
+                coin="bitcoin",
+                quantity=10.0,
+                transfer_id=transfer_id,
+                session=self.session,
+            )
+
+        self.assertEqual(
+            result,
+            f"Transaction successful! 10.0 of bitcoin transferred to portfolio with id: {portfolio2} ."
+        )
+
+        self.assertEqual(portfolio.coins["bitcoin"], 90.0)
+        self.assertEqual(portfolio2.coins["bitcoin"], 10.0)
+        self.assertEqual(portfolio2.coins["tether"], 100.0)
+        self.assertEqual(portfolio2.bought_price["bitcoin"], 50000.0)
